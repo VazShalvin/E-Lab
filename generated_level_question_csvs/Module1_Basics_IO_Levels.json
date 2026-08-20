@@ -1,0 +1,1172 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Basics I/O",
+      "module_order": 1,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Print Integer",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read an integer and print it.\n\nRead input from stdin and print only the exact requested output.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "-10",
+              "expected_output": "-10",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "42",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Sum Two Integers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers and print their sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "-5 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "10 20",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "-3 -7",
+              "expected_output": "-10",
+              "is_sample": false
+            },
+            {
+              "input": "100 200",
+              "expected_output": "300",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Product Two Integers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers and print their product.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 3",
+              "expected_output": "6",
+              "is_sample": true
+            },
+            {
+              "input": "-4 5",
+              "expected_output": "-20",
+              "is_sample": false
+            },
+            {
+              "input": "0 10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "7 8",
+              "expected_output": "56",
+              "is_sample": false
+            },
+            {
+              "input": "-3 -3",
+              "expected_output": "9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Rectangle Area",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read length and breadth and print rectangle area.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 3",
+              "expected_output": "6",
+              "is_sample": true
+            },
+            {
+              "input": "5 5",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "10 1",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "7 8",
+              "expected_output": "56",
+              "is_sample": false
+            },
+            {
+              "input": "12 4",
+              "expected_output": "48",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "ASCII Value",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read one character and print its ASCII value.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "A",
+              "expected_output": "65",
+              "is_sample": true
+            },
+            {
+              "input": "a",
+              "expected_output": "97",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "48",
+              "is_sample": false
+            },
+            {
+              "input": "Z",
+              "expected_output": "90",
+              "is_sample": false
+            },
+            {
+              "input": "z",
+              "expected_output": "122",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Subtract Two Integers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers a and b and print a - b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 3",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "10 20",
+              "expected_output": "-10",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "-5 -2",
+              "expected_output": "-3",
+              "is_sample": false
+            },
+            {
+              "input": "100 50",
+              "expected_output": "50",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Divide Two Integers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers a and b and print integer quotient a / b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10 2",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "15 3",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "7 2",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "-10 2",
+              "expected_output": "-5",
+              "is_sample": false
+            },
+            {
+              "input": "100 10",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Remainder Two Integers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers a and b and print remainder a % b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10 3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "15 4",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "20 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "7 2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "100 30",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Perimeter of Rectangle",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read length and breadth and print perimeter 2*(l+b).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 3",
+              "expected_output": "10",
+              "is_sample": true
+            },
+            {
+              "input": "5 5",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "10 1",
+              "expected_output": "22",
+              "is_sample": false
+            },
+            {
+              "input": "7 8",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "12 4",
+              "expected_output": "32",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Area of Square",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read side s and print area s*s.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "5",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "49",
+              "is_sample": false
+            },
+            {
+              "input": "12",
+              "expected_output": "144",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Celsius to Fahrenheit",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read Celsius c and print Fahrenheit using integer formula c*9/5+32.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "32",
+              "is_sample": true
+            },
+            {
+              "input": "100",
+              "expected_output": "212",
+              "is_sample": false
+            },
+            {
+              "input": "37",
+              "expected_output": "98",
+              "is_sample": false
+            },
+            {
+              "input": "-40",
+              "expected_output": "-40",
+              "is_sample": false
+            },
+            {
+              "input": "25",
+              "expected_output": "77",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Simple Interest",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read p r t and print simple interest p*r*t/100.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1000 5 2",
+              "expected_output": "100",
+              "is_sample": true
+            },
+            {
+              "input": "5000 10 1",
+              "expected_output": "500",
+              "is_sample": false
+            },
+            {
+              "input": "2500 4 3",
+              "expected_output": "300",
+              "is_sample": false
+            },
+            {
+              "input": "100 1 1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "12000 8 5",
+              "expected_output": "4800",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Square and Cube",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and print square and cube space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2",
+              "expected_output": "4 8",
+              "is_sample": true
+            },
+            {
+              "input": "3",
+              "expected_output": "9 27",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "16 64",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "25 125",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "100 1000",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Last Digit",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-negative integer and print last digit.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "123",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "4560",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "999",
+              "expected_output": "9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Swap Two Numbers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print b a.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "2 1",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "3 5",
+              "is_sample": false
+            },
+            {
+              "input": "-1 9",
+              "expected_output": "9 -1",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0 0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "99 100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Fahrenheit to Celsius",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read Fahrenheit f and print Celsius using integer formula (f-32)*5/9.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "32",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "212",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "98",
+              "expected_output": "36",
+              "is_sample": false
+            },
+            {
+              "input": "-40",
+              "expected_output": "-40",
+              "is_sample": false
+            },
+            {
+              "input": "77",
+              "expected_output": "25",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Average of Four",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read four integers and print integer average.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2 3 4",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "10 20 30 40",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "5 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "0 0 0 4",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "100 200 300 400",
+              "expected_output": "250",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Double and Triple",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and print 2*n and 3*n space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2",
+              "expected_output": "4 6",
+              "is_sample": true
+            },
+            {
+              "input": "5",
+              "expected_output": "10 15",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "20 30",
+              "is_sample": false
+            },
+            {
+              "input": "-3",
+              "expected_output": "-6 -9",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0 0",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Seconds to Minutes",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read total seconds and print integer minutes.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "60",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "130",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3600",
+              "expected_output": "60",
+              "is_sample": false
+            },
+            {
+              "input": "45",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "600",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Perimeter of Circle Approx",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read integer radius r and print integer perimeter using 2*22*r/7.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "7",
+              "expected_output": "44",
+              "is_sample": true
+            },
+            {
+              "input": "14",
+              "expected_output": "88",
+              "is_sample": false
+            },
+            {
+              "input": "21",
+              "expected_output": "132",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "35",
+              "expected_output": "220",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Quadratic Roots",
+          "topic": "Lab Manual Basics",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to find the roots of a quadratic equation ax2+bx+c=0.\nRead coefficients a b c. Print 'Equal Real', 'Distinct Real', or 'Imaginary' based on discriminant b*b - 4*a*c.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 -2 1",
+              "expected_output": "Equal Real",
+              "is_sample": true
+            },
+            {
+              "input": "1 -5 6",
+              "expected_output": "Distinct Real",
+              "is_sample": false
+            },
+            {
+              "input": "1 2 5",
+              "expected_output": "Imaginary",
+              "is_sample": false
+            },
+            {
+              "input": "2 4 2",
+              "expected_output": "Equal Real",
+              "is_sample": false
+            },
+            {
+              "input": "1 0 -4",
+              "expected_output": "Distinct Real",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM002",
+          "title": "Digit Sum and Occurrence",
+          "topic": "Lab Manual Basics",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to find the sum of all the digits and occurrence of a digit in the number.\nRead n and digit d. Print sum of digits of n, followed by space, followed by occurrence count of d in n.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1234 2",
+              "expected_output": "10 1",
+              "is_sample": true
+            },
+            {
+              "input": "555 5",
+              "expected_output": "15 3",
+              "is_sample": false
+            },
+            {
+              "input": "1010 1",
+              "expected_output": "2 2",
+              "is_sample": false
+            },
+            {
+              "input": "999 3",
+              "expected_output": "27 0",
+              "is_sample": false
+            },
+            {
+              "input": "8080 8",
+              "expected_output": "16 2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Sum of First N Natural Numbers",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print sum using n*(n+1)/2.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10",
+              "expected_output": "55",
+              "is_sample": true
+            },
+            {
+              "input": "100",
+              "expected_output": "5050",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "15",
+              "is_sample": false
+            },
+            {
+              "input": "50",
+              "expected_output": "1275",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Distance Squared",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read x1 y1 x2 y2 and print distance squared (x2-x1)^2 + (y2-y1)^2.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0 0 3 4",
+              "expected_output": "25",
+              "is_sample": true
+            },
+            {
+              "input": "1 1 4 5",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "0 0 0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "-1 -1 1 1",
+              "expected_output": "8",
+              "is_sample": false
+            },
+            {
+              "input": "10 10 20 20",
+              "expected_output": "200",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Total and Percentage",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read marks of 5 subjects (out of 100 each). Print total and integer percentage space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "80 80 80 80 80",
+              "expected_output": "400 80",
+              "is_sample": true
+            },
+            {
+              "input": "90 90 90 90 90",
+              "expected_output": "450 90",
+              "is_sample": false
+            },
+            {
+              "input": "50 60 70 80 90",
+              "expected_output": "350 70",
+              "is_sample": false
+            },
+            {
+              "input": "100 100 100 100 100",
+              "expected_output": "500 100",
+              "is_sample": false
+            },
+            {
+              "input": "40 40 40 40 40",
+              "expected_output": "200 40",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Arithmetic Progression Term",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read a d n and print nth term of AP: a + (n-1)*d.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 3 5",
+              "expected_output": "14",
+              "is_sample": true
+            },
+            {
+              "input": "10 5 3",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "1 1 100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "5 -2 4",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "0 10 10",
+              "expected_output": "90",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Cube Surface Area",
+          "topic": "Basics I/O",
+          "level": 1,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read side s and print total surface area of cube 6*s*s.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2",
+              "expected_output": "24",
+              "is_sample": true
+            },
+            {
+              "input": "3",
+              "expected_output": "54",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "150",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "600",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

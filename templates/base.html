@@ -5,7 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=11.0">
+  <link rel="icon" type="image/png" href="{% static 'img/nitte_logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=12.0">
   <script>
     (function() {
       const savedTheme = localStorage.getItem('theme') || 'light';
@@ -83,7 +84,7 @@
           rootElement.classList.remove('dark');
         }
         if (typeof monaco !== 'undefined' && monaco.editor) {
-          monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+          monaco.editor.setTheme(isDark ? 'elab-dark' : 'elab-light');
         }
       };
 
@@ -123,5 +124,7 @@
       });
     });
   </script>
+  {% include 'components/faculty_agent_widget.html' %}
 </body>
 </html>
+

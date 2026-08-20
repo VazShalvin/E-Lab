@@ -1,8 +1,10 @@
 import csv
 import io
+import json
 import os
 import re
 import subprocess
+
 
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
@@ -131,7 +133,7 @@ def onboarding_journey(request):
 def placement_training_overview(request):
     if request.user.role == User.Role.ADMIN:
         return redirect("admin:index")
-    if not request.user.usn or not request.user.usn.lower().startswith("nn25"):
+    if not hasattr(request.user, "semester") or request.user.semester < 3:
         raise PermissionDenied
     return render(request, "placement_training/overview.html")
 
@@ -174,14 +176,22 @@ def dashboard(request):
         )
         selected_category = request.GET.get("category") or "overall"
         selected_sort = request.GET.get("sort") or "rank"
+        selected_department = request.GET.get("department") or ""
         if selected_sort not in {"rank", "usn"}:
             selected_sort = "rank"
+
+        # Get all distinct departments for the filter dropdown
+        departments = User.objects.exclude(
+            department=""
+        ).values_list("department", flat=True).distinct().order_by("department")
 
         progress_modules = list(modules.order_by("order", "name"))
         progress_students_qs = (
             User.objects.filter(is_staff=False, is_superuser=False)
             .exclude(role__in=[User.Role.FACULTY, User.Role.ADMIN])
         )
+        if selected_department:
+            progress_students_qs = progress_students_qs.filter(department=selected_department)
         selected_module = None
         if selected_category != "overall":
             try:
@@ -284,12 +294,44 @@ def dashboard(request):
                 "selected_sort": selected_sort,
                 "courses": courses,
                 "selected_course": selected_course,
+                "departments": departments,
+                "selected_department": selected_department,
             },
         )
 
-    category = request.GET.get("category", "c_programming")
+    category = request.GET.get("category")
+    if not category:
+        if hasattr(request.user, "semester"):
+            if request.user.semester >= 5:
+                category = "advanced_placement_training"
+            elif request.user.semester >= 3:
+                category = "placement_training"
+            else:
+                category = "c_programming"
+        else:
+            category = "c_programming"
     progress_rows = student_progress(request.user)
-    modules = Module.objects.filter(is_active=True, category=category).prefetch_related("questions")
+    
+    # Filter modules by semester / year for students
+    if not request.user.is_faculty_like and not request.user.role == User.Role.HOD:
+        # Students can only see modules for their current semester/year and below
+        current_semester = getattr(request.user, "semester", 1) or 1
+        current_year = (current_semester + 1) // 2
+        modules = (
+            Module.objects.filter(
+                is_active=True,
+                category=category,
+            )
+            .filter(
+                Q(course__semester__lte=current_semester)
+                | Q(course__year__lte=current_year)
+                | Q(course__isnull=True)
+            )
+            .prefetch_related("questions")
+        )
+    else:
+        # Faculty and HOD can see all modules
+        modules = Module.objects.filter(is_active=True, category=category).prefetch_related("questions")
     progress_by_module = {row.module_id: row for row in progress_rows}
     user_submissions = Submission.objects.filter(student=request.user).values("question_id", "status")
     question_status_map = {}
@@ -312,7 +354,10 @@ def dashboard(request):
             ).distinct().count()
             questions_for_dots = list(module_questions)
         else:
-            module_total = min(15, module_questions.count())
+            if module.category in ["placement_training", "advanced_placement_training"]:
+                module_total = min(7, module_questions.count())
+            else:
+                module_total = min(5, module_questions.count())
             assigned_qs = AssignedQuestion.objects.filter(
                 assignment__student=request.user, assignment__module=module
             )
@@ -374,6 +419,11 @@ def dashboard(request):
     eligible, _ = certificate_eligible(request.user)
     certificates = request.user.certificates.all()
 
+    # Hide certificates for 2nd years
+    if hasattr(request.user, "semester") and request.user.semester >= 3:
+        eligible = False
+        certificates = []
+
     # Enhanced data for Ecosystem UI
     leaderboard_qs = (
         User.objects.filter(role=User.Role.STUDENT)
@@ -398,6 +448,7 @@ def dashboard(request):
         request,
         "student/dashboard.html",
         {
+            "category": category,
             "modules": modules,
             "module_cards": module_cards,
             "progress_rows": progress_rows,
@@ -417,8 +468,8 @@ def dashboard(request):
 @login_required
 def module_detail(request, module_id):
     module = get_object_or_404(Module, pk=module_id, is_active=True)
-    if module.category == "placement_training":
-        return redirect("module_level_detail", module_id=module.id, difficulty="easy")
+    if module.category in ["placement_training", "advanced_placement_training"]:
+        return redirect("module_level_detail", module_id=module.id, difficulty="medium")
         
     record_attendance(request.user, module)
     level_cards = []
@@ -470,7 +521,7 @@ def module_level_detail(request, module_id, difficulty):
         assigned_slots = []
         current_slot = None
     else:
-        assignment_count = 10 if module.category == "placement_training" else 5
+        assignment_count = 7 if module.category in ["placement_training", "advanced_placement_training"] else 5
         assignment = get_or_create_module_assignment(request.user, module, difficulty, count=assignment_count)
         assigned_slots = sync_assignment_completion(assignment)
         questions = [slot.question for slot in assigned_slots]
@@ -495,6 +546,20 @@ def module_level_detail(request, module_id, difficulty):
 @login_required
 def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id, is_active=True)
+    
+    # Check semester access for students
+    if hasattr(request.user, 'semester') and not request.user.is_faculty_like and not request.user.role == User.Role.HOD:
+        current_semester = getattr(request.user, "semester", 1) or 1
+        current_year = (current_semester + 1) // 2
+        module_course = question.module.course
+        if module_course:
+            if module_course.semester and module_course.semester > current_semester:
+                messages.error(request, "This question is not available for your semester.")
+                return redirect("dashboard")
+            elif module_course.year and module_course.year > current_year:
+                messages.error(request, "This question is not available for your semester.")
+                return redirect("dashboard")
+    
     if not request.user.is_faculty_like:
         assignment = get_or_create_module_assignment(request.user, question.module, question.difficulty)
         slot = assignment.assigned_questions.filter(question=question).first()
@@ -570,6 +635,9 @@ def manual_accept_submission(request, submission_id):
 
 @login_required
 def certificate_create(request):
+    if hasattr(request.user, "semester") and request.user.semester >= 3:
+        raise PermissionDenied("Certificates are not available for second year students.")
+        
     is_eligible, pct = certificate_eligible(request.user)
     if not is_eligible:
         messages.error(request, "You are not yet eligible for a certificate. Complete the required modules (60% threshold & mandatory questions) first.")
@@ -726,7 +794,7 @@ def run_code_api(request):
     except (json.JSONDecodeError, TypeError):
         return JsonResponse({"error": "Invalid JSON request body"}, status=400)
 
-    question_id = data.get("question")
+    question_id = data.get("question") or data.get("question_id")
     code = data.get("code")
     language_id = data.get("language_id")
     custom_input = data.get("custom_input")
@@ -1133,8 +1201,10 @@ def import_question_text(file_name, text, faculty):
     }
 
 
-def import_question_csv(file_obj, faculty, category="c_programming"):
-    module_name, order = module_name_from_csv(file_obj.name)
+def _module_for_import(filename, category="c_programming", module_name=None, order=None):
+    """Create/update the target Module for an imported bank file and link its Course."""
+    if module_name is None:
+        module_name, order = module_name_from_csv(filename)
     module, _ = Module.objects.update_or_create(
         name=module_name,
         defaults={
@@ -1159,25 +1229,46 @@ def import_question_csv(file_obj, faculty, category="c_programming"):
     if module.course_id != course.pk:
         module.course = course
         module.save(update_fields=["course"])
+    return module
 
-    decoded = file_obj.read().decode("utf-8-sig")
-    reader = csv.DictReader(io.StringIO(decoded))
-    required = {"Question_ID", "Topic", "Level", "Difficulty"}
-    missing = required.difference(reader.fieldnames or [])
-    if missing:
-        raise ValueError(f"{file_obj.name}: missing columns {', '.join(sorted(missing))}")
 
+def _canonical_question_to_row(question):
+    """Project a canonical-schema question (docs/QUESTION_JSON_SCHEMA.md) onto the
+    flat row shape shared by the CSV and JSON importers."""
+    row = {
+        "Question_ID": question["question_id"],
+        "Title": question["title"],
+        "Topic": question.get("topic", ""),
+        "Level": question.get("level", 1),
+        "Level_Range": question.get("level_range", ""),
+        "Difficulty": question.get("difficulty", "easy"),
+        "Problem_Statement": question.get("description", ""),
+        "Starter_Code": question.get("starter_code", ""),
+        "Time_Limit": question.get("time_limit", 2.0),
+        "Memory_Limit_KB": question.get("memory_limit_kb", 128000),
+        "Max_Score": question.get("max_score", 1),
+        "Is_Active": question.get("is_active", True),
+        "Is_Mandatory": question.get("is_mandatory", False),
+        "Allow_Multiple_Languages": question.get("allow_multiple_languages", False),
+    }
+    for index, case in enumerate(question.get("test_cases", []), start=1):
+        row[f"Test{index}_Input"] = case.get("input", "")
+        row[f"Test{index}_Output"] = case.get("expected_output", "")
+    return row
+
+
+def _import_rows_into_module(data, module, faculty, file_name):
     created = 0
     updated = 0
     active = 0
     test_cases = 0
     imported_slugs = []
-    replace_bank = "_levels" in file_obj.name.lower()
-    for index, row in enumerate(reader, start=1):
-        question_id = (row.get("Question_ID") or f"Q{index:03d}").strip()
-        topic = (row.get("Topic") or "Question").strip()
-        level = (row.get("Level") or "1").strip()
-        title = (row.get("Title") or f"{question_id} - {topic} (Level {level})").strip()
+    replace_bank = "_levels" in file_name.lower()
+    for index, row in enumerate(data, start=1):
+        question_id = str(row.get("Question_ID") or f"Q{index:03d}").strip()
+        topic = str(row.get("Topic") or "Question").strip()
+        level = str(row.get("Level") or "1").strip()
+        title = str(row.get("Title") or f"{question_id} - {topic} (Level {level})").strip()
         slug = slugify(f"{question_id}-{topic}-level-{level}")[:180]
         imported_slugs.append(slug)
         tests = row_test_cases(row)
@@ -1195,6 +1286,7 @@ def import_question_csv(file_obj, faculty, category="c_programming"):
                 "language_id": 50,
                 "time_limit": float(row.get("Time_Limit") or 2.0),
                 "memory_limit_kb": int(row.get("Memory_Limit_KB") or 128000),
+                "allow_multiple_languages": bool_from_csv(row.get("Allow_Multiple_Languages"), default=False),
                 "is_mandatory": bool_from_csv(row.get("Is_Mandatory"), default=False),
                 "is_active": bool_from_csv(row.get("Is_Active"), default=active_default),
                 "created_by": faculty,
@@ -1246,6 +1338,62 @@ def import_question_csv(file_obj, faculty, category="c_programming"):
         "replaced_deleted": replaced_deleted,
         "assignments_reset": assignments_reset,
     }
+
+
+def import_question_json(file_obj, faculty, category="c_programming"):
+    """Import question banks from JSON.
+
+    Accepts both the canonical schema ({"category", "modules": [...]} — see
+    docs/QUESTION_JSON_SCHEMA.md) and the legacy flat CSV-row list format.
+    """
+    data = json.loads(file_obj.read().decode("utf-8-sig"))
+
+    if isinstance(data, dict) and "modules" in data:
+        category = data.get("category") or category
+        results = []
+        for mod in data.get("modules", []):
+            module = _module_for_import(
+                file_obj.name,
+                category=category,
+                module_name=str(mod.get("module") or module_name_from_csv(file_obj.name)[0]),
+                order=int(mod.get("module_order") or 1),
+            )
+            rows = [_canonical_question_to_row(q) for q in mod.get("questions", [])]
+            results.append(_import_rows_into_module(rows, module, faculty, file_obj.name))
+        return {
+            "module": results[0]["module"] if results else None,
+            "modules": [row["module"] for row in results],
+            "created": sum(row["created"] for row in results),
+            "updated": sum(row["updated"] for row in results),
+            "active": sum(row["active"] for row in results),
+            "test_cases": sum(row["test_cases"] for row in results),
+            "stale_deleted": sum(row["stale_deleted"] for row in results),
+            "replaced_deleted": sum(row["replaced_deleted"] for row in results),
+            "assignments_reset": sum(row["assignments_reset"] for row in results),
+        }
+
+    # Legacy format: flat list of CSV-style row dicts.
+    required = {"Question_ID", "Topic", "Level", "Difficulty"}
+    if data:
+        missing = required.difference(data[0].keys())
+        if missing:
+            raise ValueError(f"{file_obj.name}: missing keys {', '.join(sorted(missing))}")
+    module = _module_for_import(file_obj.name, category=category)
+    return _import_rows_into_module(data, module, faculty, file_obj.name)
+
+
+def import_question_csv(file_obj, faculty, category="c_programming"):
+    """Import question banks from a CSV file with the documented columns
+    (Question_ID, Topic, Level, Difficulty, ..., Test1_Input, Test1_Output, ...)."""
+    text = file_obj.read().decode("utf-8-sig")
+    data = list(csv.DictReader(io.StringIO(text)))
+    required = {"Question_ID", "Topic", "Level", "Difficulty"}
+    if data:
+        missing = required.difference(data[0].keys())
+        if missing:
+            raise ValueError(f"{file_obj.name}: missing keys {', '.join(sorted(missing))}")
+    module = _module_for_import(file_obj.name, category=category)
+    return _import_rows_into_module(data, module, faculty, file_obj.name)
 
 
 @login_required
@@ -1397,6 +1545,8 @@ def faculty_question_upload(request):
                 elif ext == ".txt":
                     text = file_obj.read().decode("utf-8-sig")
                     results.append(import_question_text(file_obj.name, text, request.user))
+                elif ext == ".json":
+                    results.append(import_question_json(file_obj, request.user))
                 else:
                     results.append(import_question_csv(file_obj, request.user))
             except Exception as exc:
@@ -2010,6 +2160,14 @@ def profile_view(request):
     profile_form = ProfileForm(request.POST or None, instance=user)
     password_form = PasswordChangeForm(user, request.POST or None if "change_password" in request.POST else None)
 
+    # Set proper autocomplete attributes to prevent browser autofill conflicts
+    if password_form:
+        # Remove autofocus to prevent the old password field from auto-focusing on page load
+        for field_name, field in password_form.fields.items():
+            if 'password' in field_name:
+                field.widget.attrs['autocomplete'] = 'current-password' if 'old' in field_name else 'new-password'
+                field.widget.attrs.pop('autofocus', None)
+
     faculty_course_form = None
     if user.is_faculty_like:
         if request.method == "POST" and "update_courses" in request.POST:
@@ -2191,4 +2349,189 @@ def faculty_quiz_upload(request):
     faculty_required(request.user)
     messages.info(request, "Question upload for quizzes is coming soon.")
     return redirect("faculty_quiz_list")
+
+
+# ─── FACULTY RAG AGENT API ENDPOINTS ───
+
+from django.http import JsonResponse
+from django.utils.text import slugify
+from .rag_agent import RAGQuestionAgent
+
+
+def _parse_agent_request_data(request):
+    """Robustly parse JSON body or POST form data."""
+    cached = getattr(request, "_parsed_agent_data", None)
+    if cached:
+        return cached
+
+    data = {}
+    try:
+        raw_text = request.body.decode("utf-8")
+        if raw_text.strip():
+            data = json.loads(raw_text)
+    except Exception:
+        pass
+
+
+    if not data and request.POST:
+        data = request.POST.dict()
+
+    request._parsed_agent_data = data
+    return data
+
+
+
+
+@login_required
+def faculty_agent_topics_api(request):
+    """Return modules and RAG topics for faculty agent autocomplete."""
+    if not request.user.is_faculty_like:
+        return JsonResponse({"error": "Faculty access required"}, status=403)
+
+    modules = list(
+        Module.objects.filter(is_active=True)
+        .select_related("course")
+        .values("id", "name", "level", "course__name")
+    )
+    
+    agent = RAGQuestionAgent.get_instance()
+    topics = agent.list_topics()
+
+    return JsonResponse({
+        "modules": modules,
+        "topics": topics
+    })
+
+
+@login_required
+@require_POST
+def faculty_agent_generate_api(request):
+    """Generate a new question via RAG agent based on faculty prompt."""
+    if not request.user.is_faculty_like:
+        return JsonResponse({"error": "Faculty access required"}, status=403)
+
+    data = _parse_agent_request_data(request)
+
+    topic = str(data.get("topic", "array")).strip()
+    difficulty = str(data.get("difficulty", "medium")).strip()
+    custom_prompt = str(data.get("prompt", "")).strip()
+
+    if not topic:
+        return JsonResponse({"error": "Topic is required"}, status=400)
+
+    try:
+        agent = RAGQuestionAgent.get_instance()
+        result, references = agent.generate_question(topic, difficulty, custom_prompt)
+        
+        ref_summary = [
+            {"title": r.get("title", ""), "topic": r.get("topic", ""), "difficulty": r.get("difficulty", "")}
+            for r in references
+        ]
+
+        return JsonResponse({
+            "success": True,
+            "question": result,
+            "references": ref_summary
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def faculty_agent_add_question_api(request):
+    """Add generated question directly into E-Lab Question Bank."""
+    if not request.user.is_faculty_like:
+        return JsonResponse({"error": "Faculty access required"}, status=403)
+
+    data = _parse_agent_request_data(request)
+
+    module_id = data.get("module_id")
+    title = str(data.get("title", "")).strip()
+    description = str(data.get("description", "")).strip()
+    difficulty = str(data.get("difficulty", Question.Difficulty.MEDIUM)).lower()
+    starter_code = str(data.get("starter_code", "")).strip()
+    test_cases_data = data.get("test_cases", [])
+
+    if module_id is None or module_id == "" or not title or not description:
+        return JsonResponse({"error": "Module, title, and description are required", "received_keys": list(data.keys())}, status=400)
+
+    try:
+        module = Module.objects.get(pk=int(module_id))
+    except (Module.DoesNotExist, ValueError, TypeError):
+        return JsonResponse({"error": f"Invalid module_id: {module_id}"}, status=400)
+
+    # Generate unique slug for module
+    base_slug = slugify(title) or "question"
+    slug = base_slug
+    counter = 1
+    while Question.objects.filter(module=module, slug=slug).exists():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+
+    valid_difficulty = (
+        difficulty if difficulty in [Question.Difficulty.EASY, Question.Difficulty.MEDIUM, Question.Difficulty.HARD]
+        else Question.Difficulty.MEDIUM
+    )
+
+    # Extract sample input/output from first testcase if available
+    sample_input = ""
+    sample_output = ""
+    if isinstance(test_cases_data, list):
+        for tc in test_cases_data:
+            if isinstance(tc, dict) and tc.get("is_sample"):
+                sample_input = str(tc.get("input", ""))
+                sample_output = str(tc.get("expected_output", ""))
+                break
+
+    # Default starter code for C if blank
+    if not starter_code:
+        starter_code = "#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    return 0;\n}"
+
+    question = Question.objects.create(
+        module=module,
+        title=title,
+        slug=slug,
+        description=description,
+        difficulty=valid_difficulty,
+        sample_input=sample_input,
+        sample_output=sample_output,
+        starter_code=starter_code,
+        created_by=request.user,
+        is_mandatory=True,
+        is_active=True
+    )
+
+    # Add Test Cases
+    if isinstance(test_cases_data, list):
+        for index, tc in enumerate(test_cases_data, 1):
+            if not isinstance(tc, dict):
+                continue
+            stdin_val = str(tc.get("input", ""))
+            expected_val = str(tc.get("expected_output", ""))
+            is_samp = bool(tc.get("is_sample", False))
+            
+            TestCase.objects.create(
+                question=question,
+                stdin=stdin_val,
+                expected_output=expected_val,
+                is_sample=is_samp,
+                order=index
+            )
+
+    from django.urls import reverse
+    url = reverse("question_detail", args=[question.pk])
+    edit_url = reverse("faculty_question_edit", args=[question.pk])
+
+    return JsonResponse({
+        "success": True,
+        "message": f"Question '{question.title}' added successfully to {module.name}!",
+        "question_id": question.pk,
+        "question_url": url,
+        "edit_url": edit_url
+    })
+
+
+
+
 

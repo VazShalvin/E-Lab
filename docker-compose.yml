@@ -9,8 +9,8 @@ services:
       - .:/app
       - media:/app/media
       - staticfiles:/app/staticfiles
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/elab-sandbox:/var/elab-sandbox
+      - ./sandbox_data:/var/elab-sandbox
+      - ${DOCKER_SOCK:-/home/kevin/.docker/desktop/docker.sock}:/var/run/docker.sock
     depends_on:
       - elab-db
       - elab-redis
@@ -36,8 +36,8 @@ services:
     volumes:
       - .:/app
       - media:/app/media
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/elab-sandbox:/var/elab-sandbox
+      - ./sandbox_data:/var/elab-sandbox
+      - ${DOCKER_SOCK:-/home/kevin/.docker/desktop/docker.sock}:/var/run/docker.sock
     depends_on:
       - elab-db
       - elab-redis

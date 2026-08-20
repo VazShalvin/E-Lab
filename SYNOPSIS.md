@@ -18,8 +18,7 @@ The system is packaged for deployment with Docker Compose, so the lab server can
 - **Django REST Framework**: API endpoints for submissions, questions, and progress.
 - **PostgreSQL**: Main application database.
 - **Redis**: Queue backend for background code evaluation.
-- **Celery**: Background worker that sends submitted code to Judge0.
-- **Judge0 CE**: Code execution engine used to compile and run student submissions safely.
+- **Celery**: Background worker that processes submitted code for execution in the custom Docker sandbox.
 - **Nginx**: Reverse proxy that exposes the app on port 80 and serves static/media files.
 - **Docker Compose**: Runs the full stack on the lab server.
 
@@ -66,9 +65,9 @@ When a student submits code:
 
 1. The app saves the submission in the database with `pending` status.
 2. A Celery task is queued.
-3. The worker sends the code and test input to Judge0.
-4. Judge0 compiles and runs the code.
-5. The worker reads the Judge0 result.
+3. The worker sends the code and test input to the custom Docker sandbox.
+4. The sandbox compiles and runs the code.
+5. The worker reads the sandbox result.
 6. The submission status, score, time, memory, and output are saved.
 7. Student progress is recalculated.
 
@@ -76,31 +75,9 @@ Important files:
 
 - `core/views.py`: Creates submissions.
 - `core/tasks.py`: Celery task entry point.
-- `core/services.py`: Judge0 communication and evaluation logic.
+- `core/services.py`: Custom sandbox communication and evaluation logic.
 - `templates/student/submission_detail.html`: Result page.
 
-### 5. Judge0 Integration
-
-Judge0 is the code execution engine. It runs as separate Docker services:
-
-- `judge0-server`
-- `judge0-worker`
-- `judge0-db`
-- `judge0-redis`
-
-The Django app talks to Judge0 using:
-
-```text
-JUDGE0_URL=http://judge0-server:2358
-```
-
-The app currently uses Judge0 language ID `50` by default, which is C (GCC).
-
-Important files:
-
-- `docker-compose.yml`
-- `.env.example`
-- `core/services.py`
 
 ### 6. Progress Tracking
 
@@ -202,10 +179,7 @@ On the lab server, Docker Compose starts these services:
 - `nginx`: Public reverse proxy on port 80
 - `elab-db`: PostgreSQL database for the app
 - `elab-redis`: Redis queue for Celery
-- `judge0-server`: Judge0 API
-- `judge0-worker`: Judge0 execution worker
-- `judge0-db`: PostgreSQL database for Judge0
-- `judge0-redis`: Redis for Judge0
+
 
 Users access only:
 
@@ -229,7 +203,7 @@ Nginx forwards requests internally to Django.
 - `config/urls.py`: Root URL configuration.
 - `core/models.py`: Database models.
 - `core/views.py`: Web page and API logic.
-- `core/services.py`: Business logic, Judge0, progress, certificates.
+- `core/services.py`: Business logic, custom sandbox, progress, certificates.
 - `core/tasks.py`: Celery background jobs.
 - `core/forms.py`: Django forms.
 - `core/serializers.py`: API serializers.
@@ -261,4 +235,4 @@ http://SERVER_IP/
 
 ## Current Status
 
-The project is currently an MVP implementation. The main software pieces are present and local Django checks passed. The remaining work is full Docker testing on the actual Ubuntu server, adding real college questions, updating branding, and validating Judge0 execution under real lab load.
+The project is currently an MVP implementation. The main software pieces are present and local Django checks passed. The remaining work is full Docker testing on the actual Ubuntu server, adding real college questions, updating branding, and validating custom sandbox execution under real lab load.

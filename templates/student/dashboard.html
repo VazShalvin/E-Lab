@@ -8,7 +8,7 @@
 
   <!-- BACK LINK -->
   <div style="margin-bottom: 20px;">
-    <a href="{% url 'onboarding_journey' %}" style="display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; font-size: 14px; text-decoration: none; transition: transform 0.2s ease;" onmouseover="this.style.transform='translateX(-4px)'" onmouseout="this.style.transform='translateX(0)'">
+    <a href="{% url 'onboarding_journey' %}" class="back-link-animated" style="display: inline-flex; align-items: center; gap: 8px; color: var(--accent-primary); font-weight: 600; font-size: 14px; text-decoration: none; transition: transform 0.2s ease;">
       ← Back to Course Selection
     </a>
   </div>
@@ -17,7 +17,18 @@
   <div class="course-hero">
     <div>
       <p class="eyebrow">Welcome back, {{ user.display_name }}</p>
-      <h1>C Programming E-Lab</h1>
+      <h1>{% if category == 'advanced_placement_training' %}Advanced Placement Training E-Lab{% elif category == 'placement_training' %}Placement Training E-Lab{% else %}C Programming E-Lab{% endif %}</h1>
+      <div class="semester-info">
+        {% if request.user.semester <= 2 %}
+          <span class="badge bg-success">First Year - Semester {{ request.user.semester }}</span>
+        {% elif request.user.semester <= 4 %}
+          <span class="badge bg-primary">Second Year - Semester {{ request.user.semester }}</span>
+        {% elif request.user.semester <= 6 %}
+          <span class="badge bg-warning">Third Year - Semester {{ request.user.semester }}</span>
+        {% else %}
+          <span class="badge bg-danger">Fourth Year - Semester {{ request.user.semester }}</span>
+        {% endif %}
+      </div>
       <p class="muted">{{ questions_total }} questions across {{ modules|length }} modules</p>
     </div>
     <div class="hero-score" style="--score: {{ overall_percentage|floatformat:0 }}">
@@ -36,10 +47,12 @@
       <a href="{% url 'student_quiz_list' %}" class="secondary" style="display: flex; align-items: center; gap: 6px;">
         ⏱️ Quizzes
       </a>
-      {% if certificate_eligible %}
-        <a href="{% url 'certificate_create' %}" class="primary">Get Certificate</a>
-      {% else %}
-        <span class="locked-badge">Certificate locked</span>
+      {% if 'placement_training' not in category %}
+        {% if certificate_eligible %}
+          <a href="{% url 'certificate_create' %}" class="primary">Get Certificate</a>
+        {% else %}
+          <span class="locked-badge">Certificate locked</span>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -51,10 +64,18 @@
     <div class="course-info">
       <div class="course-card">
         <p class="eyebrow">Course Information</p>
-        <h3>E-Lab: C Programming</h3>
+        <h3>{% if category == 'advanced_placement_training' %}Advanced Placement Training{% elif category == 'placement_training' %}Placement Training{% else %}E-Lab: C Programming{% endif %}</h3>
+        <span class="muted" style="display: block; margin-bottom: 8px;">{% if 'placement_training' in category %}Training Outcome{% else %}Course Outcome{% endif %}</span>
+        <p style="font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--text-primary); margin-bottom: 24px;">
+          {% if category == 'advanced_placement_training' %}
+          Master advanced algorithmic paradigms, OOP, Design Patterns, and OS fundamentals.
+          {% elif category == 'placement_training' %}
+          Master problem solving and data structures for technical interviews.
+          {% else %}
+          Master core C programming concepts and problem solving.
+          {% endif %}
+        </p>
         <dl class="stats">
-          <dt>Course Outcome</dt>
-          <dd style="font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 12px;">Master core C programming concepts and problem solving.</dd>
           <dt>Passed</dt><dd>{{ completed_total }}/{{ questions_total }}</dd>
         </dl>
       </div>
@@ -96,7 +117,7 @@
            class="wheel-module-label"
            style="--mod-color: var(--lvl-{{ forloop.counter }});"
            title="{{ card.module.name }} — {{ card.percentage|floatformat:0 }}% complete">
-          <span class="wheel-mod-title" style="color: var(--mod-color); font-weight: 800; font-size: 16px; display: block; margin-bottom: 2px;">M{{ forloop.counter }}</span>
+          <span class="wheel-mod-title" style="color: var(--mod-color); font-weight: 800; font-size: 16px; display: block; margin-bottom: 2px;">{% if 'placement_training' in category %}W{{ card.module.order }}{% else %}M{{ card.module.order }}{% endif %}</span>
           <small>{{ card.percentage|floatformat:0 }}%</small>
         </a>
       {% empty %}
@@ -105,7 +126,7 @@
 
       <!-- Center core -->
       <div class="wheel-core">
-        <strong>C</strong>
+        <strong>{% if category == 'advanced_placement_training' %}APT{% elif category == 'placement_training' %}PT{% else %}C{% endif %}</strong>
         <span>{{ overall_percentage|floatformat:0 }}%</span>
         <small>Complete</small>
       </div>
@@ -132,7 +153,7 @@
               <!-- Content Layer (Above Progress Fill) -->
               <span class="mp-label" style="position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
                 <span class="mp-dot" style="background: var(--mp-color); width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px var(--mp-color);"></span>
-                <span class="mp-label-text" style="font-weight: 700; font-size: 15px; line-height: 1.3; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.15);" title="{{ card.module.name }}">{{ card.module.name }}</span>
+                <span class="mp-label-text" style="font-weight: 700; font-size: 15px; line-height: 1.3; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.15);" title="{{ card.module.name }}">{% if 'placement_training' in category %}W{{ card.module.order }} {% else %}M{{ card.module.order }} {% endif %}{{ card.module.name }}</span>
               </span>
               
               <span class="mp-value" style="position: relative; z-index: 1; font-weight: 800; font-size: 15px; color: var(--text-primary); margin-left: 16px; flex-shrink: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">{{ card.percentage|floatformat:0 }}%</span>

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from typing import ClassVar
 
 from .models import Course, Module, OpenEndedQuestion, Question, Quiz, Submission, TestCase, User
 
@@ -46,8 +47,8 @@ class SubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission
         fields = ("code",)
-        widgets = {
-            "code": forms.Textarea(attrs={"rows": 18, "spellcheck": "false", "class": "code-editor"}),
+        widgets: ClassVar[dict] = {
+            "code": forms.Textarea(attrs={"rows": 25, "spellcheck": "false", "class": "code-editor"}),
         }
 
 
@@ -113,9 +114,9 @@ class QuestionForm(forms.ModelForm):
             "is_mandatory",
             "is_active",
         )
-        widgets = {
+        widgets: ClassVar[dict] = {
             "description": forms.Textarea(attrs={"rows": 8}),
-            "starter_code": forms.Textarea(attrs={"rows": 8, "class": "code-editor"}),
+            "starter_code": forms.Textarea(attrs={"rows": 15, "class": "code-editor"}),
             "sample_input": forms.Textarea(attrs={"rows": 4}),
             "sample_output": forms.Textarea(attrs={"rows": 4}),
         }
@@ -125,7 +126,7 @@ class TestCaseForm(forms.ModelForm):
     class Meta:
         model = TestCase
         fields = ("question", "stdin", "expected_output", "is_sample", "order")
-        widgets = {
+        widgets: ClassVar[dict] = {
             "stdin": forms.Textarea(attrs={"rows": 4}),
             "expected_output": forms.Textarea(attrs={"rows": 4}),
         }
@@ -135,7 +136,7 @@ class QuickTestCaseForm(forms.ModelForm):
     class Meta:
         model = TestCase
         fields = ("stdin", "expected_output", "is_sample", "order")
-        widgets = {
+        widgets: ClassVar[dict] = {
             "stdin": forms.Textarea(attrs={"rows": 4, "placeholder": "Input passed through stdin"}),
             "expected_output": forms.Textarea(attrs={"rows": 4, "placeholder": "Exact expected output"}),
             "order": forms.NumberInput(attrs={"min": 1}),
@@ -148,7 +149,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "bio")
-        widgets = {
+        widgets: ClassVar[dict] = {
             "first_name": forms.TextInput(attrs={"placeholder": "First name"}),
             "last_name": forms.TextInput(attrs={"placeholder": "Last name"}),
             "email": forms.EmailInput(attrs={"placeholder": "you@example.com"}),
@@ -172,7 +173,7 @@ class OpenEndedQuestionForm(forms.ModelForm):
     class Meta:
         model = OpenEndedQuestion
         fields = ("course", "title", "description", "assigned_date", "due_date", "is_active")
-        widgets = {
+        widgets: ClassVar[dict] = {
             "description": forms.Textarea(attrs={"rows": 8}),
             "assigned_date": forms.DateInput(attrs={"type": "date"}),
             "due_date": forms.DateInput(attrs={"type": "date"}),
@@ -183,7 +184,7 @@ class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
         fields = ("course", "title", "description", "duration_minutes", "start_time", "end_time", "is_active", "show_results")
-        widgets = {
+        widgets: ClassVar[dict] = {
             "description": forms.Textarea(attrs={"rows": 4}),
             "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),

@@ -1,22 +1,27 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth import get_user_model
 from core.models import User
 
-
 class Command(BaseCommand):
-    help = "Create a sample HoD account (username=hod, password=hod@elab2026)"
+    help = 'Creates a Head of Department (HOD) user'
 
     def handle(self, *args, **options):
-        if User.objects.filter(username="hod").exists():
-            self.stdout.write(self.style.WARNING("HoD account already exists."))
+        User = get_user_model()
+        
+        if User.objects.filter(role=User.Role.HOD).exists():
+            self.stdout.write(self.style.WARNING('HOD user already exists'))
             return
-
-        user = User.objects.create_user(
-            username="hod",
-            password="hod@elab2026",
+            
+        # Create HOD user
+        hod = User.objects.create_user(
+            username='hod',
+            password='hodpassword',  # Change this in production!
+            first_name='Head',
+            last_name='Department',
+            email='hod@example.com',
             role=User.Role.HOD,
-            first_name="Head",
-            last_name="of Department",
-            department="Computer and Communication Engineering",
-            is_staff=True,
+            is_staff=True
         )
-        self.stdout.write(self.style.SUCCESS(f"HoD account created: {user.username}"))
+        
+        self.stdout.write(self.style.SUCCESS(f'Successfully created HOD user: {hod.username}'))
+        self.stdout.write(self.style.WARNING('IMPORTANT: Change the default password immediately!'))

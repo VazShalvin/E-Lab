@@ -152,7 +152,7 @@
   </div>
 
   <div class="pt-action">
-    <a href="{% url 'dashboard' %}?category=placement_training" class="pt-btn">
+    <a href="{% url 'dashboard' %}?category={% if user.semester >= 5 %}advanced_placement_training{% else %}placement_training{% endif %}" class="pt-btn">
       Take Me To The Training 🚀
     </a>
   </div>

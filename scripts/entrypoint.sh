@@ -1,9 +1,19 @@
 #!/bin/sh
-set -e
 
-python manage.py wait_for_db
+# Wait for database to be ready
+until python manage.py check --database default; do
+  echo "Waiting for database..."
+  sleep 2
+done
 
-mkdir -p /var/elab-sandbox
-python manage.py check --deploy --fail-level ERROR
+# Apply database migrations
+echo "Applying database migrations..."
+python manage.py migrate --noinput
 
-exec "$@"
+# Collect static files
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
+# Start Gunicorn
+echo "Starting Gunicorn..."
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2

@@ -1,0 +1,1129 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Operators & Expressions",
+      "module_order": 2,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Quotient Remainder",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b and print quotient and remainder space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10 3",
+              "expected_output": "3 1",
+              "is_sample": true
+            },
+            {
+              "input": "20 5",
+              "expected_output": "4 0",
+              "is_sample": false
+            },
+            {
+              "input": "7 2",
+              "expected_output": "3 1",
+              "is_sample": false
+            },
+            {
+              "input": "100 9",
+              "expected_output": "11 1",
+              "is_sample": false
+            },
+            {
+              "input": "45 6",
+              "expected_output": "7 3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Even Check",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print 1 if even else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Increment",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print n+1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "-1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "99",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "1000",
+              "expected_output": "1001",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Expression A Plus B Times C",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b c and print a+b*c.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2 3",
+              "expected_output": "7",
+              "is_sample": true
+            },
+            {
+              "input": "10 5 2",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "0 7 8",
+              "expected_output": "56",
+              "is_sample": false
+            },
+            {
+              "input": "-1 3 4",
+              "expected_output": "11",
+              "is_sample": false
+            },
+            {
+              "input": "9 9 9",
+              "expected_output": "90",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Average Three",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read three integers and print integer average.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2 3",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "10 20 30",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "0 0 1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "-3 3 6",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Decrement",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print n-1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "0",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "99",
+              "is_sample": false
+            },
+            {
+              "input": "-5",
+              "expected_output": "-6",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "41",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Multiply by Two Shift",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print n << 1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "5",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "15",
+              "expected_output": "30",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Divide by Two Shift",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read non-negative n and print n >> 1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "10",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "11",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "50",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Modulo Ten",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read positive integer n and print n % 10.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "123",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "45",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "999",
+              "expected_output": "9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Square Expression",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b and print (a+b)*(a+b).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "9",
+              "is_sample": true
+            },
+            {
+              "input": "3 4",
+              "expected_output": "49",
+              "is_sample": false
+            },
+            {
+              "input": "0 5",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "-2 2",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "10 10",
+              "expected_output": "400",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Bitwise AND",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print a & b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "12 10",
+              "expected_output": "8",
+              "is_sample": false
+            },
+            {
+              "input": "7 1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "0 9",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "15 8",
+              "expected_output": "8",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Bitwise OR",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print a | b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 3",
+              "expected_output": "7",
+              "is_sample": true
+            },
+            {
+              "input": "12 10",
+              "expected_output": "14",
+              "is_sample": false
+            },
+            {
+              "input": "7 1",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "0 9",
+              "expected_output": "9",
+              "is_sample": false
+            },
+            {
+              "input": "15 8",
+              "expected_output": "15",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Left Shift",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n k and print n shifted left by k.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "2 2",
+              "expected_output": "8",
+              "is_sample": false
+            },
+            {
+              "input": "5 1",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "7 3",
+              "expected_output": "56",
+              "is_sample": false
+            },
+            {
+              "input": "10 0",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Absolute Difference",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print absolute difference.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 5",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "5 1",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "-2 3",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "10 10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "0 9",
+              "expected_output": "9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Precedence Difference",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b c and print (a+b)*c.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2 3",
+              "expected_output": "9",
+              "is_sample": true
+            },
+            {
+              "input": "10 5 2",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "0 7 8",
+              "expected_output": "56",
+              "is_sample": false
+            },
+            {
+              "input": "-1 3 4",
+              "expected_output": "8",
+              "is_sample": false
+            },
+            {
+              "input": "9 9 9",
+              "expected_output": "162",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Right Shift",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n k and print n shifted right by k.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "8 1",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "16 2",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "15 1",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "100 3",
+              "expected_output": "12",
+              "is_sample": false
+            },
+            {
+              "input": "7 0",
+              "expected_output": "7",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Bitwise XOR",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print a ^ b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 3",
+              "expected_output": "6",
+              "is_sample": true
+            },
+            {
+              "input": "12 10",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "7 7",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "15 0",
+              "expected_output": "15",
+              "is_sample": false
+            },
+            {
+              "input": "255 1",
+              "expected_output": "254",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Is Multiple of 5",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and print 1 if multiple of 5 else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "15",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "12",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "-25",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Opposite Signs Check",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-zero a and b. Print 1 if opposite signs else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 -3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "-2 4",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "5 10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "-3 -7",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 -1",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Sum of Squares",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a b and print a*a + b*b.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 4",
+              "expected_output": "25",
+              "is_sample": true
+            },
+            {
+              "input": "1 2",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "0 5",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "-3 -4",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "10 10",
+              "expected_output": "200",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "GCD and LCM Euclid",
+          "topic": "Lab Manual Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to find the GCD and LCM of given two numbers using Euclid's method.\nRead two positive integers. Print GCD followed by space followed by LCM.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "12 18",
+              "expected_output": "6 36",
+              "is_sample": true
+            },
+            {
+              "input": "7 5",
+              "expected_output": "1 35",
+              "is_sample": false
+            },
+            {
+              "input": "100 10",
+              "expected_output": "10 100",
+              "is_sample": false
+            },
+            {
+              "input": "81 27",
+              "expected_output": "27 81",
+              "is_sample": false
+            },
+            {
+              "input": "14 21",
+              "expected_output": "7 42",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Quadratic Discriminant",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read a b c and print discriminant b*b-4*a*c.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 -2 1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "1 -5 6",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "1 2 5",
+              "expected_output": "-16",
+              "is_sample": false
+            },
+            {
+              "input": "2 4 2",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "1 0 -4",
+              "expected_output": "16",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Mask Lower N Bits",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print (1<<n)-1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "15",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Toggle Bit",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n k and print n with kth bit toggled (0-indexed).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 1",
+              "expected_output": "7",
+              "is_sample": true
+            },
+            {
+              "input": "5 0",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "8 3",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "10 1",
+              "expected_output": "8",
+              "is_sample": false
+            },
+            {
+              "input": "15 2",
+              "expected_output": "11",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Count Set Bits",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read non-negative integer n and print count of set bits (1s in binary).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "7",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "15",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "1024",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Power of Two Check",
+          "topic": "Operators",
+          "level": 2,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read positive integer n and print 1 if power of 2 else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "18",
+              "expected_output": "0",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

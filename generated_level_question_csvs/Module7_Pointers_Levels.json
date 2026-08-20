@@ -1,0 +1,1129 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Pointers",
+      "module_order": 7,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Pointer Dereference",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read integer n. Using a pointer to n, print its value.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "-10",
+              "expected_output": "-10",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "42",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Pointer Update",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n. Add 10 to n using a pointer and print updated value.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "15",
+              "is_sample": true
+            },
+            {
+              "input": "0",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "-10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "90",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "52",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Pointer Swap",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Write a function swap(int *a, int *b). Read two integers, swap via pointers, and print space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "2 1",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "3 5",
+              "is_sample": false
+            },
+            {
+              "input": "-1 9",
+              "expected_output": "9 -1",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0 0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "99 100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Pointer Add Two",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b. Compute sum using pointers and print sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "10 20",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "-5 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 200",
+              "expected_output": "300",
+              "is_sample": false
+            },
+            {
+              "input": "7 8",
+              "expected_output": "15",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Pointer Is Equal",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers. Compare them using pointers. Print 1 if equal else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 5",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "-1 1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "42 42",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Pointer Increment",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n. Increment via pointer (*ptr)++ and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "6",
+              "is_sample": true
+            },
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "-1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "99",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "43",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Pointer Decrement",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n. Decrement via pointer (*ptr)-- and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "99",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "41",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Pointer Max Two",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b. Find maximum using pointers and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "-1 -5",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Pointer Min Two",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a b. Find minimum using pointers and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "-1 -5",
+              "expected_output": "-5",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "99",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Pointer Copy Value",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n. Copy its value to variable m using pointer and print m.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "42",
+              "expected_output": "42",
+              "is_sample": true
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "-5",
+              "expected_output": "-5",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "7",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Pointer Array Traversal",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Traverse array using pointer arithmetic (ptr + i) and print elements space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1 2 3",
+              "is_sample": true
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "10 20 30 40",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 1",
+              "expected_output": "-1 1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5 5 5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Pointer Array Max",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Find maximum using pointer traversal and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "40",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Pointer Reverse Array",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Reverse array using two pointers (left and right) and print space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3 2 1",
+              "is_sample": true
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "40 30 20 10",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 1",
+              "expected_output": "1 -1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5 5 5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Pointer String Length",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a word. Compute length using pointer traversal (while (*str != '\\0')) and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "programming",
+              "expected_output": "11",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "openai",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Pointer Count Vowels",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read lowercase word. Count vowels using pointer traversal and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "sky",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "education",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "apple",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Pointer Array Min",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Find minimum using pointer traversal and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 1",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Pointer Copy Array",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Copy to second array using pointers and print second array space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1 2 3",
+              "is_sample": true
+            },
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 -2",
+              "expected_output": "-1 -2",
+              "is_sample": false
+            },
+            {
+              "input": "4 0 0 0 0",
+              "expected_output": "0 0 0 0",
+              "is_sample": false
+            },
+            {
+              "input": "3 9 8 7",
+              "expected_output": "9 8 7",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Pointer Count Evens",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Count even numbers using pointer arithmetic and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "1 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "2 2 4",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 3 5",
+              "expected_output": "0",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Pointer Search Key",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n, n integers, key. Search key using pointer arithmetic. Print 1 if found else 0.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3 2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "1 9 9",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 4 5 6 4",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 4 5 6 7",
+              "expected_output": "0",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Pointer Array Average",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Compute integer average using pointer sum and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "25",
+              "is_sample": false
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "2 0 10",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "5 5 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Pointer Array Sum Manual",
+          "topic": "Lab Manual Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to read N integers into an array A and find the sum of elements using pointers.\nRead integer N then N integers. Traverse array using pointers and print exact integer sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "100",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-2",
+              "is_sample": false
+            },
+            {
+              "input": "5 1 1 1 1 1",
+              "expected_output": "5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Pointer String Reverse",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read a word. Reverse string in place using two pointers and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "olleh",
+              "is_sample": true
+            },
+            {
+              "input": "abc",
+              "expected_output": "cba",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "edoc",
+              "is_sample": false
+            },
+            {
+              "input": "racecar",
+              "expected_output": "racecar",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Pointer Palindrome Check",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read a word. Check palindrome using two pointers. Print Palindrome or Not Palindrome.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "madam",
+              "expected_output": "Palindrome",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "Not Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "racecar",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "level",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "Not Palindrome",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Pointer Sort Array",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n integers. Sort array ascending using pointer arithmetic and print space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 3 1 2",
+              "expected_output": "1 2 3",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 5 8 2",
+              "expected_output": "2 5 8 10",
+              "is_sample": false
+            },
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5 5 5",
+              "is_sample": false
+            },
+            {
+              "input": "2 9 1",
+              "expected_output": "1 9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Pointer Count Words",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read sentence (words separated by single space). Count words using pointer traversal and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello world",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "code lab test",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "one two three four",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "openai",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Pointer Second Largest",
+          "topic": "Pointers",
+          "level": 7,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n distinct integers. Find second largest using pointer traversal and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 4 3",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "2 1 2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "5 10 50 20 30 40",
+              "expected_output": "40",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

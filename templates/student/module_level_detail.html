@@ -2,11 +2,17 @@
 {% block content %}
 <section class="toolbar">
   <div>
-    <h1>{{ module.name }} - {{ difficulty_label }}</h1>
-    <p class="muted">Your randomized 5-question {{ difficulty_label|lower }} set.</p>
+    <h1>{{ module.name }}{% if 'placement_training' not in module.category %} - {{ difficulty_label }}{% endif %}</h1>
+    <p class="muted">
+      {% if 'placement_training' in module.category %}
+      Your randomized 7-question set.
+      {% else %}
+      Your randomized 5-question {{ difficulty_label|lower }} set.
+      {% endif %}
+    </p>
   </div>
   <div class="actions">
-    <a class="secondary as-link" href="{% url 'module_detail' module.id %}">Levels</a>
+    {% if 'placement_training' not in module.category %}<a class="secondary as-link" href="{% url 'module_detail' module.id %}">Levels</a>{% endif %}
     <a class="secondary as-link" href="{% url 'dashboard' %}">Dashboard</a>
   </div>
 </section>
@@ -14,7 +20,7 @@
 {% if assigned_slots %}
   <section class="panel module-path">
     <div class="section-heading">
-      <h2>{% if module.category == "placement_training" %}Placement Training{% else %}{{ difficulty_label }}{% endif %} Questions</h2>
+      <h2>{% if module.category == "advanced_placement_training" %}Advanced Placement Training{% elif module.category == "placement_training" %}Placement Training{% else %}{{ difficulty_label }}{% endif %} Questions</h2>
       <p class="muted">Solve the current unlocked question to reveal the next one.</p>
     </div>
     <div class="path-steps">
@@ -32,11 +38,21 @@
             <small>Solve now</small>
           </a>
         {% else %}
-          <div class="path-step locked">
-            <strong>{{ slot.order }}</strong>
-            <span>Locked Question</span>
-            <small>Complete the previous question</small>
-          </div>
+          {% if 'placement_training' in module.category %}
+            {% if current_slot and slot.order == current_slot.order|add:"1" %}
+            <div class="path-step locked">
+              <strong>{{ slot.order }}</strong>
+              <span>Locked Question</span>
+              <small>Complete the previous question</small>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="path-step locked">
+              <strong>{{ slot.order }}</strong>
+              <span>Locked Question</span>
+              <small>Complete the previous question</small>
+            </div>
+          {% endif %}
         {% endif %}
       {% endfor %}
     </div>

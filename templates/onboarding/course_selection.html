@@ -414,6 +414,7 @@
   </div>
 
   <div class="course-grid">
+    {% if user.semester <= 2 %}
     <!-- CARD 1: C PROGRAMMING (ACTIVE) -->
     <div class="course-card-item active-course">
       <div>
@@ -444,8 +445,9 @@
         </a>
       </div>
     </div>
+    {% endif %}
 
-    {% if user.usn|lower|slice:":4" == "nn25" %}
+    {% if user.semester == 3 or user.semester == 4 %}
     <!-- CARD: PLACEMENT TRAINING -->
     <div class="course-card-item active-course">
       <div>
@@ -460,6 +462,28 @@
       </div>
       <div>
         <a href="{% url 'placement_training_overview' %}" class="action-btn btn-enter-c transition-link" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff;">
+          <span>Start Training Overview</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.semester == 5 or user.semester == 6 %}
+    <!-- CARD: ADVANCED PLACEMENT TRAINING -->
+    <div class="course-card-item active-course">
+      <div>
+        <div class="course-top-row">
+          <div class="course-icon-wrap icon-c" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);">APT</div>
+          <span class="status-pill status-active" style="background: rgba(225, 29, 72, 0.2); color: #e11d48; border-color: rgba(225, 29, 72, 0.4); box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);">🟢 Advanced Prep</span>
+        </div>
+        <h2 class="course-title">Advanced Technical Placement Training</h2>
+        <p class="course-desc">
+          Exclusive 14-week program for 5th semester CCE students. Master advanced algorithmic paradigms, OOP, Design Patterns, and OS fundamentals.
+        </p>
+      </div>
+      <div>
+        <a href="{% url 'placement_training_overview' %}" class="action-btn btn-enter-c transition-link" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff;">
           <span>Start Training Overview</span>
           <span>→</span>
         </a>

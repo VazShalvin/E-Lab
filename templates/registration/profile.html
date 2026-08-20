@@ -88,7 +88,7 @@
         <h3>🔒 Security &amp; Password</h3>
         <p class="card-subtitle">Update your login password</p>
       </div>
-      <form method="post" class="profile-form">
+      <form method="post" class="profile-form" id="password-form">
         {% csrf_token %}
         {% for field in password_form %}
           <div class="form-group">
@@ -173,6 +173,7 @@
     height: 18px;
     accent-color: #6366f1;
     cursor: pointer;
+    flex-shrink: 0;
   }
   .course-checkbox-card input[type="checkbox"]:checked ~ div .course-title {
     color: #818cf8 !important;
@@ -180,6 +181,41 @@
   .course-checkbox-card:has(input:checked) {
     border-color: rgba(99, 102, 241, 0.6) !important;
     background: rgba(99, 102, 241, 0.1) !important;
+  }
+  /* Fix password fields - prevent autofill interference */
+  #password-form input[type="password"] {
+    -webkit-autofill: none;
+    -webkit-box-shadow: 0 0 0 1000px var(--bg-primary, #0f172a) inset;
+    -webkit-text-fill-color: var(--text-primary, #f8fafc);
+    color: var(--text-primary, #f8fafc);
+  }
+  #password-form input[type="password"]:focus {
+    border-color: #6366f1;
+    outline: none;
+  }
+  /* Fix checkbox styling in question forms */
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #6366f1;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 0;
+    cursor: pointer;
+  }
+  .checkbox-row input[type="checkbox"] {
+    margin: 0;
+  }
+  .checkbox-row span {
+    font-size: 14px;
+    color: var(--text-secondary, #cbd5e1);
+    user-select: none;
   }
 </style>
 {% endblock %}

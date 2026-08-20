@@ -1,0 +1,1129 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Strings",
+      "module_order": 5,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "String Length",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a word and print its length.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "programming",
+              "expected_output": "11",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "openai",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "First Character",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a word and print first character.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "h",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "b",
+              "is_sample": false
+            },
+            {
+              "input": "cat",
+              "expected_output": "c",
+              "is_sample": false
+            },
+            {
+              "input": "zebra",
+              "expected_output": "z",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Last Character",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a word and print last character.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "o",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "e",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "cat",
+              "expected_output": "t",
+              "is_sample": false
+            },
+            {
+              "input": "zebra",
+              "expected_output": "a",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Count A",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a lowercase word and print count of 'a'.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "banana",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "hello",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "aaaa",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "0",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Has Digit",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a word and print Yes if it contains a digit else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "code123",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "a1b",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "test",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "9nine",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Convert to Uppercase",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a lowercase word and print in uppercase.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "HELLO",
+              "is_sample": true
+            },
+            {
+              "input": "abc",
+              "expected_output": "ABC",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "CODE",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "A",
+              "is_sample": false
+            },
+            {
+              "input": "xyz",
+              "expected_output": "XYZ",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Convert to Lowercase",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read an uppercase word and print in lowercase.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "HELLO",
+              "expected_output": "hello",
+              "is_sample": true
+            },
+            {
+              "input": "ABC",
+              "expected_output": "abc",
+              "is_sample": false
+            },
+            {
+              "input": "CODE",
+              "expected_output": "code",
+              "is_sample": false
+            },
+            {
+              "input": "A",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "XYZ",
+              "expected_output": "xyz",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Count E",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a lowercase word and print count of 'e'.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "elephant",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "eeee",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Starts with A",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a lowercase word and print Yes if starts with 'a' else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "apple",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "banana",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "ant",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Ends with Z",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read a lowercase word and print Yes if ends with 'z' else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "buzz",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "z",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "topz",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "zebra",
+              "expected_output": "No",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Count Vowels",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a lowercase word and print vowel count.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "education",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "sky",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "apple",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Count Consonants",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a lowercase alphabetic word and print consonant count.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "education",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "sky",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "apple",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Lexicographic Compare",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read two words space separated. Print First, Second, or Equal.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "apple banana",
+              "expected_output": "First",
+              "is_sample": true
+            },
+            {
+              "input": "cat bat",
+              "expected_output": "Second",
+              "is_sample": false
+            },
+            {
+              "input": "same same",
+              "expected_output": "Equal",
+              "is_sample": false
+            },
+            {
+              "input": "abc abd",
+              "expected_output": "First",
+              "is_sample": false
+            },
+            {
+              "input": "z a",
+              "expected_output": "Second",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Reverse Word",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a word and print reverse.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "olleh",
+              "is_sample": true
+            },
+            {
+              "input": "abc",
+              "expected_output": "cba",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "edoc",
+              "is_sample": false
+            },
+            {
+              "input": "racecar",
+              "expected_output": "racecar",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Count Digits in String",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a word and print number of numeric digit characters.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "a1b2c3",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "12345",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "c0de",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "x9y8z7",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Replace Vowels X",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read a lowercase word and replace all vowels with 'X'. Print result.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "hXllX",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "XpplX",
+              "is_sample": false
+            },
+            {
+              "input": "sky",
+              "expected_output": "sky",
+              "is_sample": false
+            },
+            {
+              "input": "aeiou",
+              "expected_output": "XXXXX",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "bXnXnX",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Char Frequency",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read word and character space separated. Print frequency of char in word.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello l",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "banana a",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "code z",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "test t",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "abc a",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Is Uppercase Word",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read alphabetic word. Print Yes if all letters are uppercase else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "HELLO",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "Hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "A",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "CODE",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Concatenate Words",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read two words space separated and print them joined together without space.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello world",
+              "expected_output": "helloworld",
+              "is_sample": true
+            },
+            {
+              "input": "foo bar",
+              "expected_output": "foobar",
+              "is_sample": false
+            },
+            {
+              "input": "a b",
+              "expected_output": "ab",
+              "is_sample": false
+            },
+            {
+              "input": "code lab",
+              "expected_output": "codelab",
+              "is_sample": false
+            },
+            {
+              "input": "test case",
+              "expected_output": "testcase",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Print Alternating Chars",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read word and print characters at even indices (0, 2, 4...).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "hlo",
+              "is_sample": true
+            },
+            {
+              "input": "abcdef",
+              "expected_output": "ace",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "cd",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "bnn",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Palindrome String Check",
+          "topic": "Lab Manual Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to find if a given string is a palindrome or not.\nRead a word. Print 'Palindrome' if it reads the same backwards else 'Not Palindrome'.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "madam",
+              "expected_output": "Palindrome",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "Not Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "racecar",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "level",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "Not Palindrome",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Longest Unique Substring",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read word and print length of longest substring without repeating characters.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "abcabcbb",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "bbbbb",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "pwwkew",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "abcdef",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "aab",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Anagram Check",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read two lowercase words space separated. Print Anagram or Not Anagram.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "listen silent",
+              "expected_output": "Anagram",
+              "is_sample": true
+            },
+            {
+              "input": "hello bello",
+              "expected_output": "Not Anagram",
+              "is_sample": false
+            },
+            {
+              "input": "earth heart",
+              "expected_output": "Anagram",
+              "is_sample": false
+            },
+            {
+              "input": "cat act",
+              "expected_output": "Anagram",
+              "is_sample": false
+            },
+            {
+              "input": "abc abd",
+              "expected_output": "Not Anagram",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Word Score",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read lowercase word and print sum of alphabet positions (a=1, b=2... z=26).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "abc",
+              "expected_output": "6",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "52",
+              "is_sample": false
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "z",
+              "expected_output": "26",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "27",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Remove Duplicate Chars",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read lowercase word. Remove consecutive duplicate characters and print result.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "aabccba",
+              "expected_output": "abcba",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "helo",
+              "is_sample": false
+            },
+            {
+              "input": "aaaaa",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "code",
+              "is_sample": false
+            },
+            {
+              "input": "bookkeeper",
+              "expected_output": "bokeper",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Max Frequency Char",
+          "topic": "Strings",
+          "level": 5,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read lowercase word. Print the lexicographically smallest character with highest frequency.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "banana",
+              "expected_output": "a",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "l",
+              "is_sample": false
+            },
+            {
+              "input": "abc",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "aabbcc",
+              "expected_output": "a",
+              "is_sample": false
+            },
+            {
+              "input": "Mississippi",
+              "expected_output": "s",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div id="fullscreen-toast" class="fullscreen-toast" aria-hidden="true">
+  <span>⚡ Fullscreen Mode Enabled — Press <strong>ESC</strong> to exit</span>
+</div>
+
+<section class="toolbar">
+  <div>
+    <p class="eyebrow">{{ question.module.name }} · {{ question.get_difficulty_display }}</p>
+    <h1>{{ question.title }}</h1>
+  </div>
+  <div class="toolbar-actions" style="display: flex; align-items: center; gap: 12px;">
+    <!-- Course / Semester Badge -->
+    {% if question.module.course %}
+    <div class="semester-badge" style="display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; user-select: none;">
+      {% if question.module.course.semester %}
+        <span style="display: inline-block; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></span>
+        <span>Semester {{ question.module.course.semester }}</span>
+      {% elif question.module.course.year %}
+        <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+        <span>Year {{ question.module.course.year }}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Proctoring Badge -->
+    <div class="proctoring-badge" style="display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50px; color: #ef4444; font-size: 13px; font-weight: 700; user-select: none;">
+      <span style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulseRed 1.5s infinite;"></span>
+      Proctoring Active
+    </div>
+
+    <button type="button" class="secondary maximize-page-btn" id="editor-maximize-btn" title="Toggle Full Screen Editor" style="min-height: 42px; height: 42px; padding: 0 20px; font-size: 14px; gap: 8px; border-radius: var(--radius-full);">
+      <svg class="icon-maximize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+      <svg class="icon-minimize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3"></path><path d="M21 8h-3a2 2 0 0 1-2-2V3"></path><path d="M3 16h3a2 2 0 0 1 2 2v3"></path><path d="M16 21v-3a2 2 0 0 1 2-2h3"></path></svg>
+      Full Screen
+    </button>
+  </div>
+</section>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Wider code editor section -->
+        <div class="col-md-12">
+            <!-- Code Editor Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Code Editor</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="language">Programming Language</label>
+                                    <select class="form-control" id="language" name="language_id">
+                                        {% for lang_id, lang_name in question.get_available_languages %}
+                                            <option value="{{ lang_id }}" {% if lang_id == question.language_id %}selected{% endif %}>{{ lang_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <!-- Wider and taller code editor -->
+                            <textarea class="form-control code-editor" id="code" name="code" rows="30">{{ starter_code }}</textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button type="submit" class="btn btn-primary">Submit Code</button>
+                            <small class="text-muted">Question ID: {{ question.id }} | Difficulty: {{ question.get_difficulty_display }}</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Question details and test cases section -->
+    <div class="row mt-4">
+        <!-- Problem Statement -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Problem Statement</h5>
+                    {% if question.module.course and question.module.course.semester %}
+                      <span class="badge bg-info">Semester {{ question.module.course.semester }}</span>
+                    {% elif question.module.course and question.module.course.year %}
+                      <span class="badge bg-info">Year {{ question.module.course.year }}</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {{ question.description|safe }}
+                    
+                    {% if question.starter_code %}
+                    <div class="mt-3">
+                        <h6>Starter Code:</h6>
+                        <pre class="bg-light p-3 rounded">{{ question.starter_code }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Cases -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Test Cases</h5>
+                    <span class="badge bg-secondary">{{ test_cases.count }} sample cases</span>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for test_case in test_cases %}
+                        <div class="mb-3">
+                            <h6>Test Case {{ forloop.counter }}</h6>
+                            <div class="mb-2"><strong>Input:</strong>
+                                <pre class="bg-light p-2 rounded">{{ test_case.stdin }}</pre>
+                            </div>
+                            <div><strong>Expected Output:</strong>
+                                <pre class="bg-light p-2 rounded">{{ test_case.expected_output }}</pre>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% empty %}
+                        <p>No test cases available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Previous Submission -->
+    {% if previous_submission %}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Previous Submission</h5>
+                    <span class="badge {% if previous_submission.status == 'AC' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ previous_submission.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Submitted at:</strong> {{ previous_submission.created_at }}</p>
+                            <p><strong>Language:</strong> {{ previous_submission.get_language_display }}</p>
+                            <p><strong>Status:</strong> {{ previous_submission.get_status_display }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="{% url 'submission_detail' previous_submission.id %}" class="btn btn-outline-primary">View Full Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .code-editor {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        min-height: 500px;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eaeaea;
+    }
+</style>
+
+<script>
+// Fullscreen editor functionality
+const fullscreenToast = document.getElementById('fullscreen-toast');
+const maximizeBtn = document.getElementById('editor-maximize-btn');
+const maximizeIcon = maximizeBtn.querySelector('.icon-maximize');
+const minimizeIcon = maximizeBtn.querySelector('.icon-minimize');
+
+maximizeBtn.addEventListener('click', function() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+        fullscreenToast.style.display = 'block';
+        setTimeout(() => {
+            fullscreenToast.style.display = 'none';
+        }, 3000);
+    }
+    maximizeIcon.style.display = document.fullscreenElement ? 'none' : 'block';
+    minimizeIcon.style.display = document.fullscreenElement ? 'block' : 'none';
+});
+
+// Handle ESC key to exit fullscreen
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && document.fullscreenElement) {
+        document.exitFullscreen();
+        maximizeIcon.style.display = 'block';
+        minimizeIcon.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

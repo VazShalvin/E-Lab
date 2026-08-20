@@ -1,34 +1,22 @@
-from io import BytesIO
+# Standard library
 from difflib import SequenceMatcher
+from io import BytesIO
 import random
-
+# Third-party
 import qrcode
+# Django
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.core.mail import send_mail
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
-
+# Local imports
 from .models import AssignedQuestion, Attendance, Certificate, CertificateRequest, LabSession, Module, ModuleQuestionAssignment, Notification, Progress, Question, Submission, User
 from .sandbox import run_code, language_for_id
 
 
-JUDGE0_STATUS_MAP = {
-    3: Submission.Status.ACCEPTED,
-    4: Submission.Status.WRONG_ANSWER,
-    5: Submission.Status.TLE,
-    6: Submission.Status.COMPILE_ERROR,
-    11: Submission.Status.RUNTIME_ERROR,
-}
-
-
 def normalize_output(value):
     return (value or "").replace("\r\n", "\n").strip()
-
-
-def similarity(a, b):
-    return SequenceMatcher(None, a or "", b or "").ratio()
 
 
 def similarity(a, b):
@@ -215,7 +203,14 @@ def evaluate_submission(submission_id):
                 memory_limit_kb=question.memory_limit_kb,
             )
             status_id = result.get("status_id")
-            status = JUDGE0_STATUS_MAP.get(status_id, Submission.Status.INTERNAL_ERROR)
+            status_mapping = {
+                3: Submission.Status.ACCEPTED,
+                4: Submission.Status.WRONG_ANSWER,
+                5: Submission.Status.TLE,
+                6: Submission.Status.COMPILE_ERROR,
+                11: Submission.Status.RUNTIME_ERROR,
+            }
+            status = status_mapping.get(status_id, Submission.Status.INTERNAL_ERROR)
             actual_output = normalize_output(result.get("stdout"))
 
             # Surface the real compiler/runtime message per test for the UI.
@@ -264,7 +259,6 @@ def evaluate_submission(submission_id):
     finally:
         submission.judged_at = timezone.now()
         submission.save()
-        flag_plagiarism(submission)
         for assignment in ModuleQuestionAssignment.objects.filter(student=submission.student, module=submission.question.module):
             sync_assignment_completion(assignment)
         update_progress(submission.student, submission.question.module)
@@ -326,8 +320,54 @@ def certificate_eligible(student):
     return pct >= settings.CERTIFICATE_THRESHOLD and mandatory_done == mandatory_total, pct
 
 
+def get_faculty_coordinator_for_student(student):
+    """
+    Determine the faculty coordinator for a student based on their completed modules/courses.
+    Returns the faculty member who manages the course the student completed most questions in.
+    """
+    # Get modules where student has accepted submissions
+    completed_modules = Module.objects.filter(
+        questions__submissions__student=student,
+        questions__submissions__status=Submission.Status.ACCEPTED,
+        is_active=True
+    ).distinct()
+    
+    if not completed_modules.exists():
+        return None
+    
+    # Find the course associated with the module where student has most completions
+    from django.db.models import Count
+    course_completions = Course.objects.filter(
+        modules__in=completed_modules
+    ).annotate(
+        completion_count=Count(
+            'modules__questions__submissions',
+            filter=Q(modules__questions__submissions__student=student,
+                     modules__questions__submissions__status=Submission.Status.ACCEPTED),
+            distinct=True
+        )
+    ).order_by('-completion_count')
+    
+    top_course = course_completions.first()
+    if top_course:
+        # Get faculty managing this course
+        faculty = top_course.managing_faculty.first()
+        if faculty:
+            return faculty
+    
+    # Fallback: any faculty managing any of the student's completed modules' courses
+    for course in course_completions:
+        faculty = course.managing_faculty.first()
+        if faculty:
+            return faculty
+    
+    return None
+
+
 def generate_certificate(student):
     from weasyprint import HTML
+    from django.templatetags.static import static
+    from django.conf import settings as django_settings
 
     eligible, pct = certificate_eligible(student)
     if not eligible:
@@ -349,23 +389,55 @@ def generate_certificate(student):
     verify_url = f"{settings.SITE_BASE_URL}/verify/{verification_hash}/"
     qr = qrcode.make(verify_url)
     qr_buffer = BytesIO()
-    qr.save(qr_buffer, format="PNG")
+    qr.save(qr_buffer, "PNG")
     cert.qr_code.save(f"{verification_hash}.png", ContentFile(qr_buffer.getvalue()), save=False)
 
+    # Get dynamic data for template
+    faculty_coordinator = get_faculty_coordinator_for_student(student)
+    
+    # Get course name from completed modules
+    completed_modules = Module.objects.filter(
+        questions__submissions__student=student,
+        questions__submissions__status=Submission.Status.ACCEPTED,
+        is_active=True
+    ).distinct()
+    course_names = Course.objects.filter(
+        modules__in=completed_modules
+    ).values_list('name', flat=True).distinct()
+    course_name = ", ".join(course_names) if course_names.exists() else "CCE e-Lab Programming Course"
+    
+    # Get HOD and Principal names (fallback to static if not configured)
+    hod = User.objects.filter(role=User.Role.HOD).first()
+    hod_name = hod.display_name if hod else "Head of Department"
+    principal = User.objects.filter(role=User.Role.ADMIN).first()
+    principal_name = principal.display_name if principal else "Principal / Director"
+    
+    # Certificate template image URL
+    certificate_template_url = f"{settings.SITE_BASE_URL}{static('img/certificate_template.png')}"
+    
+    issued_at = timezone.localtime()
+    issued_date = issued_at.strftime("%B %d, %Y")
+
     html = render_to_string(
-        "certificates/certificate.html",
+        "certificates/certificate_png_template.html",
         {
             "student": student,
             "percentage": pct,
             "semester": semester,
-            "issued_at": timezone.localtime(),
+            "issued_at": issued_at,
+            "issued_date": issued_date,
             "verify_url": verify_url,
             "certificate": cert,
             "site_name": settings.SITE_NAME,
+            "course_name": course_name,
+            "faculty_coordinator_name": faculty_coordinator.display_name if faculty_coordinator else "Faculty Coordinator",
+            "hod_name": hod_name,
+            "principal_name": principal_name,
+            "certificate_template_url": certificate_template_url,
         },
     )
     try:
-        pdf_bytes = HTML(string=html, base_url=str(settings.BASE_DIR)).write_pdf()
+        pdf_bytes = HTML(string=html, base_url=str(django_settings.BASE_DIR)).write_pdf()
         name_usn = student.usn or student.username
         cert.pdf.save(f"{name_usn}_{semester.replace(' ', '_')}.pdf", ContentFile(pdf_bytes), save=False)
     except Exception as e:
@@ -441,7 +513,7 @@ def notify_student_of_cert_decision(cert_request):
     if cert_request.status == CertificateRequest.Status.APPROVED:
         ntype = Notification.Type.CERT_HOD_APPROVED
         title = "Certificate Approved!"
-        message = f"Congratulations! Your certificate has been approved by the HoD. You can now view and download your official academic diploma!"
+        message = "Congratulations! Your certificate has been approved by the HoD. You can now view and download your official academic diploma!"
         fac_title = f"Certificate Approved by HoD: {cert_request.student.display_name}"
         fac_msg = f"The Head of Department has approved and issued the official certificate for {cert_request.student.display_name} ({cert_request.student.usn or cert_request.student.username})."
     else:

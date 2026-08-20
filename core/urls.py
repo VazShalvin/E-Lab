@@ -73,5 +73,10 @@ urlpatterns = [
     path("health/", views.health_check, name="health_check"),
     path("api/run/", views.run_code_api, name="run-code"),
     path("api/report-violation/", views.report_violation, name="report_violation"),
+    # Faculty Agent Routes
+    path("api/faculty-agent/topics/", views.faculty_agent_topics_api, name="faculty_agent_topics_api"),
+    path("api/faculty-agent/generate/", views.faculty_agent_generate_api, name="faculty_agent_generate_api"),
+    path("api/faculty-agent/add-question/", views.faculty_agent_add_question_api, name="faculty_agent_add_question_api"),
     path("api/", include(router.urls)),
 ]
+

@@ -1,1 +1,1 @@
-
+# Django management package initialization

@@ -1,0 +1,391 @@
+{% comment %}
+Faculty AI Agent Floating Widget - E-Lab RAG Question Generator
+{% endcomment %}
+{% if user.is_authenticated and user.is_faculty_like %}
+<div id="faculty-agent-root" class="faculty-agent-container">
+  {% csrf_token %}
+  <!-- Floating Agent Launcher Button -->
+  <button id="faculty-agent-trigger" class="faculty-agent-btn" aria-label="Open Faculty AI Question Agent" title="Ask Faculty AI Agent to create questions">
+    <div class="agent-btn-glow"></div>
+    <div class="agent-btn-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="currentColor"/>
+        <path d="M6 3L7.25 6.75L11 8L7.25 9.25L6 13L4.75 9.25L1 8L4.75 6.75L6 3Z" fill="currentColor" opacity="0.7"/>
+      </svg>
+    </div>
+    <span class="agent-btn-label">AI Question Agent</span>
+    <span class="agent-pulse-dot"></span>
+  </button>
+
+  <!-- Agent Popup Drawer Window -->
+  <div id="faculty-agent-modal" class="agent-drawer hidden" inert aria-hidden="true">
+    <div class="agent-drawer-header">
+      <div class="agent-title-group">
+        <div class="agent-avatar">✨</div>
+        <div>
+          <h3 class="agent-title">Faculty RAG Agent</h3>
+          <p class="agent-subtitle">Generate & add lab questions on any topic</p>
+        </div>
+      </div>
+      <button id="faculty-agent-close" class="agent-close-btn" aria-label="Close Drawer">&times;</button>
+    </div>
+
+    <div class="agent-drawer-body">
+      <!-- Input Panel -->
+      <form id="agent-gen-form" onsubmit="return false;">
+        <div class="agent-form-row">
+          <div class="agent-form-field">
+            <label for="agent-module-select">Target Module</label>
+            <select id="agent-module-select" required>
+              <option value="">-- Loading modules --</option>
+            </select>
+          </div>
+          <div class="agent-form-field">
+            <label for="agent-diff-select">Difficulty</label>
+            <select id="agent-diff-select">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="agent-form-field">
+          <label for="agent-topic-input">Topic / Algorithm</label>
+          <input type="text" id="agent-topic-input" placeholder="e.g. Dynamic Programming, Two Pointers, BST" list="agent-topics-list" required />
+          <datalist id="agent-topics-list"></datalist>
+        </div>
+
+        <div class="agent-form-field">
+          <label for="agent-prompt-input">Specific Focus / Instructions (Optional)</label>
+          <textarea id="agent-prompt-input" rows="2" placeholder="e.g. Create a problem on 0/1 knapsack with C starter code and 10 test cases"></textarea>
+        </div>
+
+        <button type="submit" id="agent-generate-btn" class="agent-primary-btn">
+          <span>✨ Generate Question with RAG</span>
+        </button>
+      </form>
+
+      <!-- Thinking / Loading Indicator -->
+      <div id="agent-loading-state" class="agent-loading hidden">
+        <div class="agent-spinner"></div>
+        <div class="agent-loading-text">
+          <span id="agent-status-msg">Retrieving reference questions from RAG question bank...</span>
+          <div class="agent-progress-bar"><div class="agent-progress-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- Generated Question Result Card -->
+      <div id="agent-result-card" class="agent-result hidden">
+        <div class="result-header">
+          <span class="result-badge" id="res-diff-badge">Medium</span>
+          <h4 id="res-title">Generated Question Title</h4>
+        </div>
+
+        <div id="res-references-box" class="result-references">
+          <span>📚 References:</span> <span id="res-refs-list">3 RAG questions loaded</span>
+        </div>
+
+        <div class="result-tabs">
+          <button class="result-tab active" data-tab="tab-desc">Problem Statement</button>
+          <button class="result-tab" data-tab="tab-code">Starter / Solution</button>
+          <button class="result-tab" data-tab="tab-cases">Test Cases (<span id="res-case-count">0</span>)</button>
+        </div>
+
+        <div class="result-content">
+          <div id="tab-desc" class="tab-pane active">
+            <div id="res-desc-text" class="result-desc"></div>
+          </div>
+          <div id="tab-code" class="tab-pane hidden">
+            <pre><code id="res-code-text" class="language-c"></code></pre>
+          </div>
+          <div id="tab-cases" class="tab-pane hidden">
+            <div id="res-cases-list" class="test-cases-grid"></div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button id="agent-add-btn" class="agent-success-btn">
+            🚀 Add to E-Lab Question Bank
+          </button>
+          <button id="agent-retry-btn" class="agent-secondary-btn">
+            🔄 Regenerate
+          </button>
+        </div>
+      </div>
+
+      <!-- Success Notification Banner -->
+      <div id="agent-success-banner" class="agent-banner success hidden">
+        <div class="banner-icon">✅</div>
+        <div class="banner-text">
+          <strong id="banner-msg">Question added successfully!</strong>
+          <div>
+            <a id="banner-view-link" href="#" target="_blank">View Question ↗</a> &nbsp;|&nbsp;
+            <a id="banner-edit-link" href="#" target="_blank">Edit Details ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.getElementById('faculty-agent-trigger');
+  const modal = document.getElementById('faculty-agent-modal');
+  const closeBtn = document.getElementById('faculty-agent-close');
+  const form = document.getElementById('agent-gen-form');
+  const moduleSelect = document.getElementById('agent-module-select');
+  const topicInput = document.getElementById('agent-topic-input');
+  const datalist = document.getElementById('agent-topics-list');
+  const diffSelect = document.getElementById('agent-diff-select');
+  const promptInput = document.getElementById('agent-prompt-input');
+  const genBtn = document.getElementById('agent-generate-btn');
+  const loadingState = document.getElementById('agent-loading-state');
+  const statusMsg = document.getElementById('agent-status-msg');
+  const resultCard = document.getElementById('agent-result-card');
+  const addBtn = document.getElementById('agent-add-btn');
+  const retryBtn = document.getElementById('agent-retry-btn');
+  const successBanner = document.getElementById('agent-success-banner');
+
+  let currentGeneratedQuestion = null;
+
+  // Toggle Modal Drawer
+  trigger.addEventListener('click', () => {
+    const isHidden = modal.classList.toggle('hidden');
+    modal.setAttribute('aria-hidden', isHidden ? 'true' : 'false');
+    if (isHidden) {
+      modal.setAttribute('inert', '');
+    } else {
+      modal.removeAttribute('inert');
+      // Move focus to the modal when opened
+      modal.focus();
+    }
+    if (!isHidden) {
+      loadTopicsAndModules();
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('inert', '');
+    trigger.focus();
+  });
+
+  // Tab Switching inside preview card
+  document.querySelectorAll('.result-tab').forEach(tabBtn => {
+    tabBtn.addEventListener('click', () => {
+      document.querySelectorAll('.result-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+      tabBtn.classList.add('active');
+      const targetId = tabBtn.getAttribute('data-tab');
+      document.getElementById(targetId).classList.remove('hidden');
+    });
+  });
+
+  // Load modules & topic suggestions from backend
+  async function loadTopicsAndModules() {
+    if (moduleSelect.options.length > 1) return; // already loaded
+    try {
+      const res = await fetch('/api/faculty-agent/topics/');
+      if (res.ok) {
+        const data = await res.json();
+        moduleSelect.innerHTML = '<option value="">Select Target Module</option>';
+        data.modules.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = `${m.name} (${m.course__name || 'CS'})`;
+          moduleSelect.appendChild(opt);
+        });
+        if (data.modules.length > 0) {
+          moduleSelect.selectedIndex = 1;
+        }
+
+        datalist.innerHTML = '';
+        data.topics.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t;
+          datalist.appendChild(opt);
+        });
+      }
+    } catch (e) {
+      console.error('Failed to load agent metadata:', e);
+    }
+  }
+
+  // Handle Question Generation
+  form.addEventListener('submit', async () => {
+    const topic = topicInput.value.trim();
+    const difficulty = diffSelect.value;
+    const prompt = promptInput.value.trim();
+
+    if (!topic) return;
+
+    resultCard.classList.add('hidden');
+    successBanner.classList.add('hidden');
+    loadingState.classList.remove('hidden');
+    genBtn.disabled = true;
+    statusMsg.textContent = "Retrieving reference questions from RAG dataset...";
+
+    setTimeout(() => {
+      if (!loadingState.classList.contains('hidden')) {
+        statusMsg.textContent = "Generating problem statement & 10 test cases using AI...";
+      }
+    }, 1200);
+
+    try {
+      const csrfToken = getCookie('csrftoken');
+      const res = await fetch('/api/faculty-agent/generate/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ topic, difficulty, prompt })
+      });
+
+      const data = await res.json();
+      loadingState.classList.add('hidden');
+      genBtn.disabled = false;
+
+      if (data.success && data.question) {
+        currentGeneratedQuestion = data.question;
+        renderQuestionPreview(data.question, data.references);
+      } else {
+        alert('Generation failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      loadingState.classList.add('hidden');
+      genBtn.disabled = false;
+      alert('Error connecting to Faculty Agent service.');
+    }
+  });
+
+  function renderQuestionPreview(q, refs) {
+    document.getElementById('res-title').textContent = q.title || 'Untitled Problem';
+    const badge = document.getElementById('res-diff-badge');
+    badge.textContent = (q.difficulty || 'medium').toUpperCase();
+    badge.className = 'result-badge ' + (q.difficulty || 'medium').toLowerCase();
+
+    const refsList = document.getElementById('res-refs-list');
+    if (refs && refs.length > 0) {
+      refsList.textContent = refs.map(r => r.title).join(', ');
+    } else {
+      refsList.textContent = 'Standard DSA Topic Context';
+    }
+
+    document.getElementById('res-desc-text').innerHTML = formatMarkdown(q.description || '');
+    document.getElementById('res-code-text').textContent = q.starter_code || q.solution || '';
+
+    const testCases = q.test_cases || [];
+    document.getElementById('res-case-count').textContent = testCases.length;
+    const casesContainer = document.getElementById('res-cases-list');
+    casesContainer.innerHTML = '';
+
+    testCases.forEach((tc, idx) => {
+      const caseDiv = document.createElement('div');
+      caseDiv.className = 'test-case-item' + (tc.is_sample ? ' sample' : '');
+      caseDiv.innerHTML = `
+        <div class="tc-header">
+          <span>Case #${idx + 1} (${tc.is_sample ? 'Sample' : 'Hidden'})</span>
+          <span class="tc-type">${tc.type || 'standard'}</span>
+        </div>
+        <div class="tc-detail"><strong>In:</strong> <code>${escapeHtml(tc.input || '')}</code></div>
+        <div class="tc-detail"><strong>Out:</strong> <code>${escapeHtml(tc.expected_output || '')}</code></div>
+      `;
+      casesContainer.appendChild(caseDiv);
+    });
+
+    resultCard.classList.remove('hidden');
+    resultCard.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Handle Add to E-Lab Question Bank
+  addBtn.addEventListener('click', async () => {
+    if (!currentGeneratedQuestion) return;
+    const moduleId = moduleSelect.value;
+    if (!moduleId) {
+      alert('Please select a target module first.');
+      return;
+    }
+
+    addBtn.disabled = true;
+    addBtn.textContent = 'Saving Question...';
+
+    try {
+      const csrfToken = getCookie('csrftoken');
+      const payload = {
+        module_id: moduleId,
+        title: currentGeneratedQuestion.title,
+        description: currentGeneratedQuestion.description,
+        difficulty: currentGeneratedQuestion.difficulty,
+        starter_code: currentGeneratedQuestion.starter_code || currentGeneratedQuestion.solution,
+        test_cases: currentGeneratedQuestion.test_cases
+      };
+
+      const res = await fetch('/api/faculty-agent/add-question/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      addBtn.disabled = false;
+      addBtn.textContent = '🚀 Add to E-Lab Question Bank';
+
+      if (data.success) {
+        document.getElementById('banner-msg').textContent = data.message;
+        document.getElementById('banner-view-link').href = data.question_url;
+        document.getElementById('banner-edit-link').href = data.edit_url;
+        successBanner.classList.remove('hidden');
+        resultCard.classList.add('hidden');
+      } else {
+        alert('Failed to add question: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      addBtn.disabled = false;
+      addBtn.textContent = '🚀 Add to E-Lab Question Bank';
+      alert('Network error while saving question.');
+    }
+  });
+
+  retryBtn.addEventListener('click', () => {
+    form.dispatchEvent(new Event('submit'));
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function formatMarkdown(text) {
+    return escapeHtml(text)
+      .replace(/^### (.*$)/gim, '<h4>$1</h4>')
+      .replace(/^## (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^# (.*$)/gim, '<h2>$1</h2>')
+      .replace(/\*\*(.* animate?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/gim, '<code>$1</code>')
+      .replace(/\n/g, '<br>');
+  }
+});
+</script>
+{% endif %}

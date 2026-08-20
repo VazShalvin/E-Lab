@@ -1,34 +1,37 @@
-from pathlib import Path
 import os
+import warnings
+from pathlib import Path
+
+
+def env(name: str, default: str = "") -> str:
+    """Get environment variable or return default.
+    Treat empty string as unset.
+    """
+    value = os.environ.get(name)
+    if value is None or value == "":
+        return default
+    return value
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-def env(name, default=None):
-    return os.environ.get(name, default)
-
-
 # ---------------------------------------------------------------------------
 # Core Security
 # ---------------------------------------------------------------------------
-SECRET_KEY = env("SECRET_KEY")
-if not SECRET_KEY:
-    import warnings
+_secret_key = env("SECRET_KEY")
+if not _secret_key:
     warnings.warn(
-        "SECRET_KEY is not set! Using an insecure fallback. "
-        "Set SECRET_KEY in your .env file for production.",
+        "SECRET_KEY is not set! Using an insecure fallback. Set SECRET_KEY in your .env file for production.",
         stacklevel=1,
     )
-    SECRET_KEY = "dev-only-insecure-key-CHANGE-ME"
+    _secret_key = "dev-only-insecure-key-CHANGE-ME"
+SECRET_KEY = _secret_key
+
 
 DEBUG = env("DEBUG", "false").lower() == "true"
 
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in env("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
+ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
@@ -98,7 +101,7 @@ DATABASES = {
 if env("USE_SQLITE", "").lower() == "true":
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": str(BASE_DIR / "db.sqlite3"),
     }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -121,7 +124,7 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
@@ -198,7 +201,6 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------------
 SITE_NAME = env("SITE_NAME", "CCE e-Lab")
 SITE_BASE_URL = env("SITE_BASE_URL", "http://localhost")
-JUDGE0_URL = env("JUDGE0_URL", "http://judge0-server:2358")
 CERTIFICATE_SIGNING_KEY = env("CERTIFICATE_SIGNING_KEY", SECRET_KEY)
 CERTIFICATE_THRESHOLD = int(env("CERTIFICATE_THRESHOLD", "60"))
 

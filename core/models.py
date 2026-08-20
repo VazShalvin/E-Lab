@@ -111,7 +111,7 @@ class Question(models.Model):
     sample_input = models.TextField(blank=True)
     sample_output = models.TextField(blank=True)
     starter_code = models.TextField(blank=True)
-    language_id = models.PositiveIntegerField(default=50, help_text="Judge0 language id. 50 is C (GCC).")
+    language_id = models.PositiveIntegerField(default=50, help_text="Language id. 50 is C (GCC).")
     time_limit = models.FloatField(default=2.0)
     memory_limit_kb = models.PositiveIntegerField(default=128000)
     allow_multiple_languages = models.BooleanField(default=False)

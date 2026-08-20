@@ -1,0 +1,85 @@
+# 5. Missing Number
+
+**Topic**: Bit Manipulation  
+**Difficulty**: Easy  
+**Tags**: Array, Hash Table, Math, Binary Search, Bit Manipulation, Sorting
+
+---
+
+## Problem Statement
+
+Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return the only number in the range that is missing from the array.
+
+Could you implement a solution using only `O(1)` extra space complexity and `O(n)` runtime complexity using XOR bit manipulation?
+
+---
+
+## Input & Output Format
+
+- **Input**: An array of integers `nums`.
+- **Output**: An integer representing the missing number.
+
+---
+
+## Sample Test Cases
+
+### Example 1
+
+**Input:**
+```text
+nums = [3, 0, 1]
+```
+
+**Output:**
+```text
+2
+```
+
+**Explanation:**
+n = 3 since there are 3 numbers, so all numbers are in the range [0, 3]. 2 is the missing number in the range since it does not appear in nums.
+
+### Example 2
+
+**Input:**
+```text
+nums = [0, 1]
+```
+
+**Output:**
+```text
+2
+```
+
+**Explanation:**
+n = 2, 2 is missing.
+
+### Example 3
+
+**Input:**
+```text
+nums = [9, 6, 4, 2, 3, 5, 7, 0, 1]
+```
+
+**Output:**
+```text
+8
+```
+
+**Explanation:**
+n = 9, 8 is missing.
+
+---
+
+## Constraints
+
+- `n == nums.length`
+- `1 <= n <= 10^4`
+- `0 <= nums[i] <= n`
+- All the numbers of `nums` are **unique**.
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity**: `O(N)`
+- **Space Complexity**: `O(1)`

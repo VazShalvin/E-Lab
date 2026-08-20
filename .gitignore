@@ -51,7 +51,7 @@ Thumbs.db
 
 # Docker volumes
 postgres-data/
-judge0-postgres/
+
 
 # Node (if using npm)
 node_modules/

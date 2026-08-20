@@ -1,0 +1,1124 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "File Handling",
+      "module_order": 9,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Char Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Simulate counting characters in file. Read a word and print character count.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "programming",
+              "expected_output": "11",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "openai",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Line Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read integer N representing lines in file and print N.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "10",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "42",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Digit Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read word simulating file content. Print count of digit characters.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "code123",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "a1b2c",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "999",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "test0",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Vowel Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read lowercase word simulating file content. Print count of vowels.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "sky",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "education",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "apple",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Uppercase Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read word simulating file content. Print count of uppercase letters.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "Hello",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "HELLO",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "hello",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "CodeLab",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "A",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Starts With Vowel Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read lowercase word. Print Yes if file starts with vowel else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "apple",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "banana",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "education",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "item",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Ends With Period Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read string. Print Yes if ends with '.' else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "end.",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "a.",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "test.",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "word",
+              "expected_output": "No",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Has Number Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read word. Print Yes if contains any digit else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "file1",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "text",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "data2024",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "doc",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "0zero",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Consonant Count Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read lowercase alphabetic word. Print count of consonants.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "education",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "sky",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "apple",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "File Size Bytes Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read string. Assume 1 byte per char. Print file size in bytes.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "a",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "programming",
+              "expected_output": "11",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "openai",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Copy Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Simulate file copy. Read word and print exact copy.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "hello",
+              "is_sample": true
+            },
+            {
+              "input": "world",
+              "expected_output": "world",
+              "is_sample": false
+            },
+            {
+              "input": "data",
+              "expected_output": "data",
+              "is_sample": false
+            },
+            {
+              "input": "file.txt",
+              "expected_output": "file.txt",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "code",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Find Word Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read two words space separated (content and query). Print Found if equal else Not Found.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello hello",
+              "expected_output": "Found",
+              "is_sample": true
+            },
+            {
+              "input": "hello world",
+              "expected_output": "Not Found",
+              "is_sample": false
+            },
+            {
+              "input": "data data",
+              "expected_output": "Found",
+              "is_sample": false
+            },
+            {
+              "input": "abc abd",
+              "expected_output": "Not Found",
+              "is_sample": false
+            },
+            {
+              "input": "test test",
+              "expected_output": "Found",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Replace Char Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read word. Replace all 'a' with '@' and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "banana",
+              "expected_output": "b@n@n@",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "@pple",
+              "is_sample": false
+            },
+            {
+              "input": "hello",
+              "expected_output": "hello",
+              "is_sample": false
+            },
+            {
+              "input": "data",
+              "expected_output": "d@t@",
+              "is_sample": false
+            },
+            {
+              "input": "cat",
+              "expected_output": "c@t",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Reverse Line Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read word representing line and print reversed.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "olleh",
+              "is_sample": true
+            },
+            {
+              "input": "abc",
+              "expected_output": "cba",
+              "is_sample": false
+            },
+            {
+              "input": "data",
+              "expected_output": "atad",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "edoc",
+              "is_sample": false
+            },
+            {
+              "input": "file",
+              "expected_output": "elif",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Check Empty Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read integer N representing file length. Print Empty if N == 0 else Not Empty.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "Empty",
+              "is_sample": true
+            },
+            {
+              "input": "5",
+              "expected_output": "Not Empty",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "Not Empty",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "Not Empty",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Count Specific Char Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read word and query char space separated. Print frequency of query char.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello l",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "banana a",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "code z",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "test t",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "data d",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Longest Word Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read two words space separated. Print length of the longer word.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello programming",
+              "expected_output": "11",
+              "is_sample": true
+            },
+            {
+              "input": "cat apple",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "a ab",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "same same",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "code data",
+              "expected_output": "4",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Average Word Length Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read two words space separated. Compute total length divided by 2 (integer average) and print.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello world",
+              "expected_output": "5",
+              "is_sample": true
+            },
+            {
+              "input": "a abc",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "code data",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "programming lab",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "test case",
+              "expected_output": "4",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Remove Vowels Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read lowercase word. Remove all vowels and print remaining string.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "hll",
+              "is_sample": true
+            },
+            {
+              "input": "apple",
+              "expected_output": "ppl",
+              "is_sample": false
+            },
+            {
+              "input": "sky",
+              "expected_output": "sky",
+              "is_sample": false
+            },
+            {
+              "input": "banana",
+              "expected_output": "bnn",
+              "is_sample": false
+            },
+            {
+              "input": "education",
+              "expected_output": "dctn",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Count Words Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read integer N representing word count in file and print N.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10",
+              "expected_output": "10",
+              "is_sample": true
+            },
+            {
+              "input": "50",
+              "expected_output": "50",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "100",
+              "is_sample": false
+            },
+            {
+              "input": "42",
+              "expected_output": "42",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Copy File Contents",
+          "topic": "Lab Manual File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to copy contents of one file to another file.\nSimulated via standard I/O: Read number of lines N. Then read N lines of text representing source file. Print exact copy of text representing destination file.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2\nHello World\nFile Copy Test",
+              "expected_output": "Hello World\nFile Copy Test",
+              "is_sample": true
+            },
+            {
+              "input": "1\nSingle Line Data",
+              "expected_output": "Single Line Data",
+              "is_sample": false
+            },
+            {
+              "input": "3\nLine 1\nLine 2\nLine 3",
+              "expected_output": "Line 1\nLine 2\nLine 3",
+              "is_sample": false
+            },
+            {
+              "input": "1\nE-Lab Lab Manual",
+              "expected_output": "E-Lab Lab Manual",
+              "is_sample": false
+            },
+            {
+              "input": "2\nC Programming\nFile Handling",
+              "expected_output": "C Programming\nFile Handling",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Merge Two Streams Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read word1 word2 space separated. Print merged string word1word2.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello world",
+              "expected_output": "helloworld",
+              "is_sample": true
+            },
+            {
+              "input": "foo bar",
+              "expected_output": "foobar",
+              "is_sample": false
+            },
+            {
+              "input": "file copy",
+              "expected_output": "filecopy",
+              "is_sample": false
+            },
+            {
+              "input": "data base",
+              "expected_output": "database",
+              "is_sample": false
+            },
+            {
+              "input": "open ai",
+              "expected_output": "openai",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Extract Numbers Sum Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read two integers representing extracted numbers from file. Print their sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10 20",
+              "expected_output": "30",
+              "is_sample": true
+            },
+            {
+              "input": "100 50",
+              "expected_output": "150",
+              "is_sample": false
+            },
+            {
+              "input": "5 5",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "0 42",
+              "expected_output": "42",
+              "is_sample": false
+            },
+            {
+              "input": "1000 2000",
+              "expected_output": "3000",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Encrypt Shift Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read lowercase word. Shift each letter by +1 (z->a) and print encrypted text.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "abc",
+              "expected_output": "bcd",
+              "is_sample": true
+            },
+            {
+              "input": "hello",
+              "expected_output": "ifmmp",
+              "is_sample": false
+            },
+            {
+              "input": "xyz",
+              "expected_output": "yza",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "dpef",
+              "is_sample": false
+            },
+            {
+              "input": "zebra",
+              "expected_output": "afcsb",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Decrypt Shift Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read lowercase word. Shift each letter by -1 (a->z) and print decrypted text.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "bcd",
+              "expected_output": "abc",
+              "is_sample": true
+            },
+            {
+              "input": "ifmmp",
+              "expected_output": "hello",
+              "is_sample": false
+            },
+            {
+              "input": "yza",
+              "expected_output": "xyz",
+              "is_sample": false
+            },
+            {
+              "input": "dpef",
+              "expected_output": "code",
+              "is_sample": false
+            },
+            {
+              "input": "afcsb",
+              "expected_output": "zebra",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Line Numbering Sim",
+          "topic": "File Handling",
+          "level": 9,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read word representing line text. Print with line number prefix '1: <word>'.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "hello",
+              "expected_output": "1: hello",
+              "is_sample": true
+            },
+            {
+              "input": "data",
+              "expected_output": "1: data",
+              "is_sample": false
+            },
+            {
+              "input": "code",
+              "expected_output": "1: code",
+              "is_sample": false
+            },
+            {
+              "input": "test",
+              "expected_output": "1: test",
+              "is_sample": false
+            },
+            {
+              "input": "file",
+              "expected_output": "1: file",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

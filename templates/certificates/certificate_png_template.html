@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      color: #1a1a2e;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .certificate {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 700px;
+      background-image: url('{{ certificate_template_url }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 80px;
+      box-sizing: border-box;
+    }
+    .certificate::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.02);
+      pointer-events: none;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      width: 100%;
+      max-width: 800px;
+    }
+    .institute-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .certificate-title {
+      font-size: 42px;
+      font-weight: 700;
+      color: #8b0000;
+      margin: 16px 0 8px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      font-family: 'Georgia', serif;
+    }
+    .certificate-subtitle {
+      font-size: 18px;
+      color: #4a4a6a;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    .recipient-label {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .recipient-name {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 8px 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .recipient-usn {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 24px;
+      font-family: 'Courier New', monospace;
+    }
+    .course-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    .completion-details {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+    .detail-item {
+      text-align: center;
+    }
+    .detail-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #8b0000;
+    }
+    .detail-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .qr-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    .qr-code {
+      width: 110px;
+      height: 110px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 4px;
+      background: white;
+    }
+    .verify-info {
+      text-align: left;
+      font-size: 12px;
+      color: #555;
+    }
+    .verify-url {
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 700px;
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    .signature-block {
+      text-align: center;
+      min-width: 200px;
+    }
+    .signature-line {
+      width: 200px;
+      height: 1px;
+      background: #333;
+      margin: 0 auto 8px;
+    }
+    .signature-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin: 4px 0;
+    }
+    .signature-title {
+      font-size: 13px;
+      color: #666;
+    }
+    .seal {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #8b0000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      position: relative;
+    }
+    .seal::after {
+      content: "✓";
+      font-size: 32px;
+      color: #8b0000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <div class="content">
+      <div class="institute-name">{{ site_name }}</div>
+      <div class="certificate-title">Certificate of Completion</div>
+      <div class="certificate-subtitle">This certifies that</div>
+      
+      <div class="recipient-label">Student</div>
+      <div class="recipient-name">{{ student.display_name }}</div>
+      <div class="recipient-usn">USN: {{ student.usn|default:student.username }}</div>
+      
+      <div class="course-name">{{ course_name }}</div>
+      
+      <div class="completion-details">
+        <div class="detail-item">
+          <div class="detail-value">{{ percentage|floatformat:1 }}%</div>
+          <div class="detail-label">Completion</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">{{ semester }}</div>
+          <div class="detail-label">Semester</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">{{ issued_date }}</div>
+          <div class="detail-label">Issued Date</div>
+        </div>
+      </div>
+      
+      <div class="qr-section">
+        {% if certificate.qr_code %}
+          <img class="qr-code" src="{{ certificate.qr_code.url }}" alt="Verification QR Code">
+        {% endif %}
+        <div class="verify-info">
+          <strong>Verify at:</strong>
+          <div class="verify-url">{{ verify_url }}</div>
+        </div>
+      </div>
+      
+      <div class="signature-section">
+        <div class="signature-block">
+          <div class="seal"></div>
+          <div class="signature-name">{{ hod_name }}</div>
+          <div class="signature-title">Head of Department</div>
+        </div>
+        <div class="signature-block">
+          <div class="seal"></div>
+          <div class="signature-name">{{ faculty_coordinator_name }}</div>
+          <div class="signature-title">Faculty Coordinator</div>
+        </div>
+        <div class="signature-block">
+          <div class="seal"></div>
+          <div class="signature-name">{{ principal_name }}</div>
+          <div class="signature-title">Principal / Director</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

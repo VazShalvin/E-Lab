@@ -11,9 +11,20 @@
     <h1>{{ question.title }}</h1>
   </div>
   <div class="toolbar-actions" style="display: flex; align-items: center; gap: 12px;">
+    <!-- Course / Semester Badge -->
+    {% if question.module.course %}
+    <div class="semester-badge badge-semester">
+      {% if question.module.course.semester %}
+        <span>Semester {{ question.module.course.semester }}</span>
+      {% elif question.module.course.year %}
+        <span>Year {{ question.module.course.year }}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <!-- Proctoring Badge -->
-    <div class="proctoring-badge" style="display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50px; color: #ef4444; font-size: 13px; font-weight: 700; user-select: none;">
-      <span style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulseRed 1.5s infinite;"></span>
+    <div class="proctoring-badge badge-proctoring">
+      <span class="badge-dot"></span>
       Proctoring Active
     </div>
 
@@ -26,56 +37,75 @@
   </div>
 </section>
 
-<section class="question-layout">
-  <article class="question-panel">
-    <div class="panel-header">
+<section class="question-layout-stacked">
+  <!-- TOP: Problem Statement & Examples Card -->
+  <article class="question-card-top">
+    <div class="panel-header" style="margin-bottom: 16px;">
       <div class="panel-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       </div>
-      <h2 class="panel-title">Problem</h2>
+      <div>
+        <h2 class="panel-title" style="font-size: 20px; font-weight: 700;">Problem Description</h2>
+        <span style="font-size: 13px; color: var(--text-muted);">Read the specification and constraints carefully before writing your solution</span>
+      </div>
     </div>
 
-    <div class="prose-dark">{{ question.description|safe|linebreaks }}</div>
+    <div class="prose-dark" style="font-size: 15px; margin-bottom: 20px;">{{ question.description|safe|linebreaks }}</div>
 
     {% with sample_test_cases=question.test_cases.all|dictsort:"order" %}
-      {% for tc in sample_test_cases %}
-        {% if tc.is_sample %}
-          <div class="examples-section">
-            <h3 class="examples-title">Example {{ forloop.counter }}:</h3>
-            
-            <div class="example-block">
-              <strong>Input:</strong>
-              <pre class="example-code">{{ tc.stdin }}</pre>
-            </div>
-            <div class="example-block">
-              <strong>Output:</strong>
-              <pre class="example-code">{{ tc.expected_output }}</pre>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+      {% if sample_test_cases %}
+        <div class="examples-grid">
+          {% for tc in sample_test_cases %}
+            {% if tc.is_sample %}
+              <div class="example-card">
+                <div class="example-badge">Example {{ forloop.counter }}</div>
+                <div class="example-rows">
+                  <div class="example-block">
+                    <div class="sample-label">Input</div>
+                    <pre class="sample-code" style="margin: 0;">{{ tc.stdin }}</pre>
+                  </div>
+                  <div class="example-block">
+                    <div class="sample-label">Expected Output</div>
+                    <pre class="sample-code" style="margin: 0;">{{ tc.expected_output }}</pre>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endwith %}
   </article>
 
-  <article class="submit-panel">
-    <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between;">
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="panel-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+  <!-- BOTTOM: Full-Width Monaco / VS Code Editor Panel -->
+  <article class="submit-panel-wide">
+    <div class="editor-header-bar">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="panel-icon" style="width: 42px; height: 42px; font-size: 18px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
         </div>
-        <h2 class="panel-title">Submit Code</h2>
+        <div>
+          <h2 class="panel-title" style="font-size: 18px; font-weight: 700; margin: 0;">Code Editor</h2>
+          <span style="font-size: 12px; color: var(--text-muted);">Write and debug your solution in the VS Code editor below</span>
+        </div>
       </div>
-      {% if question.allow_multiple_languages %}
-      <select name="language_id_selector" id="language-select" style="background: rgba(31, 41, 55, 0.8); color: #e2e8f0; border: 1px solid #4a5568; border-radius: var(--radius-sm); padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; z-index: 10;">
-        <option value="50" {% if request.POST.language_id == "50" or not request.POST.language_id %}selected{% endif %}>C</option>
-        <option value="54" {% if request.POST.language_id == "54" %}selected{% endif %}>C++</option>
-        <option value="71" {% if request.POST.language_id == "71" %}selected{% endif %}>Python</option>
-        <option value="62" {% if request.POST.language_id == "62" %}selected{% endif %}>Java</option>
-      </select>
-      {% endif %}
-      <button type="button" class="secondary" id="editor-minimize-btn" title="Exit Full Screen" style="display: none; height: 28px; min-height: 28px; padding: 0 12px; font-size: 12px; margin-left: 8px; border-radius: var(--radius-sm);">
-        Exit Fullscreen
-      </button>
+      
+      <div style="display: flex; align-items: center; gap: 12px;">
+        {% if question.allow_multiple_languages %}
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="field-label">Language:</span>
+          <select name="language_id_selector" id="language-select" class="language-select" aria-label="Select programming language">
+            <option value="50" {% if request.POST.language_id == "50" or not request.POST.language_id %}selected{% endif %}>C (GCC)</option>
+            <option value="54" {% if request.POST.language_id == "54" %}selected{% endif %}>C++ (G++)</option>
+            <option value="71" {% if request.POST.language_id == "71" %}selected{% endif %}>Python 3</option>
+            <option value="62" {% if request.POST.language_id == "62" %}selected{% endif %}>Java 17</option>
+          </select>
+        </div>
+        {% endif %}
+        <button type="button" class="secondary" id="editor-minimize-btn" title="Exit Full Screen" style="display: none; height: 32px; min-height: 32px; padding: 0 14px; font-size: 12px; border-radius: var(--radius-sm);">
+          Exit Fullscreen
+        </button>
+      </div>
     </div>
 
     <form method="post" class="submit-form" data-submit-form>
@@ -93,13 +123,23 @@
         <div id="editor" class="monaco-editor"></div>
       </div>
 
-      <div class="button-group">
-        <button class="secondary run-button" type="button" data-run-button>
-          <span>Run</span>
-        </button>
-        <button class="primary submit-button" type="submit" data-submit-button>
-          <span>Submit</span>
-        </button>
+      <div class="actions-row">
+        <div class="button-group-left">
+          <button class="secondary run-button" type="button" data-run-button style="min-height: 44px; padding: 0 24px; font-size: 14px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Run Sample Tests</span>
+          </button>
+          <button class="primary submit-button-inline" type="submit" data-submit-button>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Submit Solution</span>
+          </button>
+        </div>
+
+        {% if latest_submission %}
+          <div class="latest-status" style="font-size: 13px; color: var(--text-muted);">
+            Latest Status: <a href="{% url 'submission_detail' latest_submission.id %}" style="font-weight: 700; color: var(--accent-primary);">{{ latest_submission.get_status_display }}</a>
+          </div>
+        {% endif %}
       </div>
 
       <!-- Progress indicators -->
@@ -131,10 +171,6 @@
       </div>
     </form>
 
-    {% if latest_submission %}
-      <p class="muted" style="margin-top: 16px;">Latest: <a href="{% url 'submission_detail' latest_submission.id %}">{{ latest_submission.get_status_display }}</a></p>
-    {% endif %}
-
     <!-- Test Results -->
     <div class="test-results" id="test-results" style="display: none; margin-top: 24px;">
       <div class="results-header">
@@ -145,31 +181,31 @@
     </div>
     
     <!-- Custom Input Area -->
-    <div class="custom-input-section" id="custom-input-section" style="display: block; margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;">
+    <div class="custom-input-section" id="custom-input-section">
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        <h3 class="results-title" style="margin: 0;">Custom Input</h3>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        <h3 class="results-title" style="margin: 0; font-size: 15px;">Custom Input / Test Execution</h3>
       </div>
-      <textarea id="custom-input-textarea" rows="4" style="width: 100%; background: rgba(15, 20, 35, 0.7); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; font-family: 'JetBrains Mono', 'Fira Mono', monospace; font-size: 13px; resize: vertical; box-sizing: border-box; outline: none; transition: border-color 0.2s;" placeholder="Enter custom stdin here…" onfocus="this.style.borderColor='rgba(99,102,241,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"></textarea>
-      <button type="button" id="run-custom-btn" class="secondary" style="margin-top: 10px; font-size: 13px; height: 36px; min-height: 36px; display: inline-flex; align-items: center; gap: 8px;">
+          <textarea id="custom-input-textarea" rows="3" class="custom-textarea" placeholder="Enter custom stdin here…"></textarea>
+      <button type="button" id="run-custom-btn" class="secondary run-custom-btn">
         <svg id="run-custom-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        <span id="run-custom-label">Run</span>
+        <span id="run-custom-label">Run with Custom Input</span>
       </button>
 
-      <!-- Output -->  
+      <!-- Output -->
       <div id="custom-output-section" style="margin-top: 14px; display: none;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-          <span style="font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Output</span>
+          <span class="output-label">Output</span>
           <span id="custom-output-status" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;"></span>
         </div>
-        <pre id="custom-output-pre" style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.08); padding: 14px 16px; border-radius: 10px; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; font-family: 'JetBrains Mono', 'Fira Mono', monospace; font-size: 13px; min-height: 48px; margin: 0;"></pre>
+        <pre id="custom-output-pre"></pre>
       </div>
     </div>
   </article>
 </section>
 
 {{ question.starter_codes|json_script:"starter-codes-data" }}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+<script src="{% static 'vendor/monaco-editor/vs/loader.js' %}"></script>
 <script>
   let editor;
   let isRunning = false;
@@ -184,17 +220,59 @@
   };
   const langMeta = LANGUAGE_META[QUESTION_LANGUAGE] || LANGUAGE_META.c;
 
+  const DEFAULT_SAMPLE_CODES = {
+    "50": `#include <stdio.h>
+
+int main(void) {
+    // Write your solution here
+    
+    return 0;
+}`,
+    "54": `#include <iostream>
+
+using namespace std;
+
+int main() {
+    // Write your solution here
+    
+    return 0;
+}`,
+    "71": `def main():
+    # Write your solution here
+    pass
+
+if __name__ == "__main__":
+    main()
+`,
+    "62": `import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // Write your solution here
+        
+    }
+}`
+  };
+
   const textarea_global = document.getElementById("id_code");
   const starterCodesNode_global = document.getElementById("starter-codes-data");
   const starterCodes_global = starterCodesNode_global ? JSON.parse(starterCodesNode_global.textContent) : {};
 
-  if (textarea_global && !textarea_global.value.trim()) {
-    const defaultLangId = document.getElementById("language-select") ? document.getElementById("language-select").value : "50";
-    if (starterCodes_global[defaultLangId]) {
-      textarea_global.value = starterCodes_global[defaultLangId];
-    } else if ({{ question.starter_code|length|safe }} > 0) {
-      textarea_global.value = "{{ question.starter_code|escapejs }}";
+  function getSampleCode(langId) {
+    if (starterCodes_global[langId]) {
+      return starterCodes_global[langId];
     }
+    const qStarter = "{{ question.starter_code|escapejs }}";
+    if (qStarter && qStarter.trim().length > 0 && (langId === "50" || langId === "{{ question.language_id }}")) {
+      return qStarter;
+    }
+    return DEFAULT_SAMPLE_CODES[langId] || DEFAULT_SAMPLE_CODES["50"];
+  }
+
+  const defaultLangId = document.getElementById("language-select") ? document.getElementById("language-select").value : "{{ question.language_id|default:'50' }}";
+  if (textarea_global && !textarea_global.value.trim()) {
+    textarea_global.value = getSampleCode(defaultLangId);
   }
 
   const langSelectGlobal = document.getElementById("language-select");
@@ -211,20 +289,35 @@
       
       if (filenameLabelGlobal) filenameLabelGlobal.textContent = newLangMeta.filename;
       
+      const sampleForLang = getSampleCode(val);
       if (typeof editor !== 'undefined' && editor) {
         monaco.editor.setModelLanguage(editor.getModel(), newLangMeta.monaco);
-        if (starterCodes_global[val]) {
+        const currentVal = editor.getValue().trim();
+        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal)) {
+          editor.setValue(sampleForLang);
+        } else if (starterCodes_global[val]) {
           editor.setValue(starterCodes_global[val]);
         }
       } else if (textarea_global) {
-        if (starterCodes_global[val]) {
-          textarea_global.value = starterCodes_global[val];
+        const currentVal = textarea_global.value.trim();
+        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal)) {
+          textarea_global.value = sampleForLang;
         }
+      }
+    });
+
+    textarea_global.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
       }
     });
   }
 
-  require.config({ paths: { "vs": "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs" } });
+  require.config({ paths: { "vs": "{% static 'vendor/monaco-editor/vs' %}" } });
   require(["vs/editor/editor.main"], function() {
     const textarea = document.getElementById("id_code");
     const editorNode = document.getElementById("editor");
@@ -234,12 +327,107 @@
       textarea.style.display = "none";
       const chrome = document.getElementById("editor-chrome-container");
       if (chrome) chrome.style.display = "flex";
+      
+      // === Dark theme: VS Code Dark+ ===
+      monaco.editor.defineTheme('elab-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+          { token: 'comment',   foreground: '6A9955', fontStyle: 'italic' },
+          { token: 'keyword',   foreground: 'C586C0' },
+          { token: 'string',    foreground: 'CE9178' },
+          { token: 'number',    foreground: 'B5CEA8' },
+          { token: 'type',      foreground: '4EC9B0' },
+          { token: 'delimiter', foreground: 'D4D4D4' }
+        ],
+        colors: {
+          'editor.background':                '#1e1e1e',
+          'editor.foreground':                '#d4d4d4',
+          'editor.lineHighlightBackground':   '#282828',
+          'editorLineNumber.foreground':      '#858585',
+          'editorLineNumber.activeForeground':'#c6c6c6',
+          'editorCursor.foreground':          '#528bff',
+          'editor.selectionBackground':       '#264f78',
+          'editor.inactiveSelectionBackground':'#3a3d41',
+          'editorIndentGuide.background1':    '#404040',
+          'editorIndentGuide.activeBackground1':'#707070',
+          'editorGutter.background':          '#1e1e1e',
+          'editorWidget.background':          '#252526',
+          'editorSuggestWidget.background':   '#252526',
+          'editorSuggestWidget.border':       '#454545'
+        }
+      });
+
+      // === Light theme: Soft Cream / GitHub Light ===
+      monaco.editor.defineTheme('elab-light', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+          { token: 'comment',   foreground: '6a737d', fontStyle: 'italic' },
+          { token: 'keyword',   foreground: 'd73a49' },
+          { token: 'string',    foreground: '032f62' },
+          { token: 'number',    foreground: '005cc5' },
+          { token: 'type',      foreground: '6f42c1' },
+          { token: 'delimiter', foreground: '24292e' },
+          { token: 'variable',  foreground: 'e36209' },
+          { token: 'function',  foreground: '6f42c1' }
+        ],
+        colors: {
+          'editor.background':                '#f6f8fa',
+          'editor.foreground':                '#24292e',
+          'editor.lineHighlightBackground':   '#eaf2fb',
+          'editorLineNumber.foreground':      '#9ea7b3',
+          'editorLineNumber.activeForeground':'#24292e',
+          'editorCursor.foreground':          '#0550ae',
+          'editor.selectionBackground':       '#b3d7ff',
+          'editor.inactiveSelectionBackground':'#dce9f8',
+          'editorIndentGuide.background1':    '#e1e4e8',
+          'editorIndentGuide.activeBackground1':'#9ea7b3',
+          'editorGutter.background':          '#f6f8fa',
+          'editorWidget.background':          '#ffffff',
+          'editorWidget.border':              '#e1e4e8',
+          'editorSuggestWidget.background':   '#ffffff',
+          'editorSuggestWidget.border':       '#e1e4e8',
+          'editorSuggestWidget.selectedBackground': '#e8f0fe',
+          'scrollbarSlider.background':       '#c8c8c840',
+          'scrollbarSlider.hoverBackground':  '#c8c8c860',
+          'scrollbarSlider.activeBackground': '#c8c8c880'
+        }
+      });
+
+      // Pick theme based on current site preference
+      const _savedTheme = localStorage.getItem('theme') || 'light';
+      const _initialMonacoTheme = _savedTheme === 'dark' ? 'elab-dark' : 'elab-light';
+
+      const initialCode = textarea.value || getSampleCode(defaultLangId);
+      textarea.value = initialCode;
+
       editor = monaco.editor.create(editorNode, {
-        value: textarea.value,
+        value: initialCode,
         language: langMeta.monaco,
-        theme: "vs-dark",
+        theme: _initialMonacoTheme,
+        fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
+        fontSize: 14,
+        lineHeight: 22,
+        letterSpacing: 0.3,
+        fontLigatures: true,
+        cursorBlinking: "smooth",
+        cursorSmoothCaretAnimation: "on",
+        smoothScrolling: true,
         automaticLayout: true,
-        minimap: { enabled: false }
+        minimap: { enabled: true, maxColumn: 80, scale: 1 },
+        lineNumbers: "on",
+        renderLineHighlight: "all",
+        scrollBeyondLastLine: false,
+        bracketPairColorization: { enabled: true },
+        autoClosingBrackets: "always",
+        autoClosingQuotes: "always",
+        tabSize: 4,
+        insertSpaces: true,
+        autoIndent: "full",
+        formatOnType: true,
+        matchBrackets: "always",
+        padding: { top: 12, bottom: 12 }
       });
       editor.onDidChangeModelContent(function() {
         textarea.value = editor.getValue();
@@ -413,7 +601,7 @@
       const questionId = {{ question.id }};
       const csrfToken = getCsrfToken();
       const langSelect = document.getElementById("language-select");
-      const languageId = langSelect ? langSelect.value : null;
+      const languageId = langSelect ? langSelect.value : "{{ question.language_id }}";
       
       fetch("/api/run/", {
         method: "POST",
@@ -464,7 +652,7 @@
         const questionId = {{ question.id }};
         const csrfToken = getCsrfToken();
         const langSelect = document.getElementById("language-select");
-        const languageId = langSelect ? langSelect.value : null;
+        const languageId = langSelect ? langSelect.value : "{{ question.language_id }}";
         const customInput = document.getElementById("custom-input-textarea").value;
 
         fetch("/api/run/", {
@@ -627,7 +815,7 @@
             }, 4000);
           }
           setTimeout(function() {
-            if (editor) editor.layout();
+            if (typeof editor !== 'undefined' && editor) editor.layout();
           }, 50);
         }
       });
@@ -635,6 +823,58 @@
 
     window.addEventListener("pageshow", stopProgress);
   })();
+
+  // Resizer logic (if present)
+  document.addEventListener('DOMContentLoaded', function () {
+    const resizer = document.getElementById('dragMe');
+    if (!resizer) return;
+    const leftSide = resizer.previousElementSibling;
+    const rightSide = resizer.nextElementSibling;
+    if (!leftSide || !rightSide) return;
+
+    let x = 0;
+    let leftWidth = 0;
+
+    const mouseDownHandler = function (e) {
+      x = e.clientX;
+      leftWidth = leftSide.getBoundingClientRect().width;
+
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+      resizer.classList.add('is-resizing');
+    };
+
+    const mouseMoveHandler = function (e) {
+      const dx = e.clientX - x;
+      const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+      
+      // Minimum constraints
+      if (newLeftWidth < 20 || newLeftWidth > 80) return;
+      
+      leftSide.style.flex = `0 0 ${newLeftWidth}%`;
+      rightSide.style.flex = `1 1 0%`;
+      
+      document.body.style.cursor = 'col-resize';
+      leftSide.style.userSelect = 'none';
+      leftSide.style.pointerEvents = 'none';
+      rightSide.style.userSelect = 'none';
+      rightSide.style.pointerEvents = 'none';
+    };
+
+    const mouseUpHandler = function () {
+      resizer.classList.remove('is-resizing');
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+
+      document.body.style.removeProperty('cursor');
+      leftSide.style.removeProperty('user-select');
+      leftSide.style.removeProperty('pointer-events');
+      rightSide.style.removeProperty('user-select');
+      rightSide.style.removeProperty('pointer-events');
+    };
+
+    resizer.addEventListener('mousedown', mouseDownHandler);
+  });
 </script>
 
 <!-- PROCTORING SYSTEM -->
@@ -1032,17 +1272,21 @@
           document.body.classList.add("is-maximized-page");
           if (minBtn) minBtn.style.display = "inline-flex";
           if (toast) {
-            toast.setAttribute("aria-hidden", "false");
-            setTimeout(function() { toast.setAttribute("aria-hidden", "true"); }, 4000);
+            toast.textContent = "Proctored mode engaged. You cannot exit until you submit.";
+            toast.classList.add("show");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(function() {
+              toast.classList.remove("show");
+            }, 4000);
           }
-          if (typeof editor !== 'undefined' && editor.layout) editor.layout();
+          if (typeof editor !== 'undefined' && editor) editor.layout();
         } else {
           document.body.classList.remove("is-maximized-page");
           if (minBtn) minBtn.style.display = "none";
           if (document.fullscreenElement) {
             document.exitFullscreen().catch(e => console.log(e));
           }
-          if (typeof editor !== 'undefined' && editor.layout) editor.layout();
+          if (typeof editor !== 'undefined' && editor) editor.layout();
         }
       }
 

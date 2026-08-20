@@ -97,7 +97,43 @@
     <form method="post" class="form-grid">
       {% csrf_token %}
       <input type="hidden" name="action" value="add_test">
-      {{ test_form.as_p }}
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ test_form.stdin.id_for_label }}">Input (stdin)</label>
+          {{ test_form.stdin }}
+          {% if test_form.stdin.errors %}
+            <div class="field-error">{{ test_form.stdin.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="{{ test_form.expected_output.id_for_label }}">Expected Output</label>
+          {{ test_form.expected_output }}
+          {% if test_form.expected_output.errors %}
+            <div class="field-error">{{ test_form.expected_output.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ test_form.order.id_for_label }}">Order</label>
+          {{ test_form.order }}
+          {% if test_form.order.errors %}
+            <div class="field-error">{{ test_form.order.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <div class="form-group checkbox-inline">
+          <label class="checkbox-row" for="{{ test_form.is_sample.id_for_label }}">
+            {{ test_form.is_sample }}
+            <span>Sample Test Case (shown to students)</span>
+          </label>
+          {% if test_form.is_sample.errors %}
+            <div class="field-error">{{ test_form.is_sample.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      
       <button class="secondary" type="submit" {% if not question %}disabled{% endif %}>Add Test Case</button>
     </form>
   </article>

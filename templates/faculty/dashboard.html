@@ -24,6 +24,15 @@
     </div>
     <form class="progress-controls" method="get">
       <label>
+        <span>Department</span>
+        <select name="department" onchange="this.form.submit()">
+          <option value="" {% if not selected_department %}selected{% endif %}>All Departments</option>
+          {% for dept in departments %}
+            <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
         <span>Course</span>
         <select name="course" onchange="this.form.submit()">
           <option value="" {% if not selected_course %}selected{% endif %}>All Courses</option>

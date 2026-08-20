@@ -1,0 +1,1215 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Arrays",
+      "module_order": 4,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Array Sum",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "15",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-2",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Array Maximum",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print maximum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "40",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Count Even",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print count of even elements.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "4",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Positive Count",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print count of positive numbers.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "4",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Array Average",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print integer average.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "25",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Array Minimum",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print minimum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-3",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Count Odd",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print count of odd elements.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "0",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Negative Count",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print count of strictly negative numbers.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 -3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 -5 -5 -5",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 0 30 -40",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "First Element",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print the first element.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Last Element",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and n integers and print the last element.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-3",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "40",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Linear Search",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n, n integers, key. Print Found or Not Found.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3 2",
+              "expected_output": "Found",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3 5",
+              "expected_output": "Not Found",
+              "is_sample": false
+            },
+            {
+              "input": "1 9 9",
+              "expected_output": "Found",
+              "is_sample": false
+            },
+            {
+              "input": "3 4 5 6 4",
+              "expected_output": "Found",
+              "is_sample": false
+            },
+            {
+              "input": "3 4 5 6 7",
+              "expected_output": "Not Found",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Array Reverse",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers and print reverse space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3 2 1",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "5 5 5",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-3 2 -1",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "40 30 20 10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Second Largest",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n distinct integers and print second largest.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 1 2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 4 3",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "-1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Frequency Key",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n, n integers, key. Print frequency of key.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 1 1",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3 4",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5 5",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 0 0 1 0",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -1 -1",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Adjacent Pair Sum",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers and print maximum adjacent pair sum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2 1 2",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 4 3",
+              "expected_output": "9",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "70",
+              "is_sample": false
+            },
+            {
+              "input": "3 -1 2 -3",
+              "expected_output": "1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Check Sorted Ascending",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Print Sorted if non-decreasing else Not Sorted.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "Sorted",
+              "is_sample": true
+            },
+            {
+              "input": "3 3 2 1",
+              "expected_output": "Not Sorted",
+              "is_sample": false
+            },
+            {
+              "input": "1 5",
+              "expected_output": "Sorted",
+              "is_sample": false
+            },
+            {
+              "input": "4 1 1 2 2",
+              "expected_output": "Sorted",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 3 2",
+              "expected_output": "Not Sorted",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Sum of Even Indexed",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Print sum of elements at 0-based even indices.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 10 20 30",
+              "expected_output": "40",
+              "is_sample": true
+            },
+            {
+              "input": "4 1 2 3 4",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "2 10 20",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "5 1 1 1 1 1",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Replace Negatives Zero",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Print array replacing negative values with 0 space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 -2 3",
+              "expected_output": "1 0 3",
+              "is_sample": true
+            },
+            {
+              "input": "2 -5 -1",
+              "expected_output": "0 0",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1 2 3",
+              "is_sample": false
+            },
+            {
+              "input": "1 -10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "4 -1 2 -3 4",
+              "expected_output": "0 2 0 4",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Count Greater Average",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Print count of elements strictly greater than exact average.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 10 10 10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 10 1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "2 0 10",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "5 1 2 3 4 5",
+              "expected_output": "2",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Copy Array",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and n integers. Copy into second array and print second array space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "1 2 3",
+              "is_sample": true
+            },
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": false
+            },
+            {
+              "input": "2 -1 -2",
+              "expected_output": "-1 -2",
+              "is_sample": false
+            },
+            {
+              "input": "4 0 0 0 0",
+              "expected_output": "0 0 0 0",
+              "is_sample": false
+            },
+            {
+              "input": "3 9 8 7",
+              "expected_output": "9 8 7",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Mean Variance StdDev",
+          "topic": "Lab Manual Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to input N real numbers in 1-D array. Compute mean, variance and Standard Deviation.\n[Mean= sum/N, Variance = Σ (Xi-mean)^2 /N, STD Deviation= √variance.]\nRead integer N then N float numbers. Print Mean, Variance, and Std Dev rounded to 2 decimal places space separated (e.g. '2.00 0.67 0.82').",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2.00 0.67 0.82",
+              "is_sample": true
+            },
+            {
+              "input": "4 2 4 4 4",
+              "expected_output": "3.50 0.75 0.87",
+              "is_sample": false
+            },
+            {
+              "input": "1 5.0",
+              "expected_output": "5.00 0.00 0.00",
+              "is_sample": false
+            },
+            {
+              "input": "2 10 20",
+              "expected_output": "15.00 25.00 5.00",
+              "is_sample": false
+            },
+            {
+              "input": "5 1 1 1 1 1",
+              "expected_output": "1.00 0.00 0.00",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM002",
+          "title": "Binary Search Sorted",
+          "topic": "Lab Manual Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to perform a binary search for a given key integer in a single dimensional array of numbers in ascending order and report success or failure in the form of a suitable message.\nRead N, N sorted integers, then Key. Print 'Success: Found at index X' (0-based) or 'Failure: Key not found'.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 10 20 30 40 50 30",
+              "expected_output": "Success: Found at index 2",
+              "is_sample": true
+            },
+            {
+              "input": "5 10 20 30 40 50 25",
+              "expected_output": "Failure: Key not found",
+              "is_sample": false
+            },
+            {
+              "input": "1 5 5",
+              "expected_output": "Success: Found at index 0",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 2 3 1",
+              "expected_output": "Success: Found at index 0",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 2 3 4",
+              "expected_output": "Failure: Key not found",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM003",
+          "title": "Selection Sort Display",
+          "topic": "Lab Manual Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to input N integer numbers into a single dimension array, sort them into ascending order using selection sort technique, and print both given array and sorted array with suitable headings.\nRead N then N integers. Output exact format:\nGiven Array: <space separated elements>\nSorted Array: <space separated elements>",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 3 1 2",
+              "expected_output": "Given Array: 3 1 2\nSorted Array: 1 2 3",
+              "is_sample": true
+            },
+            {
+              "input": "4 10 5 8 2",
+              "expected_output": "Given Array: 10 5 8 2\nSorted Array: 2 5 8 10",
+              "is_sample": false
+            },
+            {
+              "input": "1 42",
+              "expected_output": "Given Array: 42\nSorted Array: 42",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "Given Array: 5 5 5\nSorted Array: 5 5 5",
+              "is_sample": false
+            },
+            {
+              "input": "2 9 1",
+              "expected_output": "Given Array: 9 1\nSorted Array: 1 9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Pair Sum Target",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n, n distinct integers, target. Print Yes if any pair sums to target else No.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "4 1 2 3 4 5",
+              "expected_output": "Yes",
+              "is_sample": true
+            },
+            {
+              "input": "3 1 2 3 7",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "2 5 5 10",
+              "expected_output": "No",
+              "is_sample": false
+            },
+            {
+              "input": "2 4 6 10",
+              "expected_output": "Yes",
+              "is_sample": false
+            },
+            {
+              "input": "3 10 20 30 50",
+              "expected_output": "Yes",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Majority Element",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n integers. Print element appearing strictly more than n/2 times else -1.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 1 2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "4 1 2 3 4",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "5 2 2 2 1 3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "1 42",
+              "expected_output": "42",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 6 7",
+              "expected_output": "-1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Rotate Left One",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n integers. Rotate array left by 1 position and print space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 2 3",
+              "expected_output": "2 3 1",
+              "is_sample": true
+            },
+            {
+              "input": "1 5",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "4 10 20 30 40",
+              "expected_output": "20 30 40 10",
+              "is_sample": false
+            },
+            {
+              "input": "2 1 2",
+              "expected_output": "2 1",
+              "is_sample": false
+            },
+            {
+              "input": "5 1 1 1 1 2",
+              "expected_output": "1 1 1 2 1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Longest Increasing Subarray",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n integers. Print length of longest strictly increasing contiguous subarray.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "5 1 2 3 1 2",
+              "expected_output": "3",
+              "is_sample": true
+            },
+            {
+              "input": "4 4 3 2 1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "1 10",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "6 1 3 5 4 7 8",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3 1 2 3",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Max Min Difference",
+          "topic": "Arrays",
+          "level": 4,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and n integers. Print difference between maximum and minimum elements.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3 1 5 2",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "1 10",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "4 -10 0 10 20",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "3 5 5 5",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "5 100 1 50 20 10",
+              "expected_output": "99",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

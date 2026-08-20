@@ -31,5 +31,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+
+# Create scripts directory if it doesn't exist
+RUN mkdir -p /app/scripts
+
+# Copy and make entrypoint executable
+COPY scripts/entrypoint.sh /app/scripts/
 RUN chmod +x /app/scripts/entrypoint.sh
+
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]

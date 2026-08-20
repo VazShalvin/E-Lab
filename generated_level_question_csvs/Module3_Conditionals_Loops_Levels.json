@@ -1,0 +1,1129 @@
+{
+  "category": "c_programming",
+  "modules": [
+    {
+      "module": "Conditionals & Loops",
+      "module_order": 3,
+      "questions": [
+        {
+          "question_id": "E001",
+          "title": "Maximum Two",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers and print maximum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "5",
+              "is_sample": false
+            },
+            {
+              "input": "-1 -5",
+              "expected_output": "-1",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E002",
+          "title": "Sign Number",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print Positive Negative or Zero.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "Zero",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "Positive",
+              "is_sample": false
+            },
+            {
+              "input": "-1",
+              "expected_output": "Negative",
+              "is_sample": false
+            },
+            {
+              "input": "25",
+              "expected_output": "Positive",
+              "is_sample": false
+            },
+            {
+              "input": "-30",
+              "expected_output": "Negative",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E003",
+          "title": "Sum N",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print sum 1 to n using loop.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "15",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "55",
+              "is_sample": false
+            },
+            {
+              "input": "20",
+              "expected_output": "210",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E004",
+          "title": "Count Digits",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read non-negative n and print digit count.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "99",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E005",
+          "title": "Multiplication Ten",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print n*10.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "10",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "20",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "50",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "70",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "100",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E006",
+          "title": "Minimum Two",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read two integers and print minimum.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1 2",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "5 3",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "-1 -5",
+              "expected_output": "-5",
+              "is_sample": false
+            },
+            {
+              "input": "0 0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "100 99",
+              "expected_output": "99",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E007",
+          "title": "Voting Eligibility",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read age and print Eligible if >= 18 else Not Eligible.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "18",
+              "expected_output": "Eligible",
+              "is_sample": true
+            },
+            {
+              "input": "20",
+              "expected_output": "Eligible",
+              "is_sample": false
+            },
+            {
+              "input": "17",
+              "expected_output": "Not Eligible",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "Not Eligible",
+              "is_sample": false
+            },
+            {
+              "input": "65",
+              "expected_output": "Eligible",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E008",
+          "title": "Vowel or Consonant",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read lowercase char c and print Vowel if a,e,i,o,u else Consonant.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "a",
+              "expected_output": "Vowel",
+              "is_sample": true
+            },
+            {
+              "input": "b",
+              "expected_output": "Consonant",
+              "is_sample": false
+            },
+            {
+              "input": "e",
+              "expected_output": "Vowel",
+              "is_sample": false
+            },
+            {
+              "input": "z",
+              "expected_output": "Consonant",
+              "is_sample": false
+            },
+            {
+              "input": "u",
+              "expected_output": "Vowel",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E009",
+          "title": "Pass or Fail",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read marks out of 100 and print Pass if >= 40 else Fail.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "40",
+              "expected_output": "Pass",
+              "is_sample": true
+            },
+            {
+              "input": "39",
+              "expected_output": "Fail",
+              "is_sample": false
+            },
+            {
+              "input": "85",
+              "expected_output": "Pass",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "Fail",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "Pass",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "E010",
+          "title": "Print N to 1",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Easy",
+          "difficulty": "easy",
+          "description": "Read n and print numbers from n down to 1 space separated.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "3",
+              "expected_output": "3 2 1",
+              "is_sample": true
+            },
+            {
+              "input": "5",
+              "expected_output": "5 4 3 2 1",
+              "is_sample": false
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "2 1",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "4 3 2 1",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M001",
+          "title": "Leap Year",
+          "topic": "Conditionals",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read year and print Leap or Not Leap.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "2000",
+              "expected_output": "Leap",
+              "is_sample": true
+            },
+            {
+              "input": "1900",
+              "expected_output": "Not Leap",
+              "is_sample": false
+            },
+            {
+              "input": "2024",
+              "expected_output": "Leap",
+              "is_sample": false
+            },
+            {
+              "input": "2023",
+              "expected_output": "Not Leap",
+              "is_sample": false
+            },
+            {
+              "input": "2100",
+              "expected_output": "Not Leap",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M002",
+          "title": "Factorial",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n (0 to 12) and print factorial.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "120",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M003",
+          "title": "Reverse Number",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-negative integer and print reverse.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "12",
+              "expected_output": "21",
+              "is_sample": false
+            },
+            {
+              "input": "120",
+              "expected_output": "21",
+              "is_sample": false
+            },
+            {
+              "input": "1234",
+              "expected_output": "4321",
+              "is_sample": false
+            },
+            {
+              "input": "900",
+              "expected_output": "9",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M004",
+          "title": "Prime Check",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read positive integer n and print Prime or Not Prime.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "Not Prime",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "Prime",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "Prime",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "Not Prime",
+              "is_sample": false
+            },
+            {
+              "input": "11",
+              "expected_output": "Prime",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M005",
+          "title": "Fibonacci",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and print nth Fibonacci (0th=0, 1st=1).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "6",
+              "expected_output": "8",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M006",
+          "title": "Sum of Even up to N",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read n and print sum of all even integers from 1 to n.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "30",
+              "is_sample": false
+            },
+            {
+              "input": "6",
+              "expected_output": "12",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M007",
+          "title": "Palindrome Number Check",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-negative n and print Palindrome or Not Palindrome.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "121",
+              "expected_output": "Palindrome",
+              "is_sample": true
+            },
+            {
+              "input": "123",
+              "expected_output": "Not Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            },
+            {
+              "input": "1221",
+              "expected_output": "Palindrome",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M008",
+          "title": "Factors Count",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read positive integer n and print number of divisors of n.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "6",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "7",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "12",
+              "expected_output": "6",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M009",
+          "title": "Count Even Digits",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-negative n and print count of even digits.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1234",
+              "expected_output": "2",
+              "is_sample": true
+            },
+            {
+              "input": "2468",
+              "expected_output": "4",
+              "is_sample": false
+            },
+            {
+              "input": "1357",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "802",
+              "expected_output": "3",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "M010",
+          "title": "Sum of Odd Digits",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Medium",
+          "difficulty": "medium",
+          "description": "Read non-negative n and print sum of odd digits.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1234",
+              "expected_output": "4",
+              "is_sample": true
+            },
+            {
+              "input": "2468",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "1357",
+              "expected_output": "16",
+              "is_sample": false
+            },
+            {
+              "input": "0",
+              "expected_output": "0",
+              "is_sample": false
+            },
+            {
+              "input": "901",
+              "expected_output": "10",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "LM001",
+          "title": "Prime Range Print",
+          "topic": "Lab Manual Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Write a C program to print the prime numbers in a given range.\nRead start and end (inclusive). Print all prime numbers in range space separated. If none, print empty line or nothing.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": true,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "10 20",
+              "expected_output": "11 13 17 19",
+              "is_sample": true
+            },
+            {
+              "input": "1 10",
+              "expected_output": "2 3 5 7",
+              "is_sample": false
+            },
+            {
+              "input": "14 16",
+              "expected_output": "",
+              "is_sample": false
+            },
+            {
+              "input": "20 30",
+              "expected_output": "23 29",
+              "is_sample": false
+            },
+            {
+              "input": "2 5",
+              "expected_output": "2 3 5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H001",
+          "title": "Armstrong Check",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print Armstrong or Not Armstrong (sum of cubes of digits == n for 3-digit numbers).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "153",
+              "expected_output": "Armstrong",
+              "is_sample": true
+            },
+            {
+              "input": "370",
+              "expected_output": "Armstrong",
+              "is_sample": false
+            },
+            {
+              "input": "123",
+              "expected_output": "Not Armstrong",
+              "is_sample": false
+            },
+            {
+              "input": "407",
+              "expected_output": "Armstrong",
+              "is_sample": false
+            },
+            {
+              "input": "10",
+              "expected_output": "Not Armstrong",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H002",
+          "title": "Perfect Number",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print Perfect or Not Perfect (sum of proper divisors == n).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "6",
+              "expected_output": "Perfect",
+              "is_sample": true
+            },
+            {
+              "input": "28",
+              "expected_output": "Perfect",
+              "is_sample": false
+            },
+            {
+              "input": "12",
+              "expected_output": "Not Perfect",
+              "is_sample": false
+            },
+            {
+              "input": "496",
+              "expected_output": "Perfect",
+              "is_sample": false
+            },
+            {
+              "input": "100",
+              "expected_output": "Not Perfect",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H003",
+          "title": "Pattern Count",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print number of stars in n-row triangle n*(n+1)/2.",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "1",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "3",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "6",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "10",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "15",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H004",
+          "title": "Collatz Steps",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print steps to reach 1 by Collatz rule (if even n/2 else 3*n+1).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "1",
+              "expected_output": "0",
+              "is_sample": true
+            },
+            {
+              "input": "2",
+              "expected_output": "1",
+              "is_sample": false
+            },
+            {
+              "input": "3",
+              "expected_output": "7",
+              "is_sample": false
+            },
+            {
+              "input": "4",
+              "expected_output": "2",
+              "is_sample": false
+            },
+            {
+              "input": "5",
+              "expected_output": "5",
+              "is_sample": false
+            }
+          ]
+        },
+        {
+          "question_id": "H005",
+          "title": "Strong Number Check",
+          "topic": "Loops",
+          "level": 3,
+          "level_range": "Hard",
+          "difficulty": "hard",
+          "description": "Read n and print Strong or Not Strong (sum of factorials of digits == n).",
+          "starter_code": "#include <stdio.h>\n\nint main(void)\n{\n    /* Read from stdin and print exact output only. */\n    return 0;\n}",
+          "time_limit": 2.0,
+          "memory_limit_kb": 128000,
+          "max_score": 1,
+          "is_active": true,
+          "is_mandatory": false,
+          "allow_multiple_languages": false,
+          "test_cases": [
+            {
+              "input": "145",
+              "expected_output": "Strong",
+              "is_sample": true
+            },
+            {
+              "input": "1",
+              "expected_output": "Strong",
+              "is_sample": false
+            },
+            {
+              "input": "2",
+              "expected_output": "Strong",
+              "is_sample": false
+            },
+            {
+              "input": "123",
+              "expected_output": "Not Strong",
+              "is_sample": false
+            },
+            {
+              "input": "40585",
+              "expected_output": "Strong",
+              "is_sample": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

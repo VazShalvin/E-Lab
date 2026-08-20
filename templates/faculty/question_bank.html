@@ -54,7 +54,7 @@
     <!-- Controls Bar -->
     <div class="qbank-controls">
       <div class="search-box">
-        <input type="text" id="qSearchInput" placeholder="Search questions by keyword or topic..." onkeyup="filterQuestions()">
+        <input type="text" id="qSearchInput" class="qbank-search-input" placeholder="Search questions by keyword or topic..." aria-label="Search questions" onkeyup="filterQuestions()">
       </div>
       <div class="filter-pills">
         <button class="filter-pill active" onclick="setFilter('all', this)">All</button>
