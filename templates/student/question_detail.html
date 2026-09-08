@@ -5,6 +5,236 @@
   <span>⚡ Fullscreen Mode Enabled — Press <strong>ESC</strong> to exit</span>
 </div>
 
+<!-- Animated Notification System Container -->
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<style>
+  /* Modern Animated In-Page Toast Notifications */
+  .toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000002;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 440px;
+    width: calc(100vw - 48px);
+  }
+
+  .toast-item {
+    pointer-events: auto;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #f8fafc;
+    box-shadow: 0 14px 40px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transform-origin: top right;
+    animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .toast-item.toast-leaving {
+    animation: toastSlideOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes toastSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes toastSlideOut {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-16px) scale(0.92);
+    }
+  }
+
+  .toast-item.toast-warning {
+    border-left: 4px solid #f59e0b;
+    box-shadow: 0 14px 40px -4px rgba(245, 158, 11, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.25);
+  }
+  .toast-item.toast-error {
+    border-left: 4px solid #ef4444;
+    box-shadow: 0 14px 40px -4px rgba(239, 68, 68, 0.25), 0 0 0 1px rgba(239, 68, 68, 0.25);
+  }
+  .toast-item.toast-info {
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 14px 40px -4px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.25);
+  }
+  .toast-item.toast-success {
+    border-left: 4px solid #10b981;
+    box-shadow: 0 14px 40px -4px rgba(16, 185, 129, 0.25), 0 0 0 1px rgba(16, 185, 129, 0.25);
+  }
+
+  .toast-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .toast-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toast-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .toast-message {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .toast-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+  }
+  .toast-close:hover {
+    opacity: 1;
+    color: #ffffff;
+  }
+
+  .toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .toast-progress-bar {
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+  }
+
+  .toast-warning .toast-progress-bar { background: #f59e0b; }
+  .toast-error .toast-progress-bar { background: #ef4444; }
+  .toast-info .toast-progress-bar { background: #3b82f6; }
+  .toast-success .toast-progress-bar { background: #10b981; }
+
+  [data-theme="light"] .toast-item {
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
+    box-shadow: 0 14px 40px -4px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  }
+  [data-theme="light"] .toast-title {
+    color: #0f172a;
+  }
+  [data-theme="light"] .toast-message {
+    color: #475569;
+  }
+  [data-theme="light"] .toast-close {
+    color: #64748b;
+  }
+  [data-theme="light"] .toast-close:hover {
+    color: #0f172a;
+  }
+</style>
+
+<script>
+  window.showAnimatedNotification = function(options) {
+    const { type = 'info', title = '', message = '', duration = 4500 } = options || {};
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast-item toast-${type}`;
+
+    const icons = {
+      warning: '⏳',
+      error: '❌',
+      info: 'ℹ️',
+      success: '✅'
+    };
+
+    const icon = icons[type] || '🔔';
+
+    toast.innerHTML = `
+      <div class="toast-icon">${icon}</div>
+      <div class="toast-content">
+        ${title ? `<div class="toast-title">${title}</div>` : ''}
+        <div class="toast-message">${message}</div>
+      </div>
+      <button class="toast-close" type="button" aria-label="Close">&times;</button>
+      <div class="toast-progress">
+        <div class="toast-progress-bar"></div>
+      </div>
+    `;
+
+    container.appendChild(toast);
+
+    const closeBtn = toast.querySelector('.toast-close');
+    let dismissTimer;
+
+    const dismiss = () => {
+      clearTimeout(dismissTimer);
+      toast.classList.add('toast-leaving');
+      toast.addEventListener('animationend', () => {
+        toast.remove();
+      }, { once: true });
+    };
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dismiss();
+    });
+
+    const bar = toast.querySelector('.toast-progress-bar');
+    if (duration > 0) {
+      bar.style.transition = `transform ${duration}ms linear`;
+      requestAnimationFrame(() => {
+        bar.style.transform = 'scaleX(0)';
+      });
+      dismissTimer = setTimeout(dismiss, duration);
+    } else {
+      const progressEl = toast.querySelector('.toast-progress');
+      if (progressEl) progressEl.remove();
+    }
+  };
+</script>
+
 <section class="toolbar">
   <div>
     <p class="eyebrow">{{ question.module.name }} · {{ question.get_difficulty_display }}</p>
@@ -78,6 +308,124 @@
       {% endif %}
     {% endwith %}
   </article>
+
+  <!-- MIDDLE: AI Tutor Hints Card (Click to Unlock Hints) -->
+  <article class="hints-panel-card" id="hints-panel-container" style="margin-bottom: 24px;">
+    <div class="hints-card-header" id="hints-card-toggle" role="button" tabindex="0" aria-expanded="true">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="tutor-hint-icon" style="width: 42px; height: 42px; font-size: 20px;">🧠</div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">AI Tutor — Theory &amp; Strategy Guidance</h3>
+            <span class="hint-badge hint-badge-level-{{ hints_data.unlocked_count|default:0 }}" id="hints-unlocked-badge">{{ hints_data.unlocked_count|default:0 }} of {{ hints_data.max_hints|default:3 }} Unlocked</span>
+          </div>
+          <span style="font-size: 12px; color: var(--text-muted);">Question-grounded concepts, algorithmic blueprints, and debugging insights</span>
+        </div>
+      </div>
+      <button type="button" class="secondary" id="hints-header-toggle-btn" style="min-height: 32px; padding: 0 14px; font-size: 12px;">
+        <span id="hints-toggle-label">Collapse</span>
+      </button>
+    </div>
+
+    <div class="hints-card-body" id="hints-collapsible-body">
+      <div class="hints-list" id="hints-dynamic-list" style="display: flex; flex-direction: column; gap: 12px; padding: 16px 20px;">
+        {% for h in hints_data.hints %}
+          <div class="hint-display-item hint-level-{{ h.hint_number }}" id="hint-item-{{ h.hint_number }}">
+            <div class="hint-item-header">
+              <span class="hint-badge hint-badge-level-{{ h.hint_number }}">
+                {% if h.hint_number == 1 %}🌱 Hint 1: Theoretical Foundations
+                {% elif h.hint_number == 2 %}⚙️ Hint 2: Algorithmic &amp; Paradigm Theory
+                {% else %}🔍 Hint 3: Invariant Analysis &amp; Verification{% endif %}
+              </span>
+              <span class="hint-timestamp">{{ h.unlocked_at|timesince }} ago</span>
+            </div>
+            <div class="hint-item-text" data-raw="{{ h.hint_text }}">{{ h.hint_text }}</div>
+          </div>
+        {% endfor %}
+
+        <div class="hint-locked-item" id="hint-locked-placeholder" style="{% if not hints_data.can_unlock_more %}display: none;{% endif %}">
+          <div class="hint-locked-glow-bar"></div>
+          <div class="hint-locked-content-row">
+            <div class="hint-locked-info">
+              <div class="hint-locked-badge-row">
+                <span class="hint-locked-pill">🔒 Locked Hint #{{ hints_data.next_hint_number|default:1 }}</span>
+                <span class="hint-locked-tier">
+                  {% if hints_data.next_hint_number == 1 %}Tier 1: Theoretical Foundations
+                  {% elif hints_data.next_hint_number == 2 %}Tier 2: Algorithmic Theory
+                  {% else %}Tier 3: Conceptual Diagnostics{% endif %}
+                </span>
+              </div>
+              <h4 class="hint-locked-title" id="hint-next-locked-label">
+                {% if hints_data.next_hint_number == 1 %}🌱 Core Theoretical Foundations &amp; Principles
+                {% elif hints_data.next_hint_number == 2 %}⚙️ Algorithmic Paradigm &amp; Complexity Theory
+                {% elif hints_data.next_hint_number == 3 %}🔍 Invariant Analysis &amp; Conceptual Verification
+                {% else %}Progressive Theory Guidance{% endif %}
+              </h4>
+              <p class="hint-locked-desc" id="hint-next-locked-desc">
+                {% if hints_data.next_hint_number == 1 %}Unlock pure theoretical foundations, mathematical definitions, and domain invariants for this question without code.
+                {% elif hints_data.next_hint_number == 2 %}Unlock algorithmic paradigm theory, asymptotic complexity models, and conceptual logic flow without code.
+                {% else %}Unlock invariant verification, boundary edge-case analysis, and conceptual diagnostic guidance without code.{% endif %}
+              </p>
+            </div>
+            <div class="hint-locked-cta">
+              <button type="button" class="unlock-hint-action-btn" id="unlock-hint-btn" data-hint-num="{{ hints_data.next_hint_number|default:1 }}">
+                <span class="unlock-btn-icon">💡</span>
+                <span class="unlock-btn-text">
+                  <span class="unlock-label-main">Unlock Hint #{{ hints_data.next_hint_number|default:1 }}</span>
+                  <span class="unlock-label-sub">
+                    {% if hints_data.next_hint_number == 1 %}Reveal Theory
+                    {% elif hints_data.next_hint_number == 2 %}Reveal Algorithmic Theory
+                    {% else %}Reveal Invariants{% endif %}
+                  </span>
+                </span>
+                <svg class="unlock-btn-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {% if not hints_data.can_unlock_more %}
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 10px; font-size: 12.5px; color: var(--text-secondary);">
+            <span style="font-size: 16px;">✨</span>
+            <span>All 3 progressive hints unlocked! Review the theory and blueprints above to solve the question.</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </article>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const toggleHeader = document.getElementById("hints-card-toggle");
+      const toggleBtn = document.getElementById("hints-header-toggle-btn");
+      const toggleLabel = document.getElementById("hints-toggle-label");
+      const body = document.getElementById("hints-collapsible-body");
+
+      function toggle() {
+        if (!body) return;
+        const isCollapsed = body.style.display === "none";
+        body.style.display = isCollapsed ? "block" : "none";
+        if (toggleLabel) toggleLabel.textContent = isCollapsed ? "Collapse" : "Expand";
+        if (toggleHeader) toggleHeader.setAttribute("aria-expanded", isCollapsed ? "true" : "false");
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          toggle();
+        });
+      }
+      if (toggleHeader) {
+        toggleHeader.addEventListener("click", toggle);
+        toggleHeader.addEventListener("keydown", function(e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      }
+    });
+  </script>
 
   <!-- BOTTOM: Full-Width Monaco / VS Code Editor Panel -->
   <article class="submit-panel-wide">
@@ -220,6 +568,19 @@
 {{ question.starter_codes|json_script:"starter-codes-data" }}
 <script src="{% static 'vendor/monaco-editor/vs/loader.js' %}"></script>
 <script>
+  // Global CSRF helper accessible across all scopes and handlers
+  function getCsrfToken() {
+    const input = document.querySelector("input[name='csrfmiddlewaretoken']");
+    if (input && input.value) return input.value;
+    const cookies = document.cookie ? document.cookie.split(';') : [];
+    for (let c of cookies) {
+      c = c.trim();
+      if (c.startsWith('csrftoken=')) return decodeURIComponent(c.substring('csrftoken='.length));
+    }
+    return "";
+  }
+  window.getCsrfToken = getCsrfToken;
+
   let editor;
   let isRunning = false;
 
@@ -616,8 +977,39 @@ public class Main {
       resultsStatus.className = "results-status " + (allPassed ? "success" : "error");
     }
 
+    let isSubmitting = false;
+    let cooldownInterval = null;
+
+    function startCooldown(seconds) {
+      if (cooldownInterval) clearInterval(cooldownInterval);
+      submitButton.disabled = true;
+      let remaining = seconds;
+      const span = submitButton.querySelector("span");
+      const originalText = "Submit";
+      if (span) span.textContent = `Cooldown (${remaining}s)`;
+      
+      cooldownInterval = setInterval(function() {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(cooldownInterval);
+          cooldownInterval = null;
+          submitButton.disabled = false;
+          if (span) span.textContent = originalText;
+        } else {
+          if (span) span.textContent = `Cooldown (${remaining}s)`;
+        }
+      }, 1000);
+    }
+
     function runCode() {
-      if (isRunning) return;
+      if (isRunning) {
+        showAnimatedNotification({
+          type: "warning",
+          title: "Execution in Progress",
+          message: "Sample test cases are currently running in the sandbox. Please wait."
+        });
+        return;
+      }
       isRunning = true;
       testResultsDiv.style.display = "none";
 
@@ -631,6 +1023,17 @@ public class Main {
       const csrfToken = getCsrfToken();
       const langSelect = document.getElementById("language-select");
       const languageId = langSelect ? langSelect.value : "{{ question.language_id }}";
+
+      if (!code || code.trim().length < 2) {
+        stopProgress();
+        isRunning = false;
+        showAnimatedNotification({
+          type: "warning",
+          title: "Empty Solution",
+          message: "Please write some code before running tests."
+        });
+        return;
+      }
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -658,9 +1061,17 @@ public class Main {
           console.error(err);
           stopProgress();
           if (err.name === "AbortError") {
-            alert("Run timed out. The sandbox may be busy. Please try again.");
+            showAnimatedNotification({
+              type: "error",
+              title: "Run Timed Out",
+              message: "The sandbox execution timed out. Please try again in a moment."
+            });
           } else {
-            alert("Run failed. Please try again: " + err.message);
+            showAnimatedNotification({
+              type: "error",
+              title: "Run Failed",
+              message: "Execution failed: " + (err.message || "Please check your code syntax.")
+            });
           }
         })
         .finally(function() {
@@ -672,7 +1083,14 @@ public class Main {
     const runCustomLabel = document.getElementById("run-custom-label");
     if (runCustomBtn) {
       runCustomBtn.addEventListener("click", function() {
-        if (isRunning) return;
+        if (isRunning) {
+          showAnimatedNotification({
+            type: "warning",
+            title: "Execution in Progress",
+            message: "Custom input test is currently running. Please wait."
+          });
+          return;
+        }
         isRunning = true;
 
         const outSec = document.getElementById("custom-output-section");
@@ -734,17 +1152,41 @@ public class Main {
 
     const resetCodeBtn = document.getElementById("reset-code-btn");
     if (resetCodeBtn) {
+      let resetTimer = null;
       resetCodeBtn.addEventListener("click", function() {
-        if (confirm("Are you sure you want to reset your code to the original starter template? This will erase your current solution!")) {
-          const langSelect = document.getElementById("language-select");
-          const val = langSelect ? langSelect.value : "{{ question.language_id|default:'50' }}";
-          const sample = getSampleCode(val);
-          if (typeof editor !== 'undefined' && editor) {
-            editor.setValue(sample);
-          } else if (textarea) {
-            textarea.value = sample;
-          }
+        if (!resetCodeBtn.dataset.confirming) {
+          resetCodeBtn.dataset.confirming = "true";
+          const oldText = resetCodeBtn.textContent;
+          resetCodeBtn.textContent = "Click again to confirm";
+          showAnimatedNotification({
+            type: "warning",
+            title: "Reset Code?",
+            message: "Click the Reset button once more to confirm erasing your current code."
+          });
+          resetTimer = setTimeout(function() {
+            resetCodeBtn.removeAttribute("data-confirming");
+            resetCodeBtn.textContent = oldText;
+          }, 4000);
+          return;
         }
+
+        clearTimeout(resetTimer);
+        resetCodeBtn.removeAttribute("data-confirming");
+        resetCodeBtn.textContent = "Reset";
+
+        const langSelect = document.getElementById("language-select");
+        const val = langSelect ? langSelect.value : "{{ question.language_id|default:'50' }}";
+        const sample = getSampleCode(val);
+        if (typeof editor !== 'undefined' && editor) {
+          editor.setValue(sample);
+        } else if (textarea) {
+          textarea.value = sample;
+        }
+        showAnimatedNotification({
+          type: "info",
+          title: "Starter Code Restored",
+          message: "The editor has been reset to the default template."
+        });
       });
     }
 
@@ -765,7 +1207,12 @@ public class Main {
               if (attempts >= maxAttempts) {
                 window.clearInterval(interval);
                 stopProgress();
-                alert("Submission evaluation timed out. Please refresh the page.");
+                isSubmitting = false;
+                showAnimatedNotification({
+                  type: "warning",
+                  title: "Evaluation Delayed",
+                  message: "Submission evaluation is taking longer than usual. Please refresh in a moment."
+                });
               }
               return;
             }
@@ -792,7 +1239,12 @@ public class Main {
         if (attempts >= maxAttempts) {
           window.clearInterval(interval);
           stopProgress();
-          alert("Evaluation timed out. Your submission may still be processing — please check your dashboard.");
+          isSubmitting = false;
+          showAnimatedNotification({
+            type: "warning",
+            title: "Evaluation Queued",
+            message: "Your submission may still be processing in the background — please check your dashboard."
+          });
         }
       }, 1000);
     }
@@ -800,11 +1252,24 @@ public class Main {
     if (submitForm && submitButton) {
       submitForm.addEventListener("submit", function(event) {
         event.preventDefault();
-        testResultsDiv.style.display = "none";
-        startProgress();
-        setProgressUI(6);
-        setStep("upload");
-        setStatus("Uploading…", "Your code is being queued for evaluation.");
+
+        if (isSubmitting) {
+          showAnimatedNotification({
+            type: "warning",
+            title: "Submission in Progress",
+            message: "Your code is currently being evaluated. Please wait a moment."
+          });
+          return;
+        }
+
+        if (cooldownInterval) {
+          showAnimatedNotification({
+            type: "warning",
+            title: "Submission Cooldown",
+            message: "Please wait for the cooldown timer before submitting again."
+          });
+          return;
+        }
 
         const code = editor ? editor.getValue() : textarea.value;
         const questionId = {{ question.id }};
@@ -813,10 +1278,20 @@ public class Main {
         const languageId = langSelect ? langSelect.value : "{{ question.language_id }}";
 
         if (!code || code.trim().length < 2) {
-          stopProgress();
-          alert("Please write some code before submitting.");
+          showAnimatedNotification({
+            type: "warning",
+            title: "Empty Solution",
+            message: "Please write some code before submitting your solution."
+          });
           return;
         }
+
+        isSubmitting = true;
+        testResultsDiv.style.display = "none";
+        startProgress();
+        setProgressUI(6);
+        setStep("upload");
+        setStatus("Uploading…", "Your code is being queued for evaluation.");
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -830,12 +1305,21 @@ public class Main {
           body: JSON.stringify({ question: questionId, code: code, language_id: languageId }),
           signal: controller.signal
         })
-          .then(function(r) {
+          .then(async function(r) {
             clearTimeout(timeoutId);
             if (!r.ok) {
-              return r.text().then(function(text) {
-                throw new Error("Submission failed: " + r.status + " - " + text);
-              });
+              let errorDetail = "";
+              try {
+                const errJson = await r.json();
+                errorDetail = errJson.detail || JSON.stringify(errJson);
+              } catch(e) {
+                errorDetail = await r.text();
+              }
+              if (r.status === 429) {
+                startCooldown(10);
+                throw new Error("Please wait 10 seconds before submitting again.");
+              }
+              throw new Error(errorDetail || ("Submission failed with status " + r.status));
             }
             return r.json();
           })
@@ -843,7 +1327,9 @@ public class Main {
             setStatus("Running tests…", "Executing hidden test cases in the Docker sandbox.");
             setStep("run");
             pollSubmission(questionId, function(sub) {
+              isSubmitting = false;
               stopProgress();
+              startCooldown(10);
               let tests = [];
               try {
                 if (sub.judge_output) {
@@ -851,16 +1337,49 @@ public class Main {
                 }
               } catch(e) {}
               renderTestResults(tests, false);
+
+              // Friendly guidance toast if submission was unsuccessful
+              if (sub.status !== "accepted") {
+                fetch(`/questions/${questionId}/hints/`, {
+                  headers: { "Accept": "application/json" }
+                })
+                  .then(r => r.json())
+                  .then(hintMeta => {
+                    if (hintMeta && hintMeta.can_unlock_more) {
+                      showAnimatedNotification({
+                        type: "info",
+                        title: "💡 Need guidance?",
+                        message: `You can unlock Hint #${hintMeta.next_hint_number} anytime by clicking 'Unlock Hint' in the AI Tutor panel above.`
+                      });
+                    }
+                  })
+                  .catch(() => {});
+              }
             });
           })
           .catch(function(err) {
             clearTimeout(timeoutId);
             console.error(err);
+            isSubmitting = false;
             stopProgress();
             if (err.name === "AbortError") {
-              alert("Submission timed out. Please try again.");
+              showAnimatedNotification({
+                type: "error",
+                title: "Submission Timed Out",
+                message: "The submission request timed out. Please check your network and try again."
+              });
+            } else if (err.message && err.message.toLowerCase().includes("10 seconds")) {
+              showAnimatedNotification({
+                type: "warning",
+                title: "Submission Cooldown Active",
+                message: "Please wait 10 seconds before submitting again to prevent server overload."
+              });
             } else {
-              alert("Submission failed. Please try again. Details: " + err.message);
+              showAnimatedNotification({
+                type: "error",
+                title: "Submission Failed",
+                message: err.message || "An error occurred while submitting your code."
+              });
             }
           });
       });
@@ -872,6 +1391,236 @@ public class Main {
 
     window.addEventListener("pageshow", stopProgress);
   })();
+
+  // =========================================================
+  // AUTOMATIC HINT SYSTEM (Question-Tailored Theory & Strategy)
+  // =========================================================
+  function formatHintContent(rawText) {
+    if (!rawText) return "";
+    let html = "";
+    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    let currentType = "general";
+    let currentContent = [];
+
+    function flush() {
+      if (currentContent.length === 0) return;
+      let text = currentContent.join('<br>');
+      let formatted = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; font-family: monospace;">$1</code>');
+
+      if (currentType === "theory") {
+        html += `<div class="hint-section-block hint-section-theory">
+          <div class="hint-section-title">🧠 Theoretical Foundations &amp; Principles</div>
+          <div>${formatted}</div>
+        </div>`;
+      } else if (currentType === "strategy") {
+        html += `<div class="hint-section-block hint-section-strategy">
+          <div class="hint-section-title">⚙️ Algorithmic Paradigm &amp; Complexity Theory</div>
+          <div>${formatted}</div>
+        </div>`;
+      } else if (currentType === "fix") {
+        html += `<div class="hint-section-block hint-section-fix">
+          <div class="hint-section-title">🔍 Invariant Analysis &amp; Conceptual Diagnostics</div>
+          <div>${formatted}</div>
+        </div>`;
+      } else {
+        html += `<div class="hint-section-block" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+          <div>${formatted}</div>
+        </div>`;
+      }
+      currentContent = [];
+    }
+
+    lines.forEach(line => {
+      if (line.startsWith("🧠") || /^(core\s*)?theor/i.test(line)) {
+        flush();
+        currentType = "theory";
+        currentContent.push(line.replace(/^(🧠\s*)?((core\s*)?theoretical\s*foundations|theory\s*(&\s*concept)?\s*(\([^)]*\))?:?)?\s*/i, ""));
+      } else if (line.startsWith("🎯") || line.startsWith("⚙️") || line.startsWith("🛠️") || /^(algorithmic\s*)?paradigm|strategy|blueprint|logic/i.test(line)) {
+        flush();
+        currentType = "strategy";
+        currentContent.push(line.replace(/^(🎯|⚙️|🛠️\s*)?((algorithmic\s*)?(paradigm|blueprint)|(conceptual\s*)?logic\s*flow|(recommended\s*)?strategy\s*(\([^)]*\))?:?)?\s*/i, ""));
+      } else if (line.startsWith("🔍") || line.startsWith("⚠️") || /^(invariant|error|conceptual\s*pitfall)/i.test(line)) {
+        flush();
+        currentType = "fix";
+        currentContent.push(line.replace(/^(🔍|⚠️\s*)?((invariant\s*(&\s*correctness)?\s*theory)|(conceptual\s*)?pitfalls?|(error\s*)?(localization|diagnosis)|actionable\s*fix\s*(direction)?\s*(\([^)]*\))?:?)?\s*/i, ""));
+      } else {
+        currentContent.push(line);
+      }
+    });
+    flush();
+    return html || rawText;
+  }
+
+  function getHintMetadata(hintNum) {
+    if (hintNum === 1) {
+      return {
+        title: "🌱 Hint 1: Theoretical Foundations",
+        lockedTitle: "Hint #1: Theoretical Foundations (Locked)",
+        desc: "Unlock pure theoretical foundations, mathematical definitions, and domain invariants for this question without code."
+      };
+    } else if (hintNum === 2) {
+      return {
+        title: "⚙️ Hint 2: Algorithmic & Paradigm Theory",
+        lockedTitle: "Hint #2: Algorithmic & Paradigm Theory (Locked)",
+        desc: "Unlock algorithmic paradigm theory, asymptotic complexity models, and conceptual logic flow without code."
+      };
+    } else {
+      return {
+        title: "🔍 Hint 3: Invariant Analysis & Verification",
+        lockedTitle: "Hint #3: Invariant Analysis & Verification (Locked)",
+        desc: "Unlock invariant verification, boundary edge-case analysis, and conceptual diagnostic guidance without code."
+      };
+    }
+  }
+
+  function renderHintsData(data, isNewlyUnlocked = false) {
+    const dynamicList = document.getElementById("hints-dynamic-list");
+    const badge = document.getElementById("hints-unlocked-badge");
+    const container = document.getElementById("hints-panel-container");
+
+    if (badge) {
+      badge.textContent = `${data.unlocked_count} of ${data.max_hints} Unlocked`;
+      badge.className = `hint-badge hint-badge-level-${data.unlocked_count}`;
+    }
+
+    if (!dynamicList) return;
+
+    let html = "";
+    (data.hints || []).forEach((h, idx) => {
+      const isLatest = (idx === data.hints.length - 1);
+      const meta = getHintMetadata(h.hint_number);
+      const formattedBody = formatHintContent(h.hint_text);
+
+      html += `
+        <div class="hint-display-item hint-level-${h.hint_number} ${isLatest && isNewlyUnlocked ? 'newly-unlocked hint-revealed-animation' : ''}" id="hint-item-${h.hint_number}">
+          <div class="hint-item-header">
+            <span class="hint-badge hint-badge-level-${h.hint_number}">${meta.title}</span>
+            <span class="hint-timestamp">${h.unlocked_at || 'Unlocked'}</span>
+          </div>
+          <div class="hint-item-text">${formattedBody}</div>
+        </div>
+      `;
+    });
+
+    if (data.can_unlock_more) {
+      const nextNum = data.next_hint_number;
+      const nextMeta = getHintMetadata(nextNum);
+      const tierLabel = nextNum === 1 ? "Tier 1: Theoretical Foundations" : (nextNum === 2 ? "Tier 2: Algorithmic Theory" : "Tier 3: Conceptual Diagnostics");
+      const revealLabel = nextNum === 1 ? "Reveal Theory" : (nextNum === 2 ? "Reveal Algorithmic Theory" : "Reveal Invariants");
+
+      html += `
+        <div class="hint-locked-item" id="hint-locked-placeholder">
+          <div class="hint-locked-glow-bar"></div>
+          <div class="hint-locked-content-row">
+            <div class="hint-locked-info">
+              <div class="hint-locked-badge-row">
+                <span class="hint-locked-pill">🔒 Locked Hint #${nextNum}</span>
+                <span class="hint-locked-tier">${tierLabel}</span>
+              </div>
+              <h4 class="hint-locked-title" id="hint-next-locked-label">${nextMeta.title}</h4>
+              <p class="hint-locked-desc" id="hint-next-locked-desc">${nextMeta.desc}</p>
+            </div>
+            <div class="hint-locked-cta">
+              <button type="button" class="unlock-hint-action-btn" id="unlock-hint-btn" data-hint-num="${nextNum}">
+                <span class="unlock-btn-icon">💡</span>
+                <span class="unlock-btn-text">
+                  <span class="unlock-label-main">Unlock Hint #${nextNum}</span>
+                  <span class="unlock-label-sub">${revealLabel}</span>
+                </span>
+                <svg class="unlock-btn-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 12px; font-size: 13px; color: var(--text-secondary);">
+          <span style="font-size: 18px;">⭐</span>
+          <span><strong>Theoretical Guidance Complete</strong> — All 3 progressive theory tiers have been unlocked for this question.</span>
+        </div>
+      `;
+    }
+
+    dynamicList.innerHTML = html;
+    bindUnlockHintButton();
+
+    if (isNewlyUnlocked) {
+      const latestItem = document.getElementById(`hint-item-${data.hints[data.hints.length - 1].hint_number}`);
+      if (latestItem) {
+        latestItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  }
+
+  function bindUnlockHintButton() {
+    const btn = document.getElementById("unlock-hint-btn");
+    if (!btn) return;
+    btn.onclick = async function() {
+      if (btn.disabled) return;
+      const hintNum = btn.dataset.hintNum || 1;
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `
+        <span class="btn-spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; display: inline-block; animation: spin 0.8s linear infinite;"></span>
+        <span class="unlock-btn-text">
+          <span class="unlock-label-main">Unlocking Hint #${hintNum}…</span>
+          <span class="unlock-label-sub">Analyzing theory</span>
+        </span>
+      `;
+
+      try {
+        const questionId = {{ question.id }};
+        if (!questionId) throw new Error("Question ID not found.");
+
+        const csrfToken = (typeof getCsrfToken === "function" ? getCsrfToken() : (window.getCsrfToken ? window.getCsrfToken() : (document.querySelector("[name=csrfmiddlewaretoken]") ? document.querySelector("[name=csrfmiddlewaretoken]").value : "")));
+        
+        const resp = await fetch(`/questions/${questionId}/hints/unlock/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          }
+        });
+
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          throw new Error(errData.error || "Failed to unlock hint.");
+        }
+
+        const resData = await resp.json();
+        renderHintsData(resData, true);
+
+        showAnimatedNotification({
+          type: "info",
+          title: `💡 AI Tutor Hint #${hintNum} Unlocked!`,
+          message: "Pure theoretical and conceptual guidance has been revealed without code."
+        });
+      } catch (err) {
+        console.warn("Hint unlock error:", err);
+        showAnimatedNotification({
+          type: "error",
+          title: "Unlock Notice",
+          message: err.message || "Could not unlock hint. Please try again."
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    };
+  }
+
+  // Format existing server-rendered hints on page load & bind button
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("#hints-dynamic-list .hint-item-text").forEach(el => {
+      const raw = el.getAttribute("data-raw") || el.innerText;
+      if (raw) {
+        el.innerHTML = formatHintContent(raw);
+      }
+    });
+    bindUnlockHintButton();
+  });
 
   // Resizer logic (if present)
   document.addEventListener('DOMContentLoaded', function () {
@@ -939,49 +1688,93 @@ public class Main {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     z-index: 99999;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 40px;
+    padding: 30px;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   .proctor-overlay.active {
     display: flex;
+    opacity: 1;
+    animation: proctorOverlayFade 0.25s ease forwards;
+  }
+
+  @keyframes proctorOverlayFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .proctor-warning-box {
     background: #1e293b;
     border: 2px solid #ef4444;
-    border-radius: 16px;
-    padding: 40px;
-    max-width: 500px;
-    box-shadow: 0 20px 50px rgba(239, 68, 68, 0.25);
+    border-radius: 20px;
+    padding: 36px 40px;
+    max-width: 520px;
+    width: 92%;
+    box-shadow: 0 25px 60px rgba(239, 68, 68, 0.35), 0 0 40px rgba(239, 68, 68, 0.2);
+    animation: proctorBoxZoom 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .proctor-warning-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.15);
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    margin-bottom: 16px;
+    animation: pulseRed 2s infinite;
+  }
+
+  .proctor-warning-icon {
+    font-size: 28px;
+    line-height: 1;
   }
 
   .proctor-warning-box h2 {
     color: #ef4444;
-    font-size: 28px;
-    margin-bottom: 16px;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .proctor-warning-box .proctor-reason-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    word-break: break-word;
   }
 
   .proctor-warning-box p {
-    font-size: 16px;
+    font-size: 15px;
     color: #cbd5e1;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
     line-height: 1.6;
   }
   
   [data-theme="light"] .proctor-warning-box {
     background: #ffffff;
-    box-shadow: 0 20px 50px rgba(239, 68, 68, 0.15);
+    box-shadow: 0 25px 60px rgba(239, 68, 68, 0.2);
   }
   
   [data-theme="light"] .proctor-warning-box p {
@@ -1174,9 +1967,13 @@ public class Main {
 
 <div id="proctor-overlay" class="proctor-overlay">
   <div class="proctor-warning-box">
-    <h2>⚠️ Violation Detected</h2>
-    <p>You have switched tabs, minimized the window, or attempted an unauthorized action. This incident has been logged.</p>
-    <button class="primary" id="proctor-acknowledge-btn">I Understand</button>
+    <div class="proctor-warning-icon-wrap">
+      <span class="proctor-warning-icon">⚠️</span>
+    </div>
+    <h2>Violation Detected</h2>
+    <div class="proctor-reason-tag" id="proctor-violation-reason">Tab hidden or switched</div>
+    <p>You have switched tabs, minimized the window, or attempted an unauthorized action. This incident has been logged with an exact timestamp to your proctoring report.</p>
+    <button class="primary" id="proctor-acknowledge-btn" style="min-width: 220px; padding: 12px 28px; border-radius: 12px; font-weight: 700;">I Understand — Return to Workspace</button>
   </div>
 </div>
 
@@ -1208,23 +2005,50 @@ public class Main {
       });
     }
 
+    let violationCount = 0;
+    const maxGentleWarnings = 3;
+
     window.triggerViolation = function(reason = "Window blur/tab switch") {
       if (!window.proctoringMonitoringActive) return;
-      overlay.classList.add('active');
-      
+
+      violationCount++;
+      const reasonEl = document.getElementById('proctor-violation-reason');
+      if (reasonEl) {
+        reasonEl.textContent = `${reason} (Warning ${violationCount}/${maxGentleWarnings})`;
+      }
+
+      // Update proctoring status pill in header
+      const badge = document.querySelector('.proctoring-badge');
+      if (badge) {
+        badge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:6px;animation:pulse 1.2s infinite;"></span>Proctoring Active · ${violationCount} Notice${violationCount > 1 ? 's' : ''}`;
+      }
+
       if (!violationReported) {
-        violationReported = true; // Prevent spamming within the same blur event
+        violationReported = true;
         fetch("/api/report-violation/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken
           },
-          body: JSON.stringify({ question_id: questionId, reason: reason })
-        }).then(res => res.json())
-          .then(data => {
-            console.log("Violation logged:", data);
-          }).catch(err => console.error("Violation logging failed"));
+          body: JSON.stringify({ question_id: questionId, reason: reason }),
+          keepalive: true
+        }).catch(function() {});
+      }
+
+      // User-friendly graduated enforcement:
+      // Early infractions show a clear, courteous animated toast so student isn't interrupted mid-typing
+      if (violationCount <= maxGentleWarnings) {
+        showAnimatedNotification({
+          type: "warning",
+          title: `🛡️ Proctoring Notice (${violationCount}/${maxGentleWarnings})`,
+          message: `${reason}. Please keep your focus on this assessment window.`
+        });
+        // Reset reported flag after 3 seconds so subsequent infractions can be warned
+        setTimeout(() => { violationReported = false; }, 3000);
+      } else {
+        // Repeated infractions (> 3) trigger the full acknowledgment modal
+        overlay.classList.add('active');
       }
     }
 
@@ -1244,31 +2068,63 @@ public class Main {
         setTimeout(window.requestFullscreen, 800);
       }
 
-      // 1. Tab switching / Window blur
-      window.addEventListener('blur', () => window.triggerViolation("Window lost focus (Tab switch)"));
+      // 1. Tab switching & window focus detection (debounced to eliminate false positives)
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-          window.triggerViolation("Tab hidden");
+        if (document.visibilityState === 'hidden' && window.proctoringMonitoringActive) {
+          window.triggerViolation("Tab switched or minimized");
         }
       });
 
-      // 2. Prevent Copy/Cut/Paste/Drag/Drop
-      document.addEventListener('copy', (e) => { if (window.proctoringMonitoringActive) { e.preventDefault(); window.triggerViolation("Attempted Copy"); } });
-      document.addEventListener('cut', (e) => { if (window.proctoringMonitoringActive) { e.preventDefault(); window.triggerViolation("Attempted Cut"); } });
-      document.addEventListener('paste', (e) => { if (window.proctoringMonitoringActive) { e.preventDefault(); window.triggerViolation("Attempted Paste"); } });
-      document.addEventListener('drag', (e) => { if (window.proctoringMonitoringActive) e.preventDefault(); });
-      document.addEventListener('dragstart', (e) => { if (window.proctoringMonitoringActive) e.preventDefault(); });
-      document.addEventListener('drop', (e) => { if (window.proctoringMonitoringActive) { e.preventDefault(); window.triggerViolation("Attempted Drag & Drop"); } });
+      window.addEventListener('blur', () => {
+        if (!window.proctoringMonitoringActive) return;
+        // Verify after 350ms whether the tab actually lost visibility
+        setTimeout(() => {
+          if (document.visibilityState === 'hidden') {
+            window.triggerViolation("Window lost focus (Tab switch)");
+          }
+        }, 350);
+      });
 
-      // 3. Prevent Right-Click / Context Menu & Selection
-      document.addEventListener('contextmenu', (e) => { if (window.proctoringMonitoringActive) { e.preventDefault(); window.triggerViolation("Right-Click / Context Menu Opened"); } });
-      document.addEventListener('selectstart', (e) => { 
+      // 2. Prevent Copy/Cut/Paste OUTSIDE the Monaco editor (allow students to copy/paste within their code!)
+      document.addEventListener('copy', (e) => {
+        if (window.proctoringMonitoringActive && !e.target.closest('#editor')) {
+          e.preventDefault();
+          showAnimatedNotification({
+            type: "warning",
+            title: "Copying Restricted",
+            message: "Copying content from the problem description is restricted during proctoring."
+          });
+        }
+      });
+      document.addEventListener('cut', (e) => {
+        if (window.proctoringMonitoringActive && !e.target.closest('#editor')) {
+          e.preventDefault();
+        }
+      });
+      document.addEventListener('dragstart', (e) => {
+        if (window.proctoringMonitoringActive && !e.target.closest('#editor')) {
+          e.preventDefault();
+        }
+      });
+      document.addEventListener('drop', (e) => {
         if (window.proctoringMonitoringActive && !e.target.closest('#editor')) {
           e.preventDefault();
         }
       });
 
-      // Prevent shortcuts: F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+P, Ctrl+C/V/X
+      // 3. Right-Click: Allow inside Monaco editor (for 'Format Document', 'Command Palette'), restrict outside
+      document.addEventListener('contextmenu', (e) => {
+        if (window.proctoringMonitoringActive && !e.target.closest('#editor')) {
+          e.preventDefault();
+          showAnimatedNotification({
+            type: "info",
+            title: "Context Menu Restricted",
+            message: "Right-click is disabled on the problem description. You can right-click inside the code editor."
+          });
+        }
+      });
+
+      // 4. Keyboard Shortcuts: Block DevTools (F12, Ctrl+Shift+I/J/C, Ctrl+U)
       window.addEventListener('keydown', (e) => {
         if (!window.proctoringMonitoringActive) return;
 
@@ -1279,40 +2135,27 @@ public class Main {
           return false;
         }
 
-        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S, Ctrl+P
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
         if ((e.ctrlKey || e.metaKey) && (
           (e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase())) || 
-          ['u', 's', 'p'].includes(e.key.toLowerCase())
+          e.key.toLowerCase() === 'u'
         )) {
           e.preventDefault();
-          window.triggerViolation(`Attempted Keyboard Shortcut (Ctrl+${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()})`);
-          return false;
-        }
-
-        // Ctrl+C, Ctrl+V, Ctrl+X
-        if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x'].includes(e.key.toLowerCase())) {
-          e.preventDefault();
-          window.triggerViolation(`Attempted Keyboard Shortcut (Ctrl+${e.key.toUpperCase()})`);
+          window.triggerViolation(`Developer Tools Shortcut (Ctrl+${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()})`);
           return false;
         }
       });
 
-      // 4. Console/Anti-Debugging Script Protection
-      // Clears console and pauses script debugger if DevTools is open.
-      setInterval(function() {
-        if (window.proctoringMonitoringActive) {
-          try {
-            console.clear();
-          } catch(e) {}
-
-          const startTime = performance.now();
-          debugger;
-          const endTime = performance.now();
-          if (endTime - startTime > 100) {
-            window.triggerViolation("Developer Tools Console Open");
-          }
+      // 5. Fullscreen exit polite notification
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && window.proctoringMonitoringActive) {
+          showAnimatedNotification({
+            type: "info",
+            title: "Fullscreen Exited",
+            message: "Press F11 or click full screen to maintain optimal test conditions."
+          });
         }
-      }, 1000);
+      });
     }
   })();
 </script>

@@ -1,24 +1,26 @@
-# CCE e-Lab - Programming Practice Platform
+# PRAXIS (CCE e-Lab) - Coding and Placement Skill Development Platform
 
-A self-hosted web platform for Computer & Communication Engineering students to practice programming with automated evaluation, progress tracking, and skill certification. Supports up to 400 concurrent users.
+**PRAXIS** is a self-hosted web platform engineered for the **Department of Computer and Communication Engineering**, NMAM Institute of Technology, Nitte. It delivers continuous coding practice, automated evaluation, progressive AI tutoring, proctored lab assessments, and automated skill certification. Built for high-concurrency campus lab environments, PRAXIS reliably supports up to 400 concurrent students.
 
 ---
 
 ## 🚀 Key Features
 
-- ✅ **Interactive Code Editor** — Monaco/VS Code editor with syntax highlighting for C, C++, Java, and Python
-- ✅ **Automated Evaluation** — Instant feedback via isolated Docker sandbox containers
+- ✅ **Interactive Code Editor** — Monaco / VS Code editor with syntax highlighting for C, C++, Java, and Python
+- ✅ **Automated Evaluation** — Instant feedback via isolated Docker sandbox containers with sub-second execution
 - ✅ **Multi-Language Support** — C (GCC C11), C++ (G++ C++17), Java (OpenJDK 17), Python (CPython 3)
 - ✅ **Adaptive Question Bank** — Tiered questions (Easy/Medium/Hard) with mandatory problem guarantees
-- ✅ **Progress Tracking** — Real-time dashboards showing module completion, scores, and rankings
-- ✅ **Skill Certification** — Automated certificate generation with QR verification for qualifying students
+- ✅ **Progress Tracking** — Real-time dashboards showing module completion, scores, and class rankings
+- ✅ **Skill Certification** — Automated certificate generation with cryptographic QR verification for qualifying students
 - ✅ **Faculty & HOD Portals** — Create modules/questions, review submissions, manage certificate approvals
 - ✅ **Quizzes & Assignments** — Timed quizzes and take-home open-ended assignments
 - ✅ **LeetCode Integration** — Bulk import 1,500+ public problems with test cases from local dataset
 - ✅ **RAG Question Generator** — Faculty can generate custom questions offline using local DSA knowledge base (300+ problems, no LLM/GPU required)
 - ✅ **Semester Auto-Advance** — Students automatically advance semesters on Jan 1 and Jul 1 via Celery beat
 - ✅ **Course Access Control** — Courses unlock based on student semester (C→sem 1, Python/Java/Placement→sem 3, C++/Advanced Placement→sem 5)
-- ✅ **Proctoring System** — Tab-switch detection, copy/paste blocking, fullscreen enforcement for assessment questions
+- ✅ **User-Friendly Proctoring System** — Debounced window blur and tab-switch detection, in-editor copy/paste enabled, graduated polite in-page notices, and fullscreen enforcement
+- ✅ **Question-Grounded AI Tutor Hints** — Automated theoretical principles, algorithmic blueprints ("Use this, use that"), and edge-case guidance capped at max 3 hints per question (100% offline & local, zero external API keys)
+- ✅ **Seamless In-Page Auto-Reveal** — Hints automatically reveal with a glowing Cyber Violet & Cyan animation immediately upon test evaluation without page refreshes
 - ✅ **Redis-backed Cache** — High-performance caching and session management for 400+ concurrent users
 
 ---
@@ -33,7 +35,8 @@ A self-hosted web platform for Computer & Communication Engineering students to 
 - **Execution Sandbox:** Custom isolated Docker container (`elab-sandbox`) supporting C, C++, Java, and Python
 - **Reverse Proxy:** Nginx (`elab-nginx`) with gzip compression and keepalive
 - **RAG Engine:** ChromaDB + Sentence Transformers for semantic search (local, offline)
-- **Frontend:** Responsive HTML5 templates + Monaco Editor + CSS animations
+- **Local AI & Hint Engine:** Ollama (`elab-ollama` running `qwen2.5-coder:1.5b`) with topic-aware diagnostic engine fallback
+- **Frontend:** Responsive HTML5 templates + Monaco Editor + Cyber Violet styling & CSS animations
 
 ---
 
@@ -81,6 +84,11 @@ CELERY_RESULT_BACKEND=redis://elab-redis:2
 # Sandbox Settings
 DOCKER_SANDBOX_IMAGE=elab-sandbox
 DOCKER_SANDBOX_DIR=/var/elab-sandbox
+HOST_SANDBOX_DIR=/home/nmamit/e_lab/E-Lab/sandbox_data
+
+# Local LLM / Progressive Hint System (Offline, no external API keys)
+OLLAMA_URL=http://elab-ollama:11434/api/chat
+OLLAMA_MODEL=qwen2.5-coder:1.5b
 
 # Email (optional - for certificate notifications)
 EMAIL_HOST=smtp.gmail.com
@@ -96,10 +104,13 @@ DEFAULT_FROM_EMAIL=noreply@yourdomain.com
 # 1. Build the multi-language execution sandbox image
 docker build -t elab-sandbox -f sandbox/Dockerfile sandbox/
 
-# 2. Start all services
+# 2. Start all services (Django, Postgres, Redis, Celery, Nginx, Ollama)
 docker compose up -d --build
 
-# 3. Wait for services to be healthy
+# 3. Pull the local coding model for offline tutor hints (one-time)
+docker compose exec ollama ollama pull qwen2.5-coder:1.5b
+
+# 4. Wait for services to be healthy
 docker compose ps
 ```
 
@@ -359,9 +370,57 @@ The RAG system covers 20 DSA topics with 15 problems each (300+ total):
    - Creates 5-8 test cases including edge cases for harder difficulties
    - References the original problem in the description for transparency
 
-3. **Validation & Save**: The adapted question (matching E-Lab's JSON schema) is validated and saved directly to the specified module with all test cases
+3. **Validation & Save**: The adapted question (matching PRAXIS's JSON schema) is validated and saved directly to the specified module with all test cases
 
 **Performance**: ~1-2 seconds per question (no LLM, no GPU, no internet required)
+
+---
+
+## 💡 Question-Grounded Progressive AI Tutor Hints (Max 3 Hints)
+
+Students can unlock progressive pedagogical hints on demand with a simple click in the AI Tutor panel directly above the code editor. Hints are unlocked with intentional clicks rather than automatically consumed by submits, ensuring students retain full ownership of their problem-solving journey while submissions execute instantly in the sandbox without race conditions or throttling conflicts.
+
+### 🧠 Question-Grounded Theory (Zero Code Policy)
+Hints are **grounded strictly in the theoretical principles of the question** and adhere to a **strict zero-code policy**. The AI tutor inspects the specific question title, domain theory, mathematical definitions, and boundary constraints to generate academic conceptual guidance without providing syntax, code blocks, or solution snippets:
+1. **🧠 Theoretical Foundations & Principles**: Core mathematical or computer science theory governing the problem (e.g., modular congruence, reflectional symmetry across a central axis, matrix Cartesian coordinates and row-major mapping, mathematical induction, Bellman's principle of optimality).
+2. **⚙️ Algorithmic Paradigm & Complexity Theory**: Theoretical paradigms and structural models best suited for the problem (e.g., Divide and Conquer, Dynamic Programming optimal substructure, two-way boundary convergence, monotonicity) along with theoretical $O(...)$ asymptotic complexity bounds.
+3. **🔍 Invariant Analysis & Conceptual Verification**: Theoretical invariant assertions and correctness conditions required throughout problem execution, identifying logical edge conditions and domain limits without code spoilers.
+
+### 🎯 Progressive 3-Tier Hint Strategy
+
+Hints are progressive and strictly capped at a **maximum of 3 unique hints per question**:
+
+| Hint Level | Focus Area | Pedagogical Purpose |
+|:---|:---|:---|
+| **Tier 1** | **Theoretical Foundations & Problem Principles** | Explains the underlying domain theory, mathematical definitions, and boundary conditions in plain conceptual English without code. |
+| **Tier 2** | **Algorithmic Paradigm & Complexity Theory** | Explains the theoretical algorithmic paradigm, state transitions, and asymptotic complexity lower bounds without code. |
+| **Tier 3** | **Invariant Analysis & Conceptual Verification** | Analyzes the theoretical invariants, correctness proofs, and edge-case boundary traps without code. |
+| **Hints 4+** | **Capped at 3** | No further hints can be unlocked. All 3 previously unlocked hints remain accessible in the code editor and submission view. |
+
+### 💡 On-Demand Click-to-Unlock & Cyber Violet Theme
+- **Unlock With Clicks (Not Submits)**: The AI Tutor panel displays each locked hint with an interactive Cyber Violet action button (`[💡 Unlock Hint #N]`). Clicking the button triggers an immediate on-demand generation and reveals the hint with a smooth entrance animation (`hintRevealEntrance`), animated toast notifications (`💡 AI Tutor Hint #N Unlocked!`), and automatic badge updates (`1 of 3 Unlocked`).
+- **Cyber Violet & Cyan Aesthetic**: Hints are styled with a sleek Cyber Violet (`#8b5cf6`), Indigo (`#6366f1`), and Cyan (`#06b6d4`) palette, featuring dedicated badge indicators, subtle glassmorphism borders, and clear typographic hierarchy.
+- **Submissions Free of Side-Effects**: Submitting code runs sample and hidden tests in the sandbox independently without forcing hints or consuming the student's hint quota. Unsuccessful submissions simply display a polite note reminding students that hints can be unlocked above if needed.
+
+### 🔒 Privacy & Pedagogical Safeguards
+- **Zero External API Keys**: 100% offline and self-hosted. Student code never leaves the local campus network or server.
+- **Strict Anti-Code Sanitization**: Comprehensive multi-stage sanitizers scrub raw code fences, code syntax, variable declarations, and programming keywords from LLM output, enforcing pure theoretical text.
+- **Deterministic 11-Domain Theory Engine**: Powered by a local Ollama container running `qwen2.5-coder:1.5b`. If the model is offline or during high lab concurrency (up to 400 students), the built-in deterministic theory engine instantly produces structured theory hints covering Matrix, String, Recursion, Dynamic Programming, Two Pointers/Sliding Window, Sorting/Searching, Number Theory, Linked Lists, Pointers, Structs, and Arrays with zero delay.
+- **Instant Response & Zero Throttling**: Because hints are unlocked on-demand via clicks rather than bundled into submission background tasks, both submissions and hint generation remain responsive and completely immune to submit-spamming issues.
+
+---
+
+## 🛡️ User-Friendly Proctoring System
+
+PRAXIS provides a smart, non-punitive proctoring system engineered specifically for computer science lab sessions and placement assessments:
+
+- **In-Editor Clipboard Enabled**: Students are completely free to `copy`, `cut`, `paste`, and right-click within the Monaco code editor (`#editor`). Copying from external websites or outside the editor is restricted.
+- **Graduated 3-Warning Notice System**: Instead of immediately locking the screen or showing jarring modal interruptions upon a brief window blur, the platform implements a polite 3-tier warning threshold:
+  - **Warnings 1 & 2**: Non-blocking animated toast notifications (`🛡️ Proctoring Notice (1/3): Focus lost`) appear in the upper-right corner, and the proctoring badge updates dynamically (`Proctoring: 1/3 warnings`).
+  - **Warning 3**: A polite proctoring modal appears prompting the student to return focus and resume coding.
+- **Debounced Window & Tab Transitions**: Focus and blur events are debounced with a 400ms buffer, preventing false violation triggers caused by rapid tab switches, clicking browser menus, or clicking the run/submit buttons.
+- **Non-Intrusive & Tab-Safe**: Intrusive infinite `debugger;` loops are eliminated, ensuring student browser tabs never lock up or freeze.
+- **Polite Fullscreen Reminders**: Exiting fullscreen displays a friendly reminder toast rather than terminating the session.
 
 ---
 
@@ -484,6 +543,14 @@ The following settings are configured for high concurrency:
 ### 7. Certificate PDF Generation Fails
 - Ensure `weasyprint` dependencies are installed (included in Dockerfile)
 - Check media directory permissions: `chmod -R 777 media/`
+
+### 8. Local AI / Tutor Hints Troubleshooting
+- **Ollama container status**: Verify Ollama is running: `docker compose ps ollama`.
+- **Model verification**: Ensure `qwen2.5-coder:1.5b` is downloaded:
+  ```bash
+  docker compose exec ollama ollama list
+  ```
+- **Fallback verification**: If Ollama is downloading, cold, or stopped, PRAXIS automatically falls back to the deterministic diagnostic engine. No student submissions fail or hang.
 
 ---
 

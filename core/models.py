@@ -578,3 +578,45 @@ class QuizAttempt(models.Model):
             deadline = self.started_at + timedelta(minutes=self.quiz.duration_minutes)
             return timezone.now() > deadline
         return False
+
+
+class StudentQuestionHint(models.Model):
+    """
+    Stores progressive hints unlocked by a student on unsuccessful attempts.
+    Strictly capped at maximum 3 unique hints per student per question.
+    """
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="unlocked_hints",
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="student_hints",
+    )
+    submission = models.ForeignKey(
+        Submission,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="hints",
+    )
+    hint_number = models.PositiveSmallIntegerField(
+        help_text="1, 2, or 3 (maximum 3 unique hints per question)"
+    )
+    hint_text = models.TextField()
+    hint_type = models.CharField(
+        max_length=32,
+        default="local_llm",
+        help_text="local_llm or diagnostic",
+    )
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["hint_number"]
+        unique_together = [("student", "question", "hint_number")]
+
+    def __str__(self):
+        return f"Hint #{self.hint_number} for {self.student.username} on {self.question.title}"
+

@@ -57,6 +57,8 @@ from .services import (
     update_progress,
 )
 from .tasks import evaluate_submission_task
+from .hint_service import get_student_hints_for_question, generate_hint_for_submission, unlock_hint_for_question
+
 
 
 def get_faculty_modules(user):
@@ -684,16 +686,125 @@ def question_detail(request, question_id):
             "latest_submission": latest,
             "question_language": language_for_id(question.language_id),
             "proctoring_active": question.is_proctoring_active,
+            "hints_data": get_student_hints_for_question(request.user, question),
         },
     )
 
 
 @login_required
 def submission_detail(request, submission_id):
+    submission = get_object_or_404(
+        Submission.objects.select_related("question", "question__module"), pk=submission_id
+    )
+    if submission.student != request.user and not request.user.is_faculty_like:
+        raise PermissionDenied
+
+    hints_data = get_student_hints_for_question(request.user, submission.question)
+    latest_hint = submission.hints.first() or (hints_data["hints"][-1] if hints_data["hints"] else None)
+
+    return render(
+        request,
+        "student/submission_detail.html",
+        {
+            "submission": submission,
+            "hints_data": hints_data,
+            "latest_hint": latest_hint,
+        },
+    )
+
+
+@login_required
+def submission_hints_api(request, submission_id):
     submission = get_object_or_404(Submission.objects.select_related("question"), pk=submission_id)
     if submission.student != request.user and not request.user.is_faculty_like:
         raise PermissionDenied
-    return render(request, "student/submission_detail.html", {"submission": submission})
+
+    hints_data = get_student_hints_for_question(request.user, submission.question)
+    return JsonResponse({
+        "status": submission.status,
+        "unlocked_count": hints_data["unlocked_count"],
+        "max_hints": hints_data["max_hints"],
+        "can_unlock_more": hints_data["can_unlock_more"],
+        "next_hint_number": hints_data["next_hint_number"],
+        "hints": [
+            {
+                "hint_number": h.hint_number,
+                "hint_text": h.hint_text,
+                "hint_type": h.hint_type,
+                "unlocked_at": h.unlocked_at.strftime("%b %d, %H:%M"),
+            }
+            for h in hints_data["hints"]
+        ],
+    })
+
+
+@login_required
+def question_hints_api(request, question_id):
+    if request.method == "POST":
+        return unlock_question_hint_api(request, question_id)
+
+    question = get_object_or_404(Question, pk=question_id)
+    hints_data = get_student_hints_for_question(request.user, question)
+    return JsonResponse({
+        "unlocked_count": hints_data["unlocked_count"],
+        "max_hints": hints_data["max_hints"],
+        "can_unlock_more": hints_data["can_unlock_more"],
+        "next_hint_number": hints_data["next_hint_number"],
+        "hints": [
+            {
+                "hint_number": h.hint_number,
+                "hint_text": h.hint_text,
+                "hint_type": h.hint_type,
+                "unlocked_at": h.unlocked_at.strftime("%b %d, %H:%M"),
+            }
+            for h in hints_data["hints"]
+        ],
+    })
+
+
+@login_required
+def unlock_question_hint_api(request, question_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+
+    question = get_object_or_404(Question, pk=question_id)
+    initial_hints = get_student_hints_for_question(request.user, question)
+    if not initial_hints["can_unlock_more"]:
+        return JsonResponse({
+            "success": False,
+            "error": "All 3 hints have already been unlocked for this question."
+        }, status=400)
+
+    hint_obj = unlock_hint_for_question(request.user, question)
+    if not hint_obj:
+        return JsonResponse({
+            "success": False,
+            "error": "All 3 hints have already been unlocked for this question."
+        }, status=400)
+
+    hints_data = get_student_hints_for_question(request.user, question)
+    return JsonResponse({
+        "success": True,
+        "unlocked_hint": {
+            "hint_number": hint_obj.hint_number,
+            "hint_text": hint_obj.hint_text,
+            "hint_type": hint_obj.hint_type,
+            "unlocked_at": "Just now",
+        },
+        "unlocked_count": hints_data["unlocked_count"],
+        "max_hints": hints_data["max_hints"],
+        "can_unlock_more": hints_data["can_unlock_more"],
+        "next_hint_number": hints_data["next_hint_number"],
+        "hints": [
+            {
+                "hint_number": h.hint_number,
+                "hint_text": h.hint_text,
+                "hint_type": h.hint_type,
+                "unlocked_at": h.unlocked_at.strftime("%b %d, %H:%M"),
+            }
+            for h in hints_data["hints"]
+        ],
+    })
 
 
 @login_required
@@ -2216,17 +2327,39 @@ class SubmissionLatestViewSet(viewsets.ViewSet):
             return Response({"submission": None}, status=200)
 
         data = SubmissionSerializer(submission).data
+        hints_data = get_student_hints_for_question(request.user, submission.question)
+        serialized_hints = {
+            "unlocked_count": hints_data["unlocked_count"],
+            "max_hints": hints_data["max_hints"],
+            "can_unlock_more": hints_data["can_unlock_more"],
+            "next_hint_number": hints_data["next_hint_number"],
+            "hints": [
+                {
+                    "hint_number": h.hint_number,
+                    "hint_text": h.hint_text,
+                    "hint_type": h.hint_type,
+                    "unlocked_at": h.unlocked_at.strftime("%b %d, %H:%M"),
+                }
+                for h in hints_data["hints"]
+            ],
+        }
         # DRF serializer uses numeric statuses for `status`; frontend expects string.
         # We send both for safety.
-        return Response({"submission": {**data, "status": submission.status, "status_display": submission.get_status_display()}})
+        return Response({
+            "submission": {**data, "status": submission.status, "status_display": submission.get_status_display()},
+            "hints_data": serialized_hints,
+        })
 
 @login_required
 @require_POST
 def report_violation(request):
     import json
     import datetime
-    data = json.loads(request.body)
-    question_id = data.get("question_id")
+    try:
+        data = json.loads(request.body) if request.body else {}
+    except (json.JSONDecodeError, TypeError):
+        data = {}
+    question_id = data.get("question_id", "general")
     reason = data.get("reason", "Unknown Violation")
     
     # Store count

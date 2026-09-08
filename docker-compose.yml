@@ -128,11 +128,30 @@ services:
     networks:
       - elab-network
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: elab-ollama
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_MAX_LOADED_MODELS=1
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - elab-network
+    deploy:
+      resources:
+        limits:
+          cpus: "8"
+          memory: 4G
+
 volumes:
   postgres_data:
   media:
   staticfiles:
   redis_data:
+  ollama_data:
 
 networks:
   elab-network:

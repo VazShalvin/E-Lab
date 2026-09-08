@@ -8,9 +8,35 @@ import uuid
 import base64
 
 
+def _detect_host_sandbox_dir(container_dir):
+    """
+    Detect the host path backing container_dir for Docker-out-of-Docker / sibling containers.
+    1. Returns HOST_SANDBOX_DIR environment variable if explicitly set and not container_dir.
+    2. Parses /proc/self/mountinfo to detect the underlying host bind-mount path.
+    3. Falls back to HOST_SANDBOX_DIR or container_dir.
+    """
+    env_dir = os.environ.get("HOST_SANDBOX_DIR")
+    if env_dir and env_dir != container_dir:
+        return env_dir
+
+    try:
+        if os.path.exists("/proc/self/mountinfo"):
+            with open("/proc/self/mountinfo", "r") as f:
+                for line in f:
+                    parts = line.strip().split()
+                    if len(parts) >= 5 and parts[4] == container_dir:
+                        host_path = parts[3]
+                        if os.path.isabs(host_path) and host_path != container_dir:
+                            return host_path
+    except Exception:
+        pass
+
+    return env_dir or container_dir
+
+
 SANDBOX_DIR = os.environ.get("DOCKER_SANDBOX_DIR", "/var/elab-sandbox")
 SANDBOX_IMAGE = os.environ.get("DOCKER_SANDBOX_IMAGE", "elab-sandbox")
-HOST_SANDBOX_DIR = os.environ.get("HOST_SANDBOX_DIR", SANDBOX_DIR)
+HOST_SANDBOX_DIR = _detect_host_sandbox_dir(SANDBOX_DIR)
 
 # Marker emitted by the inner script when compilation fails. Picked to be
 # impossible to appear in normal program output.
@@ -175,11 +201,15 @@ def run_code(language, source_code, stdin="", expected_output="",
     memory_limit_mb = max(16, int(memory_limit_kb) // 1024)
     run_id = str(uuid.uuid4())
     tmpdir = os.path.join(SANDBOX_DIR, run_id)
-    host_tmpdir = os.path.join(HOST_SANDBOX_DIR, run_id)
+    host_sandbox_dir = _detect_host_sandbox_dir(SANDBOX_DIR)
+    host_tmpdir = os.path.join(host_sandbox_dir, run_id)
 
-    # Ensure tmpdir is unique and safe
+    # Ensure tmpdir is unique and safe.
+    # Since SANDBOX_DIR is bind-mounted from host_sandbox_dir, creating tmpdir
+    # automatically creates host_tmpdir on the host.
     os.makedirs(tmpdir, exist_ok=True)
-    os.makedirs(host_tmpdir, exist_ok=True)
+    if host_tmpdir == tmpdir:
+        os.makedirs(host_tmpdir, exist_ok=True)
 
     class_name = ""
     if language == "java":
@@ -193,7 +223,6 @@ def run_code(language, source_code, stdin="", expected_output="",
     try:
         try:
             os.chmod(tmpdir, 0o777)
-            os.chmod(host_tmpdir, 0o777)
         except OSError:
             pass
 
@@ -339,15 +368,16 @@ def run_code(language, source_code, stdin="", expected_output="",
             "memory": 0,
         }
     finally:
-        # Clean up tmpdirs; ignore errors (container may have already cleaned up)
+        # Clean up tmpdir; removing tmpdir automatically removes files from host_tmpdir
         try:
             shutil.rmtree(tmpdir, ignore_errors=True)
         except Exception:
             pass
-        try:
-            shutil.rmtree(host_tmpdir, ignore_errors=True)
-        except Exception:
-            pass
+        if host_tmpdir == tmpdir:
+            try:
+                shutil.rmtree(host_tmpdir, ignore_errors=True)
+            except Exception:
+                pass
 
 
 def run_c_code(source_code, stdin="", expected_output="",

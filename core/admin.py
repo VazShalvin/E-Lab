@@ -17,6 +17,7 @@ from .models import (
     Quiz,
     QuizAttempt,
     QuizQuestion,
+    StudentQuestionHint,
     Submission,
     TestCase,
     User,
@@ -157,4 +158,12 @@ class QuizAttemptAdmin(admin.ModelAdmin):
     list_display = ("student", "quiz", "started_at", "finished_at", "total_score")
     list_filter = ("quiz",)
     search_fields = ("student__username", "student__usn")
+
+
+@admin.register(StudentQuestionHint)
+class StudentQuestionHintAdmin(admin.ModelAdmin):
+    list_display = ("student", "question", "hint_number", "hint_type", "unlocked_at")
+    list_filter = ("hint_number", "hint_type")
+    search_fields = ("student__username", "student__usn", "question__title")
+
 

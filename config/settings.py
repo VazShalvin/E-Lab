@@ -188,6 +188,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", env("REDIS_URL", "redis://elab-redis:6379/1"))
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", "redis://elab-redis:6379/2")
 CELERY_TASK_ALWAYS_EAGER = env("CELERY_TASK_ALWAYS_EAGER", "false").lower() == "true"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # ---------------------------------------------------------------------------
 # REST Framework
