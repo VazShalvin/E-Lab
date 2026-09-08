@@ -271,7 +271,7 @@ def _call_local_llm_for_question(question, hint_number, existing_hints, submissi
         "stream": False,
     }
 
-    resp = requests.post(OLLAMA_URL, json=payload, timeout=8)
+    resp = requests.post(OLLAMA_URL, json=payload, timeout=15)
     if resp.status_code == 200:
         data = resp.json()
         raw_text = data.get("message", {}).get("content", "").strip()
