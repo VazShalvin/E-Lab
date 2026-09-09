@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import requests
+import uuid
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
@@ -17,6 +18,13 @@ OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://elab-ollama:11434/api/chat")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5-coder:1.5b")
 MAX_HINTS_PER_QUESTION = 3
 HINT_CACHE_TTL = 604800  # 7 days in Redis cache
+LLM_TIMEOUT = 15  # seconds for Ollama HTTP request
+
+# Key for tracking in-flight LLM generation tasks in Redis
+_INFLIGHT_LLM_KEY = "elab_llm_in_flight_{question_id}_{tier}"
+_LLM_RESULT_KEY = "elab_llm_result_{question_id}_{tier}"
+_LLM_RESULT_TTL = 120  # 2 minutes — LLM should complete within this window
+_LLM_LOCK_TTL = 120  # 2 minutes — lock expires if generation hangs
 
 
 def get_student_hints_for_question(student, question):
@@ -46,10 +54,11 @@ def get_student_hints_for_question(student, question):
 
 def unlock_hint_for_question(student, question):
     """
-    Unlocks the next progressive hint (1 to 3) on-demand (e.g. on student button click).
+    Unlocks the next progressive hint (1 to 3) on-demand.
+    Returns immediately with L4 deterministic theory hint (~20ms).
+    Queues a background Celery task for LLM hint generation (~3-8s).
     Strictly capped at MAX_HINTS_PER_QUESTION (3 unique hints).
-    Utilizes multi-tier caching (Redis L1 + DB Canonical L2) to support 400-1000 concurrent students
-    with sub-millisecond response times.
+    Web workers never block on Ollama — all LLM calls happen in Celery tasks.
     """
     if not student or not student.is_authenticated:
         return None
@@ -89,15 +98,11 @@ def unlock_hint_for_question(student, question):
             cache.set(cache_key, hint_text, timeout=HINT_CACHE_TTL)
             logger.info(f"Theory hint L2 DB hit for Question {question.id} Tier {next_hint_num}.")
 
-    # --- L3 INFERENCE: Ollama Local LLM ---
-    if not hint_text:
-        try:
-            hint_text = _call_local_llm_for_question(question, next_hint_num, existing_hints, latest_sub)
-            if hint_text:
-                cache.set(cache_key, hint_text, timeout=HINT_CACHE_TTL)
-                logger.info(f"Generated & cached fresh LLM hint for Question {question.id} Tier {next_hint_num}.")
-        except Exception as e:
-            logger.warning(f"Local LLM hint generation failed ({e}), using deterministic theory fallback.")
+    # --- ASYNC LLM GENERATION: Queue Celery task, never block the web worker ---
+    # The Celery task claims the Redis slot, calls Ollama, and caches the result.
+    # Web workers never block on Ollama — they return L4 immediately.
+    # Always queue a task; the task itself deduplicates via Redis lock.
+    _enqueue_llm_generation(question.id, next_hint_num)
 
     # --- L4 FALLBACK: Instant Deterministic Theory Engine (< 0.1ms) ---
     if not hint_text:
@@ -121,11 +126,28 @@ def unlock_hint_for_question(student, question):
         return None
 
 
+def _enqueue_llm_generation(question_id, tier):
+    """
+    Schedule a background Celery task to generate the LLM hint.
+    Called from both unlock_hint_for_question and pregenerate_hints_for_question.
+    The Celery task claims the Redis slot, calls Ollama, and caches the result.
+    The web worker never blocks on Ollama.
+    """
+    from .tasks import generate_llm_hint_task
+    generate_llm_hint_task.apply_async(
+        args=[question_id, tier],
+        countdown=1,  # Run 1 second from now
+        expires=300,  # Expire if not picked up within 5 minutes
+    )
+    logger.info(f"Queued LLM generation for Question {question_id} Tier {tier}.")
+
+
 def pregenerate_hints_for_question(question, force=False):
     """
-    Pre-warms and caches all 3 theoretical hint tiers for a question in Redis & canonical storage.
-    Used by management commands and background warm-up workers to support 400-1000 users.
-    Returns a dict with generated hint tiers.
+    Pre-warms and caches all 3 theoretical hint tiers for a question.
+    Queues background Celery tasks for LLM generation — web workers never block.
+    Returns a dict with hint tiers (L4 fallback if LLM not yet ready).
+    Each tier gets a queued Celery task that claims the slot and generates.
     """
     results = {}
     for tier in range(1, MAX_HINTS_PER_QUESTION + 1):
@@ -144,15 +166,12 @@ def pregenerate_hints_for_question(question, force=False):
                 results[tier] = canonical.hint_text
                 continue
 
-        hint_text = None
-        try:
-            hint_text = _call_local_llm_for_question(question, tier, [])
-        except Exception:
-            pass
+        # Queue a Celery task to generate the LLM hint
+        # The task claims the Redis slot, does the Ollama call, caches result
+        _enqueue_llm_generation(question.id, tier)
 
-        if not hint_text:
-            hint_text = _generate_diagnostic_hint_for_question(question, tier)
-
+        # Return L4 deterministic fallback immediately
+        hint_text = _generate_diagnostic_hint_for_question(question, tier)
         cache.set(cache_key, hint_text, timeout=HINT_CACHE_TTL)
         results[tier] = hint_text
 
@@ -256,6 +275,9 @@ def _call_local_llm_for_question(question, hint_number, existing_hints, submissi
         f"Provide Hint Tier #{hint_number} focusing strictly on the theory of this question. Remember: DO NOT INCLUDE ANY CODE OR CODE BLOCKS."
     )
 
+    num_threads = int(os.environ.get("OLLAMA_NUM_THREAD", "4"))
+    num_parallel = int(os.environ.get("OLLAMA_NUM_PARALLEL", "8"))
+
     payload = {
         "model": OLLAMA_MODEL,
         "messages": [
@@ -266,12 +288,12 @@ def _call_local_llm_for_question(question, hint_number, existing_hints, submissi
             "temperature": 0.2,
             "num_ctx": 512,      # 4x smaller KV cache -> drastically lower memory & CPU attention latency
             "num_predict": 90,   # Concise academic theory
-            "num_thread": 4,     # Optimal CPU thread affinity per slot
+            "num_thread": num_threads,
         },
         "stream": False,
     }
 
-    resp = requests.post(OLLAMA_URL, json=payload, timeout=15)
+    resp = requests.post(OLLAMA_URL, json=payload, timeout=LLM_TIMEOUT)
     if resp.status_code == 200:
         data = resp.json()
         raw_text = data.get("message", {}).get("content", "").strip()

@@ -26,6 +26,7 @@ urlpatterns = [
     path("questions/<int:question_id>/", views.question_detail, name="question_detail"),
     path("questions/<int:question_id>/hints/", views.question_hints_api, name="question_hints_api"),
     path("questions/<int:question_id>/hints/unlock/", views.unlock_question_hint_api, name="unlock_question_hint_api"),
+    path("questions/<int:question_id>/hints/status/", views.hint_status_api, name="hint_status_api"),
     path("submissions/<int:submission_id>/", views.submission_detail, name="submission_detail"),
     path("submissions/<int:submission_id>/hints/", views.submission_hints_api, name="submission_hints_api"),
     path("submissions/<int:submission_id>/manual-accept/", views.manual_accept_submission, name="manual_accept_submission"),

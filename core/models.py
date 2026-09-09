@@ -189,6 +189,14 @@ class Submission(models.Model):
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="submissions")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="submissions")
+    subquestion = models.ForeignKey(
+        'SubQuestion',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="submissions",
+        help_text="The sub-question this submission is for (if applicable)",
+    )
     code = models.TextField()
     language_id = models.PositiveIntegerField(default=50)
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.PENDING)
@@ -619,4 +627,78 @@ class StudentQuestionHint(models.Model):
 
     def __str__(self):
         return f"Hint #{self.hint_number} for {self.student.username} on {self.question.title}"
+
+
+class SubQuestion(models.Model):
+    """Sub-questions for a main question, specifically for DBMS modules with SELECT/INSERT/UPDATE types."""
+    class Type(models.TextChoices):
+        SELECT = "select", "SELECT"
+        INSERT = "insert", "INSERT"
+        UPDATE = "update", "UPDATE"
+
+    main_question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="subquestions",
+        help_text="The main question this sub-question belongs to"
+    )
+    type = models.CharField(
+        max_length=10,
+        choices=Type.choices,
+        help_text="Type of sub-question: SELECT, INSERT, or UPDATE"
+    )
+    title = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180)
+    description = models.TextField()
+    difficulty = models.CharField(max_length=16, choices=Question.Difficulty.choices, default=Question.Difficulty.EASY)
+    csv_level = models.PositiveSmallIntegerField(default=1)
+    level_range = models.CharField(max_length=32, blank=True)
+    sample_input = models.TextField(blank=True)
+    sample_output = models.TextField(blank=True)
+    starter_code = models.TextField(blank=True)
+    language_id = models.PositiveIntegerField(default=50, help_text="Language id. 50 is C (GCC).")
+    time_limit = models.FloatField(default=2.0)
+    memory_limit_kb = models.PositiveIntegerField(default=128000)
+    allow_multiple_languages = models.BooleanField(default=False)
+    starter_codes = models.JSONField(default=dict, blank=True)
+    is_mandatory = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+    proctoring_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable or disable proctoring monitoring for this sub-question.",
+    )
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["main_question__order", "type"]
+        unique_together = [("main_question", "type")]
+
+    def __str__(self):
+        return f"{self.main_question.title} - {self.get_type_display()}"
+
+    @property
+    def is_proctoring_active(self):
+        """Returns True if proctoring is enabled on this sub-question and its course."""
+        if not self.proctoring_enabled:
+            return False
+        if self.main_question and self.main_question.module and self.main_question.module.course and not self.main_question.module.course.proctoring_enabled:
+            return False
+        return True
+
+
+class SubQuestionTestCase(models.Model):
+    """Test cases for sub-questions."""
+    subquestion = models.ForeignKey(SubQuestion, on_delete=models.CASCADE, related_name="test_cases")
+    stdin = models.TextField(blank=True)
+    expected_output = models.TextField()
+    is_sample = models.BooleanField(default=False)
+    order = models.PositiveSmallIntegerField(default=1)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        label = "sample" if self.is_sample else "hidden"
+        return f"{self.subquestion} ({label} #{self.order})"
 

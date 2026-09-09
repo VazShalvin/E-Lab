@@ -35,7 +35,7 @@ services:
     build: .
     container_name: elab-worker
     restart: unless-stopped
-    command: celery -A config worker -l info --concurrency 16 --pool=prefork --max-tasks-per-child 200 --max-memory-per-child 512000
+    command: celery -A config worker -l info --concurrency 32 --pool=prefork --max-tasks-per-child 200 --max-memory-per-child 512000
     env_file: .env
     volumes:
       - .:/app
@@ -45,11 +45,12 @@ services:
     depends_on:
       - elab-db
       - elab-redis
+      - ollama
     deploy:
       resources:
         limits:
-          cpus: "4"
-          memory: 2G
+          cpus: "8"
+          memory: 4G
     networks:
       - elab-network
 
@@ -135,8 +136,9 @@ services:
     restart: unless-stopped
     environment:
       - OLLAMA_KEEP_ALIVE=24h
-      - OLLAMA_NUM_PARALLEL=4
-      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_NUM_PARALLEL=8
+      - OLLAMA_MAX_LOADED_MODELS=2
+      - OLLAMA_GPU_LAYERS=-1
     volumes:
       - ollama_data:/root/.ollama
     networks:
@@ -145,7 +147,29 @@ services:
       resources:
         limits:
           cpus: "8"
-          memory: 4G
+          memory: 6G
+      reservations:
+        cpus: "4"
+        memory: 3G
+
+  ollama-replica2:
+    image: ollama/ollama:latest
+    container_name: elab-ollama-replica2
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=8
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_GPU_LAYERS=-1
+    volumes:
+      - ollama_data2:/root/.ollama
+    networks:
+      - elab-network
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 3G
 
 volumes:
   postgres_data:
@@ -153,6 +177,7 @@ volumes:
   staticfiles:
   redis_data:
   ollama_data:
+  ollama_data2:
 
 networks:
   elab-network:

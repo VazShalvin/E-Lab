@@ -166,6 +166,54 @@
   [data-theme="light"] .toast-close:hover {
     color: #0f172a;
   }
+
+  /* Subquestion Tabs */
+  .subquestion-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .tab-btn.active {
+    background: rgba(30, 64, 175, 0.2);
+    border-color: rgba(30, 64, 175, 0.4);
+    color: #ffffff;
+  }
+  
+  [data-theme="light"] .subquestion-tabs .tab-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+  }
+  
+  [data-theme="light"] .subquestion-tabs .tab-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+  
+  [data-theme="light"] .subquestion-tabs .tab-btn.active {
+    background: rgba(30, 64, 175, 0.15);
+    border-color: rgba(30, 64, 175, 0.3);
+    color: #1e40af;
+  }
 </style>
 
 <script>
@@ -237,17 +285,26 @@
 
 <section class="toolbar">
   <div>
-    <p class="eyebrow">{{ question.module.name }} · {{ question.get_difficulty_display }}</p>
-    <h1>{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 16px; font-weight: bold; margin-left: 12px; vertical-align: middle;">⭐ Mandatory</span>{% endif %}</h1>
+    <p class="eyebrow">{{ display_question.module.name }} · {{ display_question.get_difficulty_display }}</p>
+    {% if is_dbms_module and subquestion %}
+      <div class="subquestion-tabs">
+        <button type="button" class="tab-btn {% if subquestion_type == 'select' %}active{% endif %}" data-type="select">SELECT</button>
+        <button type="button" class="tab-btn {% if subquestion_type == 'insert' %}active{% endif %}" data-type="insert">INSERT</button>
+        <button type="button" class="tab-btn {% if subquestion_type == 'update' %}active{% endif %}" data-type="update">UPDATE</button>
+      </div>
+      <h1>{{ subquestion.title }}{% if subquestion.is_mandatory %}<span style="color:#eab308; font-size: 16px; font-weight: bold; margin-left: 12px; vertical-align: middle;">⭐ Mandatory</span>{% endif %}</h1>
+    {% else %}
+      <h1>{{ display_question.title }}{% if display_question.is_mandatory %}<span style="color:#eab308; font-size: 16px; font-weight: bold; margin-left: 12px; vertical-align: middle;">⭐ Mandatory</span>{% endif %}</h1>
+    {% endif %}
   </div>
   <div class="toolbar-actions" style="display: flex; align-items: center; gap: 12px;">
     <!-- Course / Semester Badge -->
-    {% if question.module.course %}
+    {% if display_question.module.course %}
     <div class="semester-badge badge-semester">
-      {% if question.module.course.semester %}
-        <span>Semester {{ question.module.course.semester }}</span>
-      {% elif question.module.course.year %}
-        <span>Year {{ question.module.course.year }}</span>
+      {% if display_question.module.course.semester %}
+        <span>Semester {{ display_question.module.course.semester }}</span>
+      {% elif display_question.module.course.year %}
+        <span>Year {{ display_question.module.course.year }}</span>
       {% endif %}
     </div>
     {% endif %}
@@ -261,11 +318,11 @@
     {% endif %}
 
     <button type="button" class="secondary maximize-page-btn" id="editor-maximize-btn" title="Toggle Full Screen Editor" style="min-height: 42px; height: 42px; padding: 0 20px; font-size: 14px; gap: 8px; border-radius: var(--radius-full);">
-      <svg class="icon-maximize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
-      <svg class="icon-minimize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3"></path><path d="M21 8h-3a2 2 0 0 1-2-2V3"></path><path d="M3 16h3a2 2 0 0 1 2 2v3"></path><path d="M16 21v-3a2 2 0 0 1 2-2h3"></path></svg>
+      <svg class="icon-maximize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0-2-2h-3"></path></svg>
+      <svg class="icon-minimize" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3"></path><path d="M21 8h-3a2 2 0 0 1-2-2V3"></path><path d="M3 16h3a2 2 0 0 1-2 2v3"></path></svg>
       <span class="max-text">Maximize</span>
     </button>
-    <a class="back-button as-link" href="{% url 'module_detail' question.module.id %}">Back</a>
+    <a class="back-button as-link" href="{% url 'module_detail' display_question.module.id %}">Back</a>
   </div>
 </section>
 
@@ -282,9 +339,9 @@
       </div>
     </div>
 
-    <div class="prose-dark" style="font-size: 15px; margin-bottom: 20px;">{{ question.description|safe|linebreaks }}</div>
+    <div class="prose-dark" style="font-size: 15px; margin-bottom: 20px;">{{ display_question.description|safe|linebreaks }}</div>
 
-    {% with sample_test_cases=question.test_cases.all|dictsort:"order" %}
+    {% with sample_test_cases=display_question.test_cases.all|dictsort:"order" %}
       {% if sample_test_cases %}
         <div class="examples-grid">
           {% for tc in sample_test_cases %}
@@ -441,24 +498,24 @@
       </div>
       
       <div style="display: flex; align-items: center; gap: 12px;">
-        {% if question.allow_multiple_languages %}
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="field-label">Language:</span>
-          <select name="language_id_selector" id="language-select" class="language-select" aria-label="Select programming language">
-            <option value="50" {% if request.POST.language_id == "50" or not request.POST.language_id %}selected{% endif %}>C (GCC)</option>
-            <option value="54" {% if request.POST.language_id == "54" %}selected{% endif %}>C++ (G++)</option>
-            <option value="71" {% if request.POST.language_id == "71" %}selected{% endif %}>Python 3</option>
-            <option value="62" {% if request.POST.language_id == "62" %}selected{% endif %}>Java 17</option>
-          </select>
-        </div>
-        {% else %}
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="field-label">Language:</span>
-          <span style="font-size: 13px; font-weight: 600; padding: 4px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; text-transform: uppercase;">
-            {% if question_language == 'cpp' %}C++{% else %}{{ question_language }}{% endif %}
-          </span>
-        </div>
-        {% endif %}
+{% if display_question.allow_multiple_languages %}
+<div style="display: flex; align-items: center; gap: 8px;">
+  <span class="field-label">Language:</span>
+  <select name="language_id_selector" id="language-select" class="language-select" aria-label="Select programming language">
+    <option value="50" {% if request.POST.language_id == "50" or not request.POST.language_id %}selected{% endif %}>C (GCC)</option>
+    <option value="54" {% if request.POST.language_id == "54" %}selected{% endif %}>C++ (G++)</option>
+    <option value="71" {% if request.POST.language_id == "71" %}selected{% endif %}>Python 3</option>
+    <option value="62" {% if request.POST.language_id == "62" %}selected{% endif %}>Java 17</option>
+  </select>
+</div>
+{% else %}
+<div style="display: flex; align-items: center; gap: 8px;">
+  <span class="field-label">Language:</span>
+  <span style="font-size: 13px; font-weight: 600; padding: 4px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; text-transform: uppercase;">
+    {% if question_language == 'cpp' %}C++{% else %}{{ question_language }}{% endif %}
+  </span>
+</div>
+{% endif %}
         <button type="button" class="secondary" id="editor-minimize-btn" title="Exit Full Screen" style="display: none; height: 32px; min-height: 32px; padding: 0 14px; font-size: 12px; border-radius: var(--radius-sm);">
           Exit Fullscreen
         </button>
@@ -2158,6 +2215,31 @@ public class Main {
       });
     }
   })();
+
+  // SUBQUESTION TAB HANDLING
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    if (tabButtons.length > 0) {
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const type = this.getAttribute('data-type');
+          // Update active tab
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Update URL without page reload
+          const url = new URL(window.location);
+          url.searchParams.set('subtype', type);
+          window.history.replaceState({}, '', url);
+          
+          // Reload the page to show the new subquestion
+          // In a real implementation, we might fetch data via AJAX,
+          // but for simplicity we'll reload since the server handles the subtype parameter
+          location.reload();
+        });
+      });
+    }
+  });
 </script>
 {% endif %}
 

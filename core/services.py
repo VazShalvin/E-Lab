@@ -118,6 +118,19 @@ def sync_assignment_completion(assignment):
             question__assigned_slots__assignment=assignment,
         ).values_list("question_id", flat=True)
     )
+    # Also get accepted subquestion IDs for DBMS modules
+    accepted_subquestion_ids = set()
+    if "dbms" in assignment.module.category.lower():
+        from .models import SubQuestion
+        accepted_subquestion_ids = set(
+            Submission.objects.filter(
+                student=assignment.student,
+                status=Submission.Status.ACCEPTED,
+                subquestion__isnull=False,
+                subquestion__main_question__assigned_slots__assignment=assignment,
+            ).values_list("subquestion_id", flat=True)
+        )
+    
     now = timezone.now()
     slots = list(assignment.assigned_questions.select_related("question"))
     changed = False
@@ -126,12 +139,37 @@ def sync_assignment_completion(assignment):
         if not slot.unlocked_at:
             slot.unlocked_at = now
             changed = True
-        if slot.question_id in accepted_ids and not slot.completed_at:
+        
+        # Check if this question is completed
+        question_completed = False
+        if "dbms" in assignment.module.category.lower():
+            # For DBMS modules, check if all sub-questions are completed
+            from .models import SubQuestion
+            subquestions = SubQuestion.objects.filter(main_question=slot.question, is_active=True)
+            if subquestions.exists():
+                # All sub-questions must be completed
+                completed_subquestion_ids = set(
+                    Submission.objects.filter(
+                        student=assignment.student,
+                        status=Submission.Status.ACCEPTED,
+                        subquestion__in=subquestions
+                    ).values_list("subquestion_id", flat=True)
+                )
+                question_completed = len(completed_subquestion_ids) == len(subquestions)
+            else:
+                # No sub-questions, fall back to main question completion
+                question_completed = slot.question_id in accepted_ids
+        else:
+            # Non-DBMS modules: check main question completion
+            question_completed = slot.question_id in accepted_ids
+            
+        if question_completed and not slot.completed_at:
             slot.completed_at = now
             changed = True
-        elif slot.completed_at and slot.question_id not in accepted_ids:
+        elif slot.completed_at and not question_completed:
             slot.completed_at = None
             changed = True
+            
         if slot.completed_at and index + 1 < len(slots) and not slots[index + 1].unlocked_at:
             slots[index + 1].unlocked_at = now
             changed = True
@@ -184,7 +222,16 @@ def evaluate_submission(submission_id):
     Uses a thread pool sized for production load (400 concurrent users).
     """
     submission = Submission.objects.select_related("question", "student").get(pk=submission_id)
-    question = submission.question
+    
+    # Determine if this is for a sub-question
+    if submission.subquestion:
+        question = submission.subquestion
+        # For sub-questions, we still need the main question for module/category access
+        main_question = submission.question
+    else:
+        question = submission.question
+        main_question = question
+        
     tests = list(question.test_cases.filter(is_sample=False))
     if not tests:
         tests = list(question.test_cases.all())
@@ -298,14 +345,28 @@ def evaluate_submission(submission_id):
 
 
 def update_progress(student, module):
-    questions = Question.objects.filter(module=module, is_active=True)
-    if module.category in ["placement_training", "advanced_placement_training"]:
-        total = min(7, questions.count())
+    # For DBMS modules, count sub-questions instead of questions
+    if "dbms" in module.category.lower():
+        # Get all sub-questions for active main questions in this module
+        from .models import SubQuestion
+        subquestions = SubQuestion.objects.filter(
+            main_question__module=module,
+            main_question__is_active=True,
+            is_active=True
+        )
+        total = min(12, subquestions.count()) * 3  # 3 sub-questions per main question, capped at 12 main questions
+        attempted = subquestions.filter(submissions__student=student).distinct().count()
+        completed = subquestions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
+        completed = min(completed, total)
     else:
-        total = min(12, questions.count())
-    attempted = questions.filter(submissions__student=student).distinct().count()
-    completed = questions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
-    completed = min(completed, total)
+        questions = Question.objects.filter(module=module, is_active=True)
+        if module.category in ["placement_training", "advanced_placement_training"]:
+            total = min(7, questions.count())
+        else:
+            total = min(12, questions.count())
+        attempted = questions.filter(submissions__student=student).distinct().count()
+        completed = questions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
+        completed = min(completed, total)
     percentage = (completed / total * 100) if total else 0
     progress, _ = Progress.objects.update_or_create(
         student=student,

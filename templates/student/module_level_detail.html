@@ -64,13 +64,28 @@
   </div>
   <div class="list">
     {% for question in questions %}
-      <a class="row-card" href="{% url 'question_detail' question.id %}">
-        <span>
-          <strong>{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</strong>
-          <small>{{ question.get_difficulty_display }}</small>
-        </span>
-        <span>Solve</span>
-      </a>
+      {% if is_dbms_module %}
+        <div class="panel" style="margin-bottom: 20px; border-left: 4px solid var(--accent-primary); padding: 16px; background: rgba(31, 41, 55, 0.4);">
+          <h3 style="margin: 0 0 6px;">{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</h3>
+          <p class="muted">Sub-questions: SELECT, INSERT, UPDATE</p>
+          <div class="subquestion-status">
+            {% for subq_data in subquestion_completion_data[question.id] %}
+              <span class="subquestion-status-item {% if subq_data.completed %}completed{% else %}pending{% endif %}">
+                {{ subq_data.subquestion.get_type_display }}
+                {% if subq_data.completed %}<span style="color:#10b981;">✓</span>{% else %}<span style="color:#ef4444;">○</span>{% endif %}
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <a class="row-card" href="{% url 'question_detail' question.id %}">
+          <span>
+            <strong>{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</strong>
+            <small>{{ question.get_difficulty_display }}</small>
+          </span>
+          <span>Solve</span>
+        </a>
+      {% endif %}
     {% empty %}
       <p class="muted">No {{ difficulty_label|lower }} questions in this module yet.</p>
     {% endfor %}

@@ -45,12 +45,35 @@ class StudentSignUpForm(UserCreationForm):
 
 
 class SubmissionForm(forms.ModelForm):
+    subquestion = forms.ModelChoiceField(
+        queryset=SubQuestion.objects.none(),  # Will be set in __init__
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     class Meta:
         model = Submission
-        fields = ("code",)
+        fields = ("code", "subquestion")
         widgets: ClassVar[dict] = {
             "code": forms.Textarea(attrs={"rows": 25, "spellcheck": "false", "class": "code-editor"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        # Extract custom parameters
+        question = kwargs.pop('question', None)
+        subquestion_id = kwargs.pop('subquestion_id', None)
+        super().__init__(*args, **kwargs)
+        
+        # If we have a question, set the subquestion queryset to its subquestions
+        if question:
+            self.fields['subquestion'].queryset = question.subquestions.filter(is_active=True)
+            # If we have a specific subquestion_id, set it as initial
+            if subquestion_id:
+                try:
+                    subquestion = question.subquestions.get(id=subquestion_id, is_active=True)
+                    self.fields['subquestion'].initial = subquestion
+                except SubQuestion.DoesNotExist:
+                    pass
 
 
 class ModuleForm(forms.ModelForm):

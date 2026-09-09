@@ -28,6 +28,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .forms import (
+    SubmissionForm,
     CSVQuestionUploadForm,
     FacultyCourseSelectForm,
     ModuleForm,
@@ -35,9 +36,9 @@ from .forms import (
     QuestionForm,
     QuickTestCaseForm,
     StudentSignUpForm,
-    SubmissionForm,
     TestCaseForm,
 )
+from .models import SubQuestion
 from .models import AssignedQuestion, Certificate, CertificateRequest, Course, LabSession, Module, ModuleQuestionAssignment, Notification, OpenEndedQuestion, Progress, Question, Quiz, QuizAttempt, QuizQuestion, Submission, TestCase, User
 from .sandbox import run_code as sandbox_run_code, language_for_id, inject_headers
 from .serializers import ProgressSerializer, QuestionSerializer, SubmissionSerializer
@@ -56,7 +57,7 @@ from .services import (
     student_progress,
     update_progress,
 )
-from .tasks import evaluate_submission_task
+from .tasks import evaluate_submission_task, generate_llm_hint_task
 from .hint_service import get_student_hints_for_question, generate_hint_for_submission, unlock_hint_for_question
 
 
@@ -599,11 +600,23 @@ def module_level_detail(request, module_id, difficulty):
     if difficulty not in valid_difficulties:
         raise PermissionDenied
     record_attendance(request.user, module)
+    
+    # Check if this is a DBMS module
+    is_dbms_module = "dbms" in module.category.lower()
+    
     if request.user.is_faculty_like:
-        questions = module.questions.filter(is_active=True, difficulty=difficulty)
-        accepted_ids = set()
-        assigned_slots = []
-        current_slot = None
+        if is_dbms_module:
+            # For faculty, show main questions with sub-question completion status
+            questions = list(module.questions.filter(is_active=True, difficulty=difficulty))
+            # For faculty view, we don't need assigned_slots in the same way
+            assigned_slots = []
+            current_slot = None
+            accepted_ids = set()
+        else:
+            questions = module.questions.filter(is_active=True, difficulty=difficulty)
+            accepted_ids = set()
+            assigned_slots = []
+            current_slot = None
     else:
         if module.category in ["placement_training", "advanced_placement_training"]:
             assignment_count = 7
@@ -611,10 +624,59 @@ def module_level_detail(request, module_id, difficulty):
             assignment_count = 5
         assignment = get_or_create_module_assignment(request.user, module, difficulty, count=assignment_count)
         assigned_slots = sync_assignment_completion(assignment)
-        questions = [slot.question for slot in assigned_slots]
+        if is_dbms_module:
+            # For DBMS modules, questions are the main questions from assigned slots
+            questions = [slot.question for slot in assigned_slots]
+        else:
+            questions = [slot.question for slot in assigned_slots]
         current_slot = current_unlocked_question(assignment)
-        accepted_ids = {slot.question_id for slot in assigned_slots if slot.completed_at}
+        if is_dbms_module:
+            # For DBMS modules, accepted_ids should be main questions where all sub-questions are completed
+            accepted_ids = set()
+            for slot in assigned_slots:
+                # Check if all sub-questions for this main question are completed
+                from .models import SubQuestion
+                subquestions = SubQuestion.objects.filter(main_question=slot.question, is_active=True)
+                if subquestions.exists():
+                    completed_subquestion_ids = set(
+                        Submission.objects.filter(
+                            student=request.user,
+                            status=Submission.Status.ACCEPTED,
+                            subquestion__in=subquestions
+                        ).values_list("subquestion_id", flat=True)
+                    )
+                    if len(completed_subquestion_ids) == len(subquestions):
+                        accepted_ids.add(slot.question_id)
+                else:
+                    # No sub-questions, fall back to main question completion
+                    if slot.completed_at:
+                        accepted_ids.add(slot.question_id)
+        else:
+            accepted_ids = {slot.question_id for slot in assigned_slots if slot.completed_at}
+    
     difficulty_label = dict(Question.Difficulty.choices).get(difficulty, difficulty.title())
+    
+    # Prepare sub-question completion data for DBMS modules
+    subquestion_completion_data = {}
+    if is_dbms_module and not request.user.is_faculty_like:
+        from .models import SubQuestion
+        for question in questions:
+            subquestions = SubQuestion.objects.filter(main_question=question, is_active=True)
+            subquestion_completion_data[question.id] = []
+            for sq in subquestions:
+                # Check if this sub-question has an accepted submission
+                has_accepted = Submission.objects.filter(
+                    student=request.user,
+                    question=question,
+                    subquestion=sq,
+                    status=Submission.Status.ACCEPTED
+                ).exists()
+                subquestion_completion_data[question.id].append({
+                    'subquestion': sq,
+                    'completed': has_accepted,
+                    'type': sq.type
+                })
+    
     return render(
         request,
         "student/module_level_detail.html",
@@ -626,6 +688,8 @@ def module_level_detail(request, module_id, difficulty):
             "assigned_slots": assigned_slots,
             "current_slot": current_slot,
             "accepted_ids": accepted_ids,
+            "is_dbms_module": is_dbms_module,
+            "subquestion_completion_data": subquestion_completion_data,
         },
     )
 
@@ -650,9 +714,43 @@ def question_detail(request, question_id):
             messages.error(request, "This question is not assigned to you.")
             return redirect("module_level_detail", question.module_id, question.difficulty)
     record_attendance(request.user, question.module)
+    
+    # Determine if we are dealing with a DBMS module and sub-question
+    is_dbms_module = "dbms" in question.module.category.lower()
+    subquestion = None
+    subquestion_type = None
+    display_question = question  # Default to main question for display
+    
+    if is_dbms_module:
+        # Get sub-question type from GET parameter, default to 'select'
+        subquestion_type = request.GET.get('subtype', 'select').lower()
+        # Validate subquestion_type
+        if subquestion_type not in ['select', 'insert', 'update']:
+            subquestion_type = 'select'
+        try:
+            subquestion = question.subquestions.get(type=subquestion_type, is_active=True)
+            display_question = subquestion
+        except SubQuestion.DoesNotExist:
+            # Fallback to the first active sub-question
+            subquestion = question.subquestions.filter(is_active=True).first()
+            if subquestion:
+                display_question = subquestion
+            else:
+                # No sub-questions, fall back to main question
+                display_question = question
+                subquestion_type = None
+    
     latest = Submission.objects.filter(student=request.user, question=question).first()
-    initial = {"code": latest.code if latest else question.starter_code}
-    form = SubmissionForm(request.POST or None, initial=initial)
+    # For DBMS modules, we might want to filter by subquestion as well for the latest submission
+    # But the latest submission is for the main question and subquestion combination.
+    # We'll adjust the latest to be for the specific subquestion if we are in a DBMS context.
+    if is_dbms_module and subquestion:
+        latest = Submission.objects.filter(student=request.user, question=question, subquestion=subquestion).first()
+    else:
+        latest = Submission.objects.filter(student=request.user, question=question).first()
+    
+    initial = {"code": latest.code if latest else display_question.starter_code}
+    form = SubmissionForm(request.POST or None, initial=initial, question=question, subquestion_id=subquestion.id if subquestion else None)
     if request.method == "POST" and form.is_valid():
         if not can_submit(request.user, question):
             messages.error(request, "Please wait 10 seconds before submitting again.")
@@ -660,13 +758,15 @@ def question_detail(request, question_id):
         submission = form.save(commit=False)
         submission.student = request.user
         submission.question = question
-        if question.allow_multiple_languages:
+        if is_dbms_module and subquestion:
+            submission.subquestion = subquestion
+        if display_question.allow_multiple_languages:
             try:
-                submission.language_id = int(request.POST.get("language_id", question.language_id))
+                submission.language_id = int(request.POST.get("language_id", display_question.language_id))
             except ValueError:
-                submission.language_id = question.language_id
+                submission.language_id = display_question.language_id
         else:
-            submission.language_id = question.language_id
+            submission.language_id = display_question.language_id
         
         session_key = f"violations_{request.user.id}_{question.id}"
         submission.proctoring_violations = request.session.get(session_key, 0)
@@ -676,17 +776,21 @@ def question_detail(request, question_id):
         evaluate_submission_task.delay(submission.pk)
         messages.success(request, "Submission queued. We'll take you to the results shortly.")
         return redirect("submission_detail", submission.pk)
-
+    
     return render(
         request,
         "student/question_detail.html",
         {
-            "question": question,
+            "question": question,  # Main question for reference
+            "display_question": display_question,  # The question/sub-question being displayed
+            "subquestion": subquestion,  # The current sub-question (if any)
+            "subquestion_type": subquestion_type,  # The type of sub-question (if any)
+            "is_dbms_module": is_dbms_module,
             "form": form,
             "latest_submission": latest,
-            "question_language": language_for_id(question.language_id),
-            "proctoring_active": question.is_proctoring_active,
-            "hints_data": get_student_hints_for_question(request.user, question),
+            "question_language": language_for_id(display_question.language_id),
+            "proctoring_active": display_question.is_proctoring_active,
+            "hints_data": get_student_hints_for_question(request.user, question),  # Hints are still per main question
         },
     )
 
@@ -694,7 +798,7 @@ def question_detail(request, question_id):
 @login_required
 def submission_detail(request, submission_id):
     submission = get_object_or_404(
-        Submission.objects.select_related("question", "question__module"), pk=submission_id
+        Submission.objects.select_related("question", "question__module", "subquestion"), pk=submission_id
     )
     if submission.student != request.user and not request.user.is_faculty_like:
         raise PermissionDenied
@@ -715,7 +819,9 @@ def submission_detail(request, submission_id):
 
 @login_required
 def submission_hints_api(request, submission_id):
-    submission = get_object_or_404(Submission.objects.select_related("question"), pk=submission_id)
+    submission = get_object_or_404(
+        Submission.objects.select_related("question", "subquestion"), pk=submission_id
+    )
     if submission.student != request.user and not request.user.is_faculty_like:
         raise PermissionDenied
 
@@ -805,6 +911,56 @@ def unlock_question_hint_api(request, question_id):
             for h in hints_data["hints"]
         ],
     })
+
+
+@login_required
+def hint_status_api(request, question_id):
+    """
+    Polling endpoint for clients to check if an LLM-generated hint
+    has been cached. Returns the current hint state including whether
+    a background LLM generation is still in progress.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    question = get_object_or_404(Question, pk=question_id)
+    hints_data = get_student_hints_for_question(request.user, question)
+
+    # Check if there are any cached LLM hints for this question+tier
+    next_tier = hints_data["next_hint_number"]
+    cache_key = f"elab_theory_hint_{question.id}_{next_tier}" if next_tier else None
+
+    result = {
+        "unlocked_count": hints_data["unlocked_count"],
+        "max_hints": hints_data["max_hints"],
+        "can_unlock_more": hints_data["can_unlock_more"],
+        "next_hint_number": hints_data["next_hint_number"],
+        "hints": [
+            {
+                "hint_number": h.hint_number,
+                "hint_text": h.hint_text,
+                "hint_type": h.hint_type,
+                "unlocked_at": h.unlocked_at.strftime("%b %d, %H:%M"),
+            }
+            for h in hints_data["hints"]
+        ],
+    }
+
+    # If there's a pending tier, check if LLM result is cached
+    if next_tier and cache_key:
+        cached = cache.get(cache_key)
+        if cached:
+            result["llm_hint_available"] = True
+            result["llm_hint_text"] = cached
+            result["hint_generation_status"] = "complete"
+        else:
+            # Check if a generation task is in-flight (lock exists)
+            lock_key = f"elab_llm_in_flight_{question.id}_{next_tier}"
+            in_flight = cache.get(lock_key) is not None
+            result["llm_hint_available"] = False
+            result["hint_generation_status"] = "generating" if in_flight else "pending"
+
+    return JsonResponse(result)
 
 
 @login_required

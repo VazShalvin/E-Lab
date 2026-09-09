@@ -19,6 +19,8 @@ from .models import (
     QuizQuestion,
     StudentQuestionHint,
     Submission,
+    SubQuestion,
+    SubQuestionTestCase,
     TestCase,
     User,
 )
@@ -165,5 +167,25 @@ class StudentQuestionHintAdmin(admin.ModelAdmin):
     list_display = ("student", "question", "hint_number", "hint_type", "unlocked_at")
     list_filter = ("hint_number", "hint_type")
     search_fields = ("student__username", "student__usn", "question__title")
+
+
+class SubQuestionTestCaseInline(admin.TabularInline):
+    model = SubQuestionTestCase
+    extra = 1
+
+
+@admin.register(SubQuestion)
+class SubQuestionAdmin(admin.ModelAdmin):
+    list_display = ("title", "main_question", "type", "difficulty", "language_id", "is_mandatory", "proctoring_enabled", "is_active")
+    list_filter = ("main_question__module", "type", "difficulty", "is_mandatory", "proctoring_enabled", "is_active")
+    prepopulated_fields = {"slug": ("title",)}
+    inlines = [SubQuestionTestCaseInline]
+
+
+@admin.register(SubQuestionTestCase)
+class SubQuestionTestCaseAdmin(admin.ModelAdmin):
+    list_display = ("subquestion", "stdin", "expected_output", "is_sample", "order")
+    list_filter = ("is_sample",)
+    search_fields = ("subquestion__title",)
 
 
