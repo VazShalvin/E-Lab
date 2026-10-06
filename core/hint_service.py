@@ -25,6 +25,7 @@ _INFLIGHT_LLM_KEY = "elab_llm_in_flight_{question_id}_{tier}"
 _LLM_RESULT_KEY = "elab_llm_result_{question_id}_{tier}"
 _LLM_RESULT_TTL = 120  # 2 minutes — LLM should complete within this window
 _LLM_LOCK_TTL = 120  # 2 minutes — lock expires if generation hangs
+_LLM_KIND_KEY = "elab_llm_kind_{question_id}_{tier}"  # "llm" | "diagnostic"
 
 
 def get_student_hints_for_question(student, question):
@@ -86,7 +87,10 @@ def unlock_hint_for_question(student, question):
     # --- L1 CACHE: Redis fast-path (< 1ms) ---
     cache_key = f"elab_theory_hint_{question.id}_{next_hint_num}"
     hint_text = cache.get(cache_key)
-    hint_type = "local_llm"
+    # Only trust the main cache entry if it was written by the LLM;
+    # diagnostic fallback text is served as hint_type "diagnostic".
+    cached_kind = cache.get(_LLM_KIND_KEY.format(question_id=question.id, tier=next_hint_num))
+    hint_type = "diagnostic" if (hint_text and cached_kind == "diagnostic") else "local_llm"
 
     # --- L2 CACHE: Shared Question Canonical Hint in DB (< 5ms) ---
     if not hint_text:
@@ -95,8 +99,12 @@ def unlock_hint_for_question(student, question):
         ).exclude(hint_text="").first()
         if canonical:
             hint_text = canonical.hint_text
+            hint_type = "local_llm"
             cache.set(cache_key, hint_text, timeout=HINT_CACHE_TTL)
+            cache.set(_LLM_KIND_KEY.format(question_id=question.id, tier=next_hint_num), "llm", timeout=HINT_CACHE_TTL)
             logger.info(f"Theory hint L2 DB hit for Question {question.id} Tier {next_hint_num}.")
+    elif cached_kind == "diagnostic":
+        hint_type = "diagnostic"
 
     # --- ASYNC LLM GENERATION: Queue Celery task, never block the web worker ---
     # The Celery task claims the Redis slot, calls Ollama, and caches the result.
@@ -154,7 +162,8 @@ def pregenerate_hints_for_question(question, force=False):
         cache_key = f"elab_theory_hint_{question.id}_{tier}"
         if not force:
             cached = cache.get(cache_key)
-            if cached:
+            kind = cache.get(_LLM_KIND_KEY.format(question_id=question.id, tier=tier))
+            if cached and kind != "diagnostic":
                 results[tier] = cached
                 continue
 
@@ -163,16 +172,18 @@ def pregenerate_hints_for_question(question, force=False):
             ).exclude(hint_text="").first()
             if canonical:
                 cache.set(cache_key, canonical.hint_text, timeout=HINT_CACHE_TTL)
+                cache.set(_LLM_KIND_KEY.format(question_id=question.id, tier=tier), "llm", timeout=HINT_CACHE_TTL)
                 results[tier] = canonical.hint_text
                 continue
 
         # Queue a Celery task to generate the LLM hint
-        # The task claims the Redis slot, does the Ollama call, caches result
+        # The task claims the Redis slot, does the Ollama call, caches result.
+        # NOTE: the L4 fallback is returned directly and is NOT written to the
+        # main cache key — doing so would short-circuit the queued LLM task.
         _enqueue_llm_generation(question.id, tier)
 
         # Return L4 deterministic fallback immediately
         hint_text = _generate_diagnostic_hint_for_question(question, tier)
-        cache.set(cache_key, hint_text, timeout=HINT_CACHE_TTL)
         results[tier] = hint_text
 
     return results

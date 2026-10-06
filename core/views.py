@@ -955,7 +955,8 @@ def hint_status_api(request, question_id):
     # If there's a pending tier, check if LLM result is cached
     if next_tier and cache_key:
         cached = cache.get(cache_key)
-        if cached:
+        kind = cache.get(f"elab_llm_kind_{question.id}_{next_tier}")
+        if cached and kind != "diagnostic":
             result["llm_hint_available"] = True
             result["llm_hint_text"] = cached
             result["hint_generation_status"] = "complete"

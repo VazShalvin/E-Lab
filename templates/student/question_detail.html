@@ -1614,6 +1614,37 @@ public class Main {
     }
   }
 
+  // Poll the hint status endpoint briefly so an asynchronously-generated
+  // LLM hint can replace the instant deterministic fallback without reload.
+  function pollForLlmHintUpgrade(questionId) {
+    if (!questionId) return;
+    let attempts = 0;
+    const maxAttempts = 12;  // ~36s total
+    const timer = setInterval(async function() {
+      attempts += 1;
+      try {
+        const resp = await fetch(`/questions/${questionId}/hints/status/`);
+        if (!resp.ok) throw new Error("status fetch failed");
+        const data = await resp.json();
+        const hasDiagnostic = (data.hints || []).some(h => h.hint_type === "diagnostic");
+        if (!hasDiagnostic) {
+          clearInterval(timer);
+          renderHintsData(data, false);
+          showAnimatedNotification({
+            type: "success",
+            title: "💡 AI Tutor hint updated",
+            message: "A question-tailored hint from the local AI tutor is ready."
+          });
+        } else if (attempts >= maxAttempts || data.hint_generation_status === "complete") {
+          clearInterval(timer);
+        }
+      } catch (e) {
+        if (attempts >= maxAttempts) clearInterval(timer);
+      }
+      if (attempts >= maxAttempts) clearInterval(timer);
+    }, 3000);
+  }
+
   function bindUnlockHintButton() {
     const btn = document.getElementById("unlock-hint-btn");
     if (!btn) return;
@@ -1651,6 +1682,7 @@ public class Main {
 
         const resData = await resp.json();
         renderHintsData(resData, true);
+        pollForLlmHintUpgrade({{ question.id }});
 
         showAnimatedNotification({
           type: "info",

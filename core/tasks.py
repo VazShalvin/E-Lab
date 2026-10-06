@@ -33,8 +33,13 @@ def generate_llm_hint_task(self, question_id, tier):
     Retries up to 3 times with 5-second delay if Ollama is temporarily unavailable.
     """
     from django.core.cache import cache
-    from .models import Question, StudentQuestionHint
-    from .hint_service import _call_local_llm_for_question, _generate_diagnostic_hint_for_question, _INFLIGHT_LLM_KEY
+    from .models import Question, StudentQuestionHint, Submission
+    from .hint_service import (
+        _call_local_llm_for_question,
+        _generate_diagnostic_hint_for_question,
+        _INFLIGHT_LLM_KEY,
+        _LLM_KIND_KEY,
+    )
 
     try:
         question = Question.objects.filter(pk=question_id, is_active=True).first()
@@ -53,9 +58,13 @@ def generate_llm_hint_task(self, question_id, tier):
             return None
 
         try:
-            # Check again if another process already cached the result
+            # Check if an LLM-generated result is already cached.
+            # A cached value is only authoritative when it came from the LLM;
+            # deterministic fallbacks must never short-circuit regeneration.
             cached = cache.get(cache_key)
-            if cached:
+            kind = cache.get(_LLM_KIND_KEY.format(question_id=question.id, tier=tier))
+            if cached and kind == "llm":
+                _upgrade_student_hints(question, tier, cached)
                 return cached
 
             # Get existing hints for context (empty list for pre-generation)
@@ -74,12 +83,15 @@ def generate_llm_hint_task(self, question_id, tier):
 
             if hint_text:
                 cache.set(cache_key, hint_text, timeout=604800)
+                cache.set(_LLM_KIND_KEY.format(question_id=question.id, tier=tier), "llm", timeout=604800)
+                _upgrade_student_hints(question, tier, hint_text)
                 logger.info(f"Background LLM hint cached for Q{question.id} T{tier}.")
                 return hint_text
             else:
                 # LLM failed — try deterministic fallback and cache that
                 hint_text = _generate_diagnostic_hint_for_question(question, tier)
                 cache.set(cache_key, hint_text, timeout=604800)
+                cache.set(_LLM_KIND_KEY.format(question_id=question.id, tier=tier), "diagnostic", timeout=604800)
                 return hint_text
 
         finally:
@@ -98,7 +110,17 @@ def generate_llm_hint_task(self, question_id, tier):
                     hint_text = _generate_diagnostic_hint_for_question(question, tier)
                     cache_key = f"elab_theory_hint_{question.id}_{tier}"
                     cache.set(cache_key, hint_text, timeout=604800)
+                    cache.set(_LLM_KIND_KEY.format(question_id=question.id, tier=tier), "diagnostic", timeout=604800)
                     logger.info(f"Deterministic fallback cached for Q{question.id} T{tier} after LLM failure.")
             except Exception:
                 pass
         return None
+
+
+def _upgrade_student_hints(question, tier, llm_text):
+    """Replace stored deterministic fallback rows with the LLM-generated text."""
+    from .models import StudentQuestionHint
+    StudentQuestionHint.objects.filter(
+        question=question, hint_number=tier, hint_type="diagnostic"
+    ).update(hint_text=llm_text, hint_type="local_llm")
+    logger.info(f"Upgraded stored hints to LLM text for Q{question.id} T{tier}.")
