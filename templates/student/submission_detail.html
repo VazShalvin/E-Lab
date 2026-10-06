@@ -120,8 +120,18 @@
 </section>
 
 <script>
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function formatHintContent(rawText) {
     if (!rawText) return "";
+    rawText = escapeHtml(rawText);
     let html = "";
     const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     let currentType = "general";
@@ -294,7 +304,7 @@
           // Fallback if not JSON
           let fallback = document.getElementById("judge-output-data").textContent;
           try { fallback = JSON.parse(fallback); } catch(ex) {}
-          document.getElementById("rich-output-container").innerHTML = `<pre>${fallback}</pre>`;
+          document.getElementById("rich-output-container").innerHTML = `<pre>${escapeHtml(typeof fallback === 'string' ? fallback : JSON.stringify(fallback))}</pre>`;
         }
       </script>
     {% else %}

@@ -164,9 +164,12 @@
                 <span class="badge {% if course.proctoring_enabled %}badge-success{% else %}badge-muted{% endif %}" style="font-size:0.8rem; padding:0.25rem 0.65rem; border-radius:1rem;">
                   {% if course.proctoring_enabled %}Proctoring ON{% else %}Proctoring OFF{% endif %}
                 </span>
-                <a class="secondary as-link" href="{% url 'toggle_course_proctoring' course.id %}" style="font-size:0.85rem; padding: 4px 12px; border-radius: 6px; text-decoration: none;">
-                  {% if course.proctoring_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
+                <form method="post" action="{% url 'toggle_course_proctoring' course.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="secondary as-link" style="font-size:0.85rem; padding: 4px 12px; border-radius: 6px; text-decoration: none; border:none; cursor:pointer;">
+                    {% if course.proctoring_enabled %}Disable{% else %}Enable{% endif %}
+                  </button>
+                </form>
               </span>
             </div>
           {% empty %}

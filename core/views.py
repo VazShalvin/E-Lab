@@ -25,6 +25,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import Throttled
 from rest_framework.response import Response
 
 from .forms import (
@@ -3025,6 +3026,7 @@ def faculty_agent_add_question_api(request):
 
 
 @login_required
+@require_POST
 def toggle_question_proctoring(request, question_id):
     """Toggle proctoring on a specific question for Faculty, HoD, or Admin."""
     faculty_required(request.user)
@@ -3043,12 +3045,13 @@ def toggle_question_proctoring(request, question_id):
         })
     
     referer = request.META.get("HTTP_REFERER")
-    if referer:
+    if referer and url_has_allowed_host_and_scheme(referer, allowed_hosts={request.get_host()}):
         return redirect(referer)
     return redirect("faculty_question_bank")
 
 
 @login_required
+@require_POST
 def toggle_course_proctoring(request, course_id):
     """Toggle proctoring for an entire course for Faculty, HoD, or Admin."""
     faculty_required(request.user)
@@ -3066,7 +3069,7 @@ def toggle_course_proctoring(request, course_id):
         })
         
     referer = request.META.get("HTTP_REFERER")
-    if referer:
+    if referer and url_has_allowed_host_and_scheme(referer, allowed_hosts={request.get_host()}):
         return redirect(referer)
     return redirect("dashboard")
 

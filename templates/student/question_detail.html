@@ -1454,8 +1454,18 @@ public class Main {
   // =========================================================
   // AUTOMATIC HINT SYSTEM (Question-Tailored Theory & Strategy)
   // =========================================================
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function formatHintContent(rawText) {
     if (!rawText) return "";
+    rawText = escapeHtml(rawText);
     let html = "";
     const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     let currentType = "general";

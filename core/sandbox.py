@@ -178,10 +178,12 @@ def _build_inner_script(lang_config, source_filename, class_name, time_limit, so
     quoted_run = " ".join(shlex.quote(t) for t in run_cmd)
 
     # Use timeout to enforce time limits. Fall back to stdbuf for unbuffered output.
-    # Order: stdbuf (if available) -> timeout -> command
+    # Pick stdbuf-if-available FIRST — chaining with || would re-run the whole
+    # program a second time whenever the first attempt exits non-zero.
     parts.append(
-        f"(command -v stdbuf >/dev/null 2>&1 && stdbuf -o0 timeout {time_limit}s {quoted_run} < input.txt) "
-        f"|| (timeout {time_limit}s {quoted_run} < input.txt)"
+        f"if command -v stdbuf >/dev/null 2>&1; then "
+        f"stdbuf -o0 timeout {time_limit}s {quoted_run} < input.txt; "
+        f"else timeout {time_limit}s {quoted_run} < input.txt; fi"
     )
 
     return "; ".join(parts)
@@ -236,8 +238,10 @@ def run_code(language, source_code, stdin="", expected_output="",
         os.chmod(script_path, 0o755)
 
         # The script will be accessible at /box/run_script.sh in the container
+        container_name = f"elab-sandbox-{uuid.uuid4().hex[:12]}"
         cmd = [
             "docker", "run", "--rm",
+            "--name", container_name,
             "--network", "none",
             "--memory", f"{memory_limit_mb}m",
             "--memory-swap", f"{memory_limit_mb}m",
@@ -301,7 +305,10 @@ def run_code(language, source_code, stdin="", expected_output="",
                 }
 
             # --- Time Limit Exceeded ---
-            if result.returncode == 124 or "timeout" in stderr.lower():
+            # Only the runner's own exit condition (124) or the inner `timeout`
+            # wrapper's stderr marker counts — a runtime program that merely
+            # prints the word "timeout" must not be misclassified.
+            if result.returncode == 124 or "time limit exceeded by sandbox runner" in stderr.lower():
                 return {
                     "status_id": 5,
                     "status": "Time Limit Exceeded",
@@ -345,6 +352,15 @@ def run_code(language, source_code, stdin="", expected_output="",
             }
 
         except subprocess.TimeoutExpired:
+            # The docker CLI was killed, but the inner container may still be
+            # running — force-remove it by name so it can't leak resources.
+            try:
+                subprocess.run(
+                    ["docker", "rm", "-f", container_name],
+                    capture_output=True, timeout=10, check=False,
+                )
+            except Exception:
+                pass
             return {
                 "status_id": 5,
                 "status": "Time Limit Exceeded",
