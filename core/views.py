@@ -361,13 +361,12 @@ def dashboard(request):
     category = request.GET.get("category")
     course_id = request.GET.get("course")
     
-    if course_id is None and category is None:
+    # 1. If no query params provided, read from session
+    if not course_id and not category:
         category = request.session.get("student_last_category")
         course_id = request.session.get("student_last_course")
-    else:
-        request.session["student_last_category"] = category
-        request.session["student_last_course"] = course_id
     
+    # 2. If we have a course_id but no category, try to resolve the category
     if course_id and not category:
         try:
             course = Course.objects.get(id=int(course_id))
@@ -380,8 +379,9 @@ def dashboard(request):
             if first_module:
                 category = first_module.category
         except (ValueError, Course.DoesNotExist):
-            pass
-
+            course_id = None # Reset so it falls back to defaults properly
+            
+    # 3. If STILL no category, use semester-based defaults
     if not category:
         if hasattr(request.user, "semester"):
             sem = request.user.semester
@@ -395,6 +395,12 @@ def dashboard(request):
                 category = "c_programming"
         else:
             category = "c_programming"
+
+    # 4. Save the definitive category and course_id to the session
+    request.session["student_last_category"] = category
+    if course_id:
+        request.session["student_last_course"] = course_id
+        
     progress_rows = student_progress(request.user)
 
     # Filter modules by available_from_semester for students
