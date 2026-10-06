@@ -54,7 +54,8 @@ class HintSystemTests(TestCase):
             difficulty=Question.Difficulty.EASY,
         )
 
-    def test_progressive_hints_capped_at_three(self):
+    @patch("core.hint_service._enqueue_llm_generation")
+    def test_progressive_hints_capped_at_three(self, _mock_enqueue):
         from .hint_service import generate_hint_for_submission, get_student_hints_for_question
         from .models import StudentQuestionHint, Submission
 
@@ -137,7 +138,8 @@ class HintSystemTests(TestCase):
         self.assertEqual(data["hints"][0]["hint_number"], 1)
         self.assertEqual(data["hints"][0]["hint_text"], "Check boundary constraints.")
 
-    def test_unlock_question_hint_api(self):
+    @patch("core.hint_service._enqueue_llm_generation")
+    def test_unlock_question_hint_api(self, _mock_enqueue):
         self.client.force_login(self.student)
 
         # Unlock Hint 1
@@ -169,3 +171,139 @@ class HintSystemTests(TestCase):
         d4 = res4.json()
         self.assertFalse(d4["success"])
 
+
+
+from django.core.cache import cache
+from django.test import override_settings
+from unittest.mock import patch, MagicMock
+
+LOCMEM_CACHE = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
+class LlmHintTaskTests(TestCase):
+    def setUp(self):
+        from .models import Course, Module, Question, StudentQuestionHint, Submission
+        cache.clear()
+        self.student = User.objects.create_user(
+            username="hint_student", password="password123", role=User.Role.STUDENT,
+        )
+        self.course = Course.objects.create(name="C Programming", slug="c-programming-llm")
+        self.module = Module.objects.create(name="Module 1", course=self.course, order=1)
+        self.question = Question.objects.create(
+            title="Two Sum", slug="two-sum-llm", module=self.module,
+            description="Given an array and target, find two numbers that add up to target.",
+            difficulty=Question.Difficulty.EASY,
+        )
+        self.submission = Submission.objects.create(
+            student=self.student, question=self.question, code="pass",
+            status=Submission.Status.WRONG_ANSWER,
+            judge_output='[{"passed": false, "stdin": "4 9", "expected": "2", "actual": "3"}]',
+        )
+        StudentQuestionHint.objects.create(
+            student=self.student, question=self.question, submission=self.submission,
+            hint_number=1, hint_text="old diagnostic text", hint_type="diagnostic",
+        )
+
+    def test_llm_task_caches_llm_text_and_upgrades_rows(self):
+        from .tasks import generate_llm_hint_task
+
+        with patch("core.hint_service._call_local_llm_for_question", return_value="LLM: use a hash map for O(n) lookup."):
+            result = generate_llm_hint_task.apply(args=[self.question.id, 1])
+
+        self.assertEqual(result.result, "LLM: use a hash map for O(n) lookup.")
+        self.assertEqual(cache.get(f"elab_theory_hint_{self.question.id}_1"), "LLM: use a hash map for O(n) lookup.")
+        self.assertEqual(cache.get(f"elab_llm_kind_{self.question.id}_1"), "llm")
+        from .models import StudentQuestionHint
+        row = StudentQuestionHint.objects.get(student=self.student, question=self.question, hint_number=1)
+        self.assertEqual(row.hint_type, "local_llm")
+        self.assertIn("hash map", row.hint_text)
+
+    def test_llm_task_falls_back_without_crashing(self):
+        from .tasks import generate_llm_hint_task
+
+        with patch("core.hint_service._call_local_llm_for_question", return_value=None):
+            result = generate_llm_hint_task.apply(args=[self.question.id, 2])
+
+        self.assertTrue(result.result)
+        self.assertEqual(cache.get(f"elab_llm_kind_{self.question.id}_2"), "diagnostic")
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
+class PregenerateCacheTests(TestCase):
+    def setUp(self):
+        from .models import Course, Module, Question
+        cache.clear()
+        self.course = Course.objects.create(name="C++", slug="cpp-pregen")
+        self.module = Module.objects.create(name="M", course=self.course, order=1)
+        self.question = Question.objects.create(
+            title="Reverse", slug="reverse-pregen", module=self.module,
+            description="Reverse a string.", difficulty=Question.Difficulty.EASY,
+        )
+
+    def test_pregenerate_does_not_poison_llm_cache_slot(self):
+        from .hint_service import pregenerate_hints_for_question
+        with patch("core.hint_service._enqueue_llm_generation") as enqueue:
+            results = pregenerate_hints_for_question(self.question)
+
+        self.assertEqual(enqueue.call_count, 3)
+        for tier in (1, 2, 3):
+            self.assertIsNone(cache.get(f"elab_theory_hint_{self.question.id}_{tier}"))
+            self.assertTrue(len(results[tier]) > 10)
+
+
+class DiagnosticHintGroundingTests(TestCase):
+    def setUp(self):
+        from .models import Course, Module, Question
+        self.student = User.objects.create_user(
+            username="diag_student", password="password123", role=User.Role.STUDENT,
+        )
+        self.course = Course.objects.create(name="Python", slug="python-diag")
+        self.module = Module.objects.create(name="Strings", course=self.course, order=1)
+        self.question = Question.objects.create(
+            title="Palindrome Check", slug="palindrome-diag", module=self.module,
+            description="Check if a string is a palindrome.", difficulty=Question.Difficulty.EASY,
+        )
+
+    def test_wrong_answer_hint_references_failing_test(self):
+        from .hint_service import _generate_diagnostic_hint_for_question
+        from .models import Submission
+        sub = Submission.objects.create(
+            student=self.student, question=self.question, code="pass",
+            status=Submission.Status.WRONG_ANSWER,
+            judge_output='[{"passed": false, "stdin": "abba", "expected": "yes", "actual": "no"}]',
+        )
+        hint = _generate_diagnostic_hint_for_question(self.question, 1, sub)
+        self.assertIn("abba", hint)
+        self.assertIn("Your first failing test", hint)
+
+
+class RagAgentStarterCodeTests(TestCase):
+    def test_starter_code_is_python_not_c(self):
+        from .rag_agent import RAGQuestionAgent
+        agent = RAGQuestionAgent()
+        starter = agent._adapt_starter_code("", "easy")
+        self.assertIn("def solve", starter)
+        self.assertNotIn("#include", starter)
+
+    def test_clean_tc_value_is_callable_on_instance(self):
+        from .rag_agent import RAGQuestionAgent
+        agent = RAGQuestionAgent()
+        self.assertEqual(agent._clean_tc_value("```\n5\n```"), "5")
+
+
+class DbmsProgressTests(TestCase):
+    def test_progress_can_reach_100_percent(self):
+        from .models import Course, Module, Question, SubQuestion, Submission
+        from .services import update_progress
+        student = User.objects.create_user(username="dbms_st", password="password123", role=User.Role.STUDENT)
+        course = Course.objects.create(name="DBMS", slug="dbms-prog")
+        module = Module.objects.create(name="SQL", course=course, order=1, category="dbms_module")
+        q = Question.objects.create(title="Q", slug="dbms-q", module=module, description="d", difficulty=Question.Difficulty.EASY)
+        for i, t in enumerate(["select", "insert", "update"]):
+            sq = SubQuestion.objects.create(main_question=q, type=t, title=t, slug=t, description=t)
+            Submission.objects.create(student=student, question=q, subquestion=sq, code="x", status=Submission.Status.ACCEPTED)
+        update_progress(student, module)
+        from .models import Progress
+        p = Progress.objects.get(student=student, module=module)
+        self.assertEqual(p.percentage, 100)
