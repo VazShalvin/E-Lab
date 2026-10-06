@@ -268,6 +268,8 @@ def _call_local_llm_for_question(question, hint_number, existing_hints, submissi
     # Extract failure context in purely conceptual terms
     status_display = submission.get_status_display() if submission else "Student in-progress solution"
     error_snippet = (submission.error_output or "").strip()[:200] if submission else "None"
+    failed_test = _extract_failed_test_info(getattr(submission, "judge_output", None)) if submission else "Unknown"
+    code_snippet = (submission.code or "").strip()[:300] if submission and getattr(submission, "code", None) else "Not provided"
 
     prior_hints_text = ""
     if existing_hints:
@@ -281,7 +283,9 @@ def _call_local_llm_for_question(question, hint_number, existing_hints, submissi
         f"Problem Description: {question.description[:400]}\n"
         f"Input / Output Context: {question.sample_input[:80] if question.sample_input else 'N/A'} -> {question.sample_output[:80] if question.sample_output else 'N/A'}\n"
         f"Current Attempt Status: {status_display}\n"
-        f"Diagnostic Context: {error_snippet}\n\n"
+        f"Diagnostic Context: {error_snippet}\n"
+        f"First Failing Test: {failed_test}\n"
+        f"Student's Code (for context only, DO NOT quote or fix it): {code_snippet}\n\n"
         f"{prior_hints_text}"
         f"Provide Hint Tier #{hint_number} focusing strictly on the theory of this question. Remember: DO NOT INCLUDE ANY CODE OR CODE BLOCKS."
     )
@@ -415,6 +419,11 @@ def _generate_diagnostic_hint_for_question(question, hint_number, submission=Non
     title = question.title
     status = submission.status if submission else None
     error_output = (submission.error_output or "").lower() if submission else ""
+    failed_test = (
+        _extract_failed_test_info(getattr(submission, "judge_output", None))
+        if submission and status == Submission.Status.WRONG_ANSWER
+        else None
+    )
 
     # 1. Compilation Errors (Grammar, Lexical Scope, and Type Theory)
     if status == Submission.Status.COMPILE_ERROR and submission:
@@ -628,4 +637,7 @@ def _generate_diagnostic_hint_for_question(question, hint_number, submission=Non
     }
 
     topic_dict = topic_guides.get(topic, topic_guides["general_array_loop"])
-    return topic_dict.get(hint_number, topic_dict[1])
+    hint = topic_dict.get(hint_number, topic_dict[1])
+    if failed_test and "Hidden test case" not in failed_test and "mismatch" not in failed_test:
+        hint += f"\n🧪 Your first failing test: {failed_test}. Trace your logic against this exact input by hand before changing code."
+    return hint

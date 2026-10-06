@@ -38,7 +38,7 @@ class RAGQuestionAgent:
         name = re.sub(r'^\d+_', '', dirname)
         return name.replace('_', ' ').lower()
 
-    def _clean_tc_value(text):
+    def _clean_tc_value(self, text):
         """Strip markdown artifacts from test case input/output values."""
         if not text:
             return ''
@@ -279,55 +279,33 @@ class RAGQuestionAgent:
 
     def _adapt_starter_code(self, solution_code: str, difficulty: str) -> str:
         """Generate starter code based on reference solution."""
-        # Extract function signature if possible
+        # Reference's solution may define a Python function; otherwise give a generic stub.
         if solution_code:
-            # Try to find a function definition
             func_match = re.search(r'def\s+(\w+)\s*\([^)]*\):', solution_code)
             if func_match:
                 func_name = func_match.group(1)
-                return f"""#include <stdio.h>
-#include <stdlib.h>
+                return (
+                    "# TODO: Implement the solution\n"
+                    f"# Function to implement: {func_name}\n\n"
+                    "def solve():\n"
+                    "    n = int(input().strip())\n"
+                    "    arr = list(map(int, input().split()))\n"
+                    "    # Call your function / implement your algorithm and print the result\n"
+                    f"    # print({func_name}(arr, n))\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    solve()\n"
+                )
 
-// Function to implement: {func_name}
-// TODO: Implement the solution
-
-int main(void) {{
-    int n;
-    if (scanf("%d", &n) != 1) return 0;
-    
-    // Read input
-    int *arr = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {{
-        scanf("%d", &arr[i]);
-    }}
-    
-    // Call your function and print result
-    // printf("%d\\n", {func_name}(arr, n));
-    
-    free(arr);
-    return 0;
-}}"""
-        
-        return """#include <stdio.h>
-#include <stdlib.h>
-
-// TODO: Implement your solution here
-// Read N, then N integers, compute and print the result
-
-int main(void) {{
-    int n;
-    if (scanf("%d", &n) != 1) return 0;
-    
-    int *arr = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {{
-        scanf("%d", &arr[i]);
-    }}
-    
-    // Your algorithm here
-    
-    free(arr);
-    return 0;
-}}"""
+        return (
+            "# TODO: Implement your solution here\n"
+            "# Read N, then N integers, compute and print the result\n\n"
+            "def solve():\n"
+            "    n = int(input().strip())\n"
+            "    arr = list(map(int, input().split()))\n"
+            "    # Your algorithm here\n\n"
+            "if __name__ == '__main__':\n"
+            "    solve()\n"
+        )
 
     def _adapt_solution(self, solution_code: str, difficulty: str) -> str:
         """Adapt the reference solution."""
@@ -436,23 +414,21 @@ Implement an algorithm for **{topic_title}** at {difficulty} level.
 #### Constraints
 - `1 <= N <= 10^5`
 - `-10^9 <= element <= 10^9`""",
-            "starter_code": """#include <stdio.h>
-#include <stdlib.h>
+            "starter_code": """# TODO: Implement your solution here
+# Read N, then N integers from standard input
 
-int main(void) {
-    int n;
-    if (scanf("%d", &n) != 1) return 0;
-    
-    int *arr = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &arr[i]);
-    }
-    
-    // TODO: Implement algorithm
-    
-    free(arr);
-    return 0;
-}""",
+def solve():
+    import sys
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    n = int(data[0])
+    # arr = list(map(int, data[1:n + 1]))
+    # TODO: Your algorithm here
+
+if __name__ == '__main__':
+    solve()
+""",
             "solution": "def solve():\n    import sys\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    n = int(input_data[0])\n    arr = [int(x) for x in input_data[1:n+1]]\n    print(sum(arr))\n\nif __name__ == '__main__':\n    solve()",
             "time_limit": 2.0,
             "memory_limit_kb": 128000,
