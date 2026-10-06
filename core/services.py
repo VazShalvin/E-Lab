@@ -13,7 +13,7 @@ from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 # Local imports
-from .models import AssignedQuestion, Attendance, Certificate, CertificateRequest, LabSession, Module, ModuleQuestionAssignment, Notification, Progress, Question, Submission, User
+from .models import AssignedQuestion, Attendance, Certificate, CertificateRequest, Course, LabSession, Module, ModuleQuestionAssignment, Notification, Progress, Question, Submission, User
 from .sandbox import run_code, language_for_id, inject_headers
 from .certificate_generator import generate_certificate_pdf
 
@@ -321,7 +321,16 @@ def evaluate_submission(submission_id):
                 worst_status = status
                 break
 
-        total = len(tests) or 1
+        total = len(tests)
+        if total == 0:
+            # A question without test cases cannot be fairly accepted — flag it
+            # instead of silently auto-accepting every submission with score 0.
+            submission.status = Submission.Status.INTERNAL_ERROR
+            submission.error_output = "No test cases configured for this question."
+            submission.score = 0
+            submission.judge_output = "[]"
+            submission.save()
+            return submission
         submission.score = round((passed / total) * 100)
         submission.status = Submission.Status.ACCEPTED if passed == total else worst_status
         submission.execution_time = max_time
@@ -354,7 +363,7 @@ def update_progress(student, module):
             main_question__is_active=True,
             is_active=True
         )
-        total = min(12, subquestions.count()) * 3  # 3 sub-questions per main question, capped at 12 main questions
+        total = min(12, subquestions.count())  # cap at 12 sub-questions
         attempted = subquestions.filter(submissions__student=student).distinct().count()
         completed = subquestions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
         completed = min(completed, total)

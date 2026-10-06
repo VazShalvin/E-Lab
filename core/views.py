@@ -532,7 +532,7 @@ def dashboard(request):
         "student/dashboard.html",
         {
             "category": category,
-            "course_name": course.name if 'course' in locals() else None,
+            "course_name": Course.objects.filter(id=course_id).values_list("name", flat=True).first() if course_id else None,
             "modules": modules,
             "module_cards": module_cards,
             "progress_rows": progress_rows,
@@ -1004,7 +1004,7 @@ def certificate_create(request):
 
     is_eligible, pct = certificate_eligible(request.user, course)
     if not is_eligible:
-        messages.error(request, "You are not yet eligible for a certificate. Complete the required modules (60% threshold & mandatory questions) first.")
+        messages.error(request, "You are not yet eligible for a certificate. Complete the required modules (80% threshold & mandatory questions) first.")
         return redirect("dashboard")
 
     cert = Certificate.objects.filter(student=request.user, course=course).first()
@@ -2284,7 +2284,7 @@ def hod_approve_certificate(request, request_id):
             cert_req.hod_notes = notes
             cert_req.save()
             # Auto-generate the certificate
-            cert = generate_certificate(cert_req.student)
+            cert = generate_certificate(cert_req.student, cert_req.course)
             notify_student_of_cert_decision(cert_req)
             messages.success(request, f"The certificate for {cert_req.student.display_name} has been approved!")
         except Exception as e:
@@ -3195,7 +3195,7 @@ def faculty_generate_question(request):
                 title=title,
                 slug=slug,
                 description=description,
-                difficulty=difficulty,
+                difficulty=valid_difficulty,
                 sample_input=sample_input,
                 sample_output=sample_output,
                 starter_code=starter_code,
