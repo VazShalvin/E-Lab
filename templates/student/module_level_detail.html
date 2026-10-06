@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 {% block content %}
 <section class="toolbar">
   <div>
@@ -69,12 +70,14 @@
           <h3 style="margin: 0 0 6px;">{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</h3>
           <p class="muted">Sub-questions: SELECT, INSERT, UPDATE</p>
           <div class="subquestion-status">
-            {% for subq_data in subquestion_completion_data[question.id] %}
+            {% with subq_list=subquestion_completion_data|get_item:question.id %}
+            {% for subq_data in subq_list %}
               <span class="subquestion-status-item {% if subq_data.completed %}completed{% else %}pending{% endif %}">
                 {{ subq_data.subquestion.get_type_display }}
                 {% if subq_data.completed %}<span style="color:#10b981;">✓</span>{% else %}<span style="color:#ef4444;">○</span>{% endif %}
               </span>
             {% endfor %}
+            {% endwith %}
           </div>
         </div>
       {% else %}

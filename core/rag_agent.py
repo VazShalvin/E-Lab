@@ -208,7 +208,7 @@ class RAGQuestionAgent:
             "max_score": 1,
             "is_active": True,
             "is_mandatory": False,
-            "allow_multiple_languages": True,
+            "allow_multiple_languages": False,
             "test_cases": self._adapt_test_cases(ref.get('test_cases', []), target_difficulty, secondary_refs),
         }
         
@@ -459,7 +459,7 @@ int main(void) {
             "max_score": 1,
             "is_active": True,
             "is_mandatory": False,
-            "allow_multiple_languages": True,
+            "allow_multiple_languages": False,
             "language_id": 71,  # Python 3
             "test_cases": [
                 {"input": "5\n1 2 3 4 5\n", "expected_output": "15\n", "is_sample": True},
@@ -508,7 +508,7 @@ int main(void) {
             "max_score": parsed.get("max_score", 1),
             "is_active": bool(parsed.get("is_active", True)),
             "is_mandatory": bool(parsed.get("is_mandatory", False)),
-            "allow_multiple_languages": bool(parsed.get("allow_multiple_languages", True)),
+            "allow_multiple_languages": bool(parsed.get("allow_multiple_languages", False)),
             "language_id": int(parsed.get("language_id") or 71),
             "test_cases": test_cases,
         }

@@ -148,9 +148,9 @@ services:
         limits:
           cpus: "8"
           memory: 6G
-      reservations:
-        cpus: "4"
-        memory: 3G
+        reservations:
+          cpus: "4"
+          memory: 3G
 
   ollama-replica2:
     image: ollama/ollama:latest

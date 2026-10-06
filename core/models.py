@@ -671,7 +671,7 @@ class SubQuestion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["main_question__order", "type"]
+        ordering = ["main_question__title", "type"]
         unique_together = [("main_question", "type")]
 
     def __str__(self):

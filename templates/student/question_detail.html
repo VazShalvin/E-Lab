@@ -724,14 +724,16 @@ public class Main {
       if (typeof editor !== 'undefined' && editor) {
         monaco.editor.setModelLanguage(editor.getModel(), newLangMeta.monaco);
         const currentVal = editor.getValue().trim();
-        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal)) {
+        const qStarter = "{{ question.starter_code|escapejs }}".trim();
+        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal) || (qStarter && currentVal === qStarter)) {
           editor.setValue(sampleForLang);
         } else if (starterCodes_global[val]) {
           editor.setValue(starterCodes_global[val]);
         }
       } else if (textarea_global) {
         const currentVal = textarea_global.value.trim();
-        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal)) {
+        const qStarter = "{{ question.starter_code|escapejs }}".trim();
+        if (!currentVal || Object.values(DEFAULT_SAMPLE_CODES).some(c => c.trim() === currentVal) || (qStarter && currentVal === qStarter)) {
           textarea_global.value = sampleForLang;
         }
       }

@@ -122,7 +122,7 @@ class Command(BaseCommand):
                         lang_id = 71
                     elif module.category in ("placement_training", "advanced_placement_training"):
                         lang_id = 71
-                    elif module.category == "cpp_programming":
+                    elif module.category in ("cpp_programming", "c_programming_advanced"):
                         lang_id = 54
                     elif module.category == "java_programming":
                         lang_id = 62

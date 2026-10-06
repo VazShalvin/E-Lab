@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from typing import ClassVar
 
-from .models import Course, Module, OpenEndedQuestion, Question, Quiz, Submission, TestCase, User
+from .models import Course, Module, OpenEndedQuestion, Question, Quiz, Submission, TestCase, User, SubQuestion
 
 
 class MultipleFileInput(forms.ClearableFileInput):
