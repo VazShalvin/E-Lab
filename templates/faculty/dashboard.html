@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="toolbar">
+<section class="toolbar" style="align-items: flex-start;">
   <div>
+    <a class="back-button as-link" href="{% url 'onboarding_journey' %}" style="margin-bottom: 12px; font-size: 14px; padding: 0 16px; min-height: 36px; display: inline-flex;">← Back to Course Selection</a>
     <h1>Faculty Dashboard</h1>
     <p class="muted">{{ students }} students · {{ questions }} questions</p>
   </div>
-  <div class="actions">
+  <div class="actions" style="max-width: 60%; justify-content: flex-end;">
     <a class="primary as-link" href="{% url 'faculty_question_new' %}">New Question</a>
     <a class="secondary as-link" href="{% url 'faculty_question_bank' %}">Question Bank</a>
     <a class="secondary as-link" href="{% url 'faculty_open_ended_list' %}">Take-Home</a>
@@ -57,6 +58,7 @@
         <tr>
           <th>Rank</th>
           <th>USN</th>
+          <th>Sem</th>
           <th>Student</th>
           <th>Attempted</th>
           <th>Completed</th>
@@ -68,6 +70,7 @@
           <tr>
             <td>#{{ row.rank }}</td>
             <td>{{ row.student_usn }}</td>
+            <td>{{ row.student.semester }}</td>
             <td><a href="{% url 'faculty_student_detail' row.student.id %}" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">{{ row.student.display_name }}</a></td>
             <td>{{ row.attempted }}/{{ row.total }}</td>
             <td>{{ row.completed }}/{{ row.total }}</td>
@@ -80,13 +83,15 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="muted">No students found.</td>
+            <td colspan="7" class="muted">No students found.</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </section>
+
+
 
 <section class="grid two">
   <div>

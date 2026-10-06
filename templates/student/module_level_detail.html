@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 {% block content %}
 <section class="toolbar">
   <div>
@@ -21,20 +22,20 @@
   <section class="panel module-path">
     <div class="section-heading">
       <h2>{% if module.category == "advanced_placement_training" %}Advanced Placement Training{% elif module.category == "placement_training" %}Placement Training{% else %}{{ difficulty_label }}{% endif %} Questions</h2>
-      <p class="muted">Solve the current unlocked question to reveal the next one.</p>
+      <p class="muted">Solve these questions in any order to complete the set.</p>
     </div>
     <div class="path-steps">
       {% for slot in assigned_slots %}
         {% if slot.completed_at %}
           <a class="path-step completed" href="{% url 'question_detail' slot.question.id %}">
             <strong>{{ slot.order }}</strong>
-            <span>{{ slot.question.title }}</span>
+            <span>{{ slot.question.title }}{% if slot.question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</span>
             <small>Completed</small>
           </a>
         {% elif slot.unlocked_at %}
           <a class="path-step current" href="{% url 'question_detail' slot.question.id %}">
             <strong>{{ slot.order }}</strong>
-            <span>{{ slot.question.title }}</span>
+            <span>{{ slot.question.title }}{% if slot.question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</span>
             <small>Solve now</small>
           </a>
         {% else %}
@@ -42,14 +43,14 @@
             {% if current_slot and slot.order == current_slot.order|add:"1" %}
             <div class="path-step locked">
               <strong>{{ slot.order }}</strong>
-              <span>Locked Question</span>
+              <span>Locked Question{% if slot.question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</span>
               <small>Complete the previous question</small>
             </div>
             {% endif %}
           {% else %}
             <div class="path-step locked">
               <strong>{{ slot.order }}</strong>
-              <span>Locked Question</span>
+              <span>Locked Question{% if slot.question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</span>
               <small>Complete the previous question</small>
             </div>
           {% endif %}
@@ -64,13 +65,30 @@
   </div>
   <div class="list">
     {% for question in questions %}
-      <a class="row-card" href="{% url 'question_detail' question.id %}">
-        <span>
-          <strong>{{ question.title }}</strong>
-          <small>{{ question.get_difficulty_display }}</small>
-        </span>
-        <span>Solve</span>
-      </a>
+      {% if is_dbms_module %}
+        <div class="panel" style="margin-bottom: 20px; border-left: 4px solid var(--accent-primary); padding: 16px; background: rgba(31, 41, 55, 0.4);">
+          <h3 style="margin: 0 0 6px;">{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</h3>
+          <p class="muted">Sub-questions: SELECT, INSERT, UPDATE</p>
+          <div class="subquestion-status">
+            {% with subq_list=subquestion_completion_data|get_item:question.id %}
+            {% for subq_data in subq_list %}
+              <span class="subquestion-status-item {% if subq_data.completed %}completed{% else %}pending{% endif %}">
+                {{ subq_data.subquestion.get_type_display }}
+                {% if subq_data.completed %}<span style="color:#10b981;">✓</span>{% else %}<span style="color:#ef4444;">○</span>{% endif %}
+              </span>
+            {% endfor %}
+            {% endwith %}
+          </div>
+        </div>
+      {% else %}
+        <a class="row-card" href="{% url 'question_detail' question.id %}">
+          <span>
+            <strong>{{ question.title }}{% if question.is_mandatory %}<span style="color:#eab308; font-size: 12px; font-weight: bold; margin-left: 8px;">⭐ Mandatory</span>{% endif %}</strong>
+            <small>{{ question.get_difficulty_display }}</small>
+          </span>
+          <span>Solve</span>
+        </a>
+      {% endif %}
     {% empty %}
       <p class="muted">No {{ difficulty_label|lower }} questions in this module yet.</p>
     {% endfor %}

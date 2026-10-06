@@ -85,7 +85,13 @@ class Command(BaseCommand):
                         "level_range": q_data.get("level_range", ""),
                         "time_limit": q_data.get("time_limit", 2.0),
                         "memory_limit_kb": q_data.get("memory_limit_kb", 128000),
-                        "allow_multiple_languages": q_data.get("allow_multiple_languages", True),
+                        "allow_multiple_languages": True,
+                        "starter_codes": {
+                            "50": "#include <stdio.h>\n\nint main(void) {\n    // Write your solution here\n    \n    return 0;\n}",
+                            "54": "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    \n    return 0;\n}",
+                            "71": "def main():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    main()\n",
+                            "62": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        // Write your solution here\n        \n    }\n}"
+                        },
                         "is_mandatory": q_data.get("is_mandatory", True),
                         "is_active": True,
                         "created_by": admin_user,

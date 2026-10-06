@@ -3,6 +3,7 @@
 .env.local
 .env.*.local
 
+
 # Python
 __pycache__/
 *.py[cod]
@@ -23,7 +24,7 @@ local_settings.py
 # Static & Media
 staticfiles/
 media/
-static/videos/*.mp4
+static/videos/edit4.mp4
 
 # IDE
 .vscode/

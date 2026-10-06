@@ -2,17 +2,22 @@
 from difflib import SequenceMatcher
 from io import BytesIO
 import random
+import logging
 # Third-party
 import qrcode
 # Django
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.core.mail import send_mail
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 # Local imports
-from .models import AssignedQuestion, Attendance, Certificate, CertificateRequest, LabSession, Module, ModuleQuestionAssignment, Notification, Progress, Question, Submission, User
-from .sandbox import run_code, language_for_id
+from .models import AssignedQuestion, Attendance, Certificate, CertificateRequest, Course, LabSession, Module, ModuleQuestionAssignment, Notification, Progress, Question, Submission, User
+from .sandbox import run_code, language_for_id, inject_headers
+from .certificate_generator import generate_certificate_pdf
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_output(value):
@@ -113,20 +118,58 @@ def sync_assignment_completion(assignment):
             question__assigned_slots__assignment=assignment,
         ).values_list("question_id", flat=True)
     )
+    # Also get accepted subquestion IDs for DBMS modules
+    accepted_subquestion_ids = set()
+    if "dbms" in assignment.module.category.lower():
+        from .models import SubQuestion
+        accepted_subquestion_ids = set(
+            Submission.objects.filter(
+                student=assignment.student,
+                status=Submission.Status.ACCEPTED,
+                subquestion__isnull=False,
+                subquestion__main_question__assigned_slots__assignment=assignment,
+            ).values_list("subquestion_id", flat=True)
+        )
+    
     now = timezone.now()
     slots = list(assignment.assigned_questions.select_related("question"))
     changed = False
 
     for index, slot in enumerate(slots):
-        if index == 0 and not slot.unlocked_at:
+        if not slot.unlocked_at:
             slot.unlocked_at = now
             changed = True
-        if slot.question_id in accepted_ids and not slot.completed_at:
+        
+        # Check if this question is completed
+        question_completed = False
+        if "dbms" in assignment.module.category.lower():
+            # For DBMS modules, check if all sub-questions are completed
+            from .models import SubQuestion
+            subquestions = SubQuestion.objects.filter(main_question=slot.question, is_active=True)
+            if subquestions.exists():
+                # All sub-questions must be completed
+                completed_subquestion_ids = set(
+                    Submission.objects.filter(
+                        student=assignment.student,
+                        status=Submission.Status.ACCEPTED,
+                        subquestion__in=subquestions
+                    ).values_list("subquestion_id", flat=True)
+                )
+                question_completed = len(completed_subquestion_ids) == len(subquestions)
+            else:
+                # No sub-questions, fall back to main question completion
+                question_completed = slot.question_id in accepted_ids
+        else:
+            # Non-DBMS modules: check main question completion
+            question_completed = slot.question_id in accepted_ids
+            
+        if question_completed and not slot.completed_at:
             slot.completed_at = now
             changed = True
-        elif slot.completed_at and slot.question_id not in accepted_ids:
+        elif slot.completed_at and not question_completed:
             slot.completed_at = None
             changed = True
+            
         if slot.completed_at and index + 1 < len(slots) and not slots[index + 1].unlocked_at:
             slots[index + 1].unlocked_at = now
             changed = True
@@ -157,7 +200,7 @@ def get_or_create_module_assignment(student, module, difficulty=Question.Difficu
                 assignment=assignment,
                 question=question,
                 order=index,
-                unlocked_at=timezone.now() if index == 1 else None,
+                unlocked_at=timezone.now(),
             )
     sync_assignment_completion(assignment)
     return assignment
@@ -174,8 +217,21 @@ def current_unlocked_question(assignment):
 
 
 def evaluate_submission(submission_id):
+    """
+    Evaluate a submission against all hidden test cases.
+    Uses a thread pool sized for production load (400 concurrent users).
+    """
     submission = Submission.objects.select_related("question", "student").get(pk=submission_id)
-    question = submission.question
+    
+    # Determine if this is for a sub-question
+    if submission.subquestion:
+        question = submission.subquestion
+        # For sub-questions, we still need the main question for module/category access
+        main_question = submission.question
+    else:
+        question = submission.question
+        main_question = question
+        
     tests = list(question.test_cases.filter(is_sample=False))
     if not tests:
         tests = list(question.test_cases.all())
@@ -191,17 +247,36 @@ def evaluate_submission(submission_id):
 
     # Resolve the language once from the submission (fallback to the question).
     language = language_for_id(submission.language_id or question.language_id)
+    evaluated_code = inject_headers(submission.code, question.starter_code)
+
+    def evaluate_single_test(test):
+        result = run_code(
+            language,
+            source_code=evaluated_code,
+            stdin=test.stdin,
+            expected_output=test.expected_output,
+            time_limit=question.time_limit,
+            memory_limit_kb=question.memory_limit_kb,
+        )
+        return test, result
 
     try:
-        for test in tests:
-            result = run_code(
-                language,
-                source_code=submission.code,
-                stdin=test.stdin,
-                expected_output=test.expected_output,
-                time_limit=question.time_limit,
-                memory_limit_kb=question.memory_limit_kb,
-            )
+        if tests:
+            # Run first test synchronously to detect compile errors early
+            first_test, first_result = evaluate_single_test(tests[0])
+            results = [(first_test, first_result)]
+
+            # If the first test fails to compile, don't run the rest
+            if first_result.get("status_id") != 6 and len(tests) > 1:
+                # Use a larger thread pool for high concurrency (400 users)
+                from concurrent.futures import ThreadPoolExecutor
+                with ThreadPoolExecutor(max_workers=8) as executor:
+                    rest_results = list(executor.map(evaluate_single_test, tests[1:]))
+                    results.extend(rest_results)
+        else:
+            results = []
+
+        for test, result in results:
             status_id = result.get("status_id")
             status_mapping = {
                 3: Submission.Status.ACCEPTED,
@@ -246,7 +321,16 @@ def evaluate_submission(submission_id):
                 worst_status = status
                 break
 
-        total = len(tests) or 1
+        total = len(tests)
+        if total == 0:
+            # A question without test cases cannot be fairly accepted — flag it
+            # instead of silently auto-accepting every submission with score 0.
+            submission.status = Submission.Status.INTERNAL_ERROR
+            submission.error_output = "No test cases configured for this question."
+            submission.score = 0
+            submission.judge_output = "[]"
+            submission.save()
+            return submission
         submission.score = round((passed / total) * 100)
         submission.status = Submission.Status.ACCEPTED if passed == total else worst_status
         submission.execution_time = max_time
@@ -254,23 +338,44 @@ def evaluate_submission(submission_id):
         import json
         submission.judge_output = json.dumps(test_results)
     except Exception as exc:
+        logger.error(f"Evaluation error for submission {submission_id}: {exc}", exc_info=True)
         submission.status = Submission.Status.INTERNAL_ERROR
         submission.error_output = str(exc)
     finally:
         submission.judged_at = timezone.now()
         submission.save()
-        for assignment in ModuleQuestionAssignment.objects.filter(student=submission.student, module=submission.question.module):
-            sync_assignment_completion(assignment)
-        update_progress(submission.student, submission.question.module)
+        try:
+            for assignment in ModuleQuestionAssignment.objects.filter(student=submission.student, module=submission.question.module):
+                sync_assignment_completion(assignment)
+            update_progress(submission.student, submission.question.module)
+        except Exception as e:
+            logger.error(f"Progress update error for submission {submission_id}: {e}")
     return submission
 
 
 def update_progress(student, module):
-    questions = Question.objects.filter(module=module, is_active=True)
-    total = min(15, questions.count())
-    attempted = questions.filter(submissions__student=student).distinct().count()
-    completed = questions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
-    completed = min(completed, total)
+    # For DBMS modules, count sub-questions instead of questions
+    if "dbms" in module.category.lower():
+        # Get all sub-questions for active main questions in this module
+        from .models import SubQuestion
+        subquestions = SubQuestion.objects.filter(
+            main_question__module=module,
+            main_question__is_active=True,
+            is_active=True
+        )
+        total = min(12, subquestions.count())  # cap at 12 sub-questions
+        attempted = subquestions.filter(submissions__student=student).distinct().count()
+        completed = subquestions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
+        completed = min(completed, total)
+    else:
+        questions = Question.objects.filter(module=module, is_active=True)
+        if module.category in ["placement_training", "advanced_placement_training"]:
+            total = min(7, questions.count())
+        else:
+            total = min(12, questions.count())
+        attempted = questions.filter(submissions__student=student).distinct().count()
+        completed = questions.filter(submissions__student=student, submissions__status=Submission.Status.ACCEPTED).distinct().count()
+        completed = min(completed, total)
     percentage = (completed / total * 100) if total else 0
     progress, _ = Progress.objects.update_or_create(
         student=student,
@@ -281,27 +386,51 @@ def update_progress(student, module):
 
 
 def student_progress(student):
-    modules = Module.objects.filter(is_active=True).annotate(total=Count("questions", filter=Q(questions__is_active=True)))
+    modules = Module.objects.filter(is_active=True)
+    if not getattr(student, "is_faculty_like", False) and student.role != "hod":
+        current_semester = getattr(student, "semester", 1) or 1
+        modules = modules.filter(
+            Q(course__available_from_semester__lte=current_semester) | Q(course__isnull=True)
+        )
+    modules = modules.annotate(total=Count("questions", filter=Q(questions__is_active=True)))
     rows = []
     for module in modules:
         rows.append(update_progress(student, module))
     return rows
 
 
-def overall_percentage(student):
-    active_modules = Module.objects.filter(is_active=True).count()
-    total = active_modules * 15
+def _student_primary_category(student):
+    if hasattr(student, "semester"):
+        sem = student.semester
+        if sem in (5, 6):
+            return "advanced_placement_training"
+        elif sem in (3, 4):
+            return "placement_training"
+        elif sem == 2:
+            return "python_programming"
+    return "c_programming"
+
+
+def overall_percentage(student, course=None):
+    if course:
+        target_modules = Module.objects.filter(course=course, is_active=True)
+    else:
+        category = _student_primary_category(student)
+        target_modules = Module.objects.filter(is_active=True, category=category)
+    active_modules = target_modules.count()
+
+    total = active_modules * 12
     if total == 0:
         return 0
 
-    assigned_qs = AssignedQuestion.objects.filter(assignment__student=student, assignment__module__is_active=True)
+    assigned_qs = AssignedQuestion.objects.filter(assignment__student=student, assignment__module__in=target_modules)
     if assigned_qs.exists():
-        for assignment in ModuleQuestionAssignment.objects.filter(student=student, module__is_active=True):
+        for assignment in ModuleQuestionAssignment.objects.filter(student=student, module__in=target_modules):
             sync_assignment_completion(assignment)
         completed = assigned_qs.filter(completed_at__isnull=False).count()
     else:
         completed = (
-            Submission.objects.filter(student=student, question__module__is_active=True, question__is_active=True, status=Submission.Status.ACCEPTED)
+            Submission.objects.filter(student=student, question__module__in=target_modules, question__is_active=True, status=Submission.Status.ACCEPTED)
             .values_list("question_id", flat=True)
             .distinct()
             .count()
@@ -309,9 +438,21 @@ def overall_percentage(student):
 
     return min(100.0, (completed / total * 100))
 
-def certificate_eligible(student):
-    pct = overall_percentage(student)
-    mandatory_questions = Question.objects.filter(module__is_active=True, is_active=True, is_mandatory=True)
+
+def certificate_eligible(student, course=None):
+    if course:
+        target_modules = Module.objects.filter(course=course, is_active=True)
+        if target_modules.exists() and target_modules.first().category in ["placement_training", "advanced_placement_training"]:
+            return False, 0
+    else:
+        category = _student_primary_category(student)
+        target_modules = Module.objects.filter(is_active=True, category=category)
+        if category in ["placement_training", "advanced_placement_training"]:
+            return False, 0
+
+    pct = overall_percentage(student, course)
+
+    mandatory_questions = Question.objects.filter(module__in=target_modules, is_active=True, is_mandatory=True)
     mandatory_total = mandatory_questions.count()
     mandatory_done = mandatory_questions.filter(
         submissions__student=student,
@@ -331,10 +472,10 @@ def get_faculty_coordinator_for_student(student):
         questions__submissions__status=Submission.Status.ACCEPTED,
         is_active=True
     ).distinct()
-    
+
     if not completed_modules.exists():
         return None
-    
+
     # Find the course associated with the module where student has most completions
     from django.db.models import Count
     course_completions = Course.objects.filter(
@@ -347,39 +488,37 @@ def get_faculty_coordinator_for_student(student):
             distinct=True
         )
     ).order_by('-completion_count')
-    
+
     top_course = course_completions.first()
     if top_course:
         # Get faculty managing this course
         faculty = top_course.managing_faculty.first()
         if faculty:
             return faculty
-    
+
     # Fallback: any faculty managing any of the student's completed modules' courses
     for course in course_completions:
         faculty = course.managing_faculty.first()
         if faculty:
             return faculty
-    
+
     return None
 
 
-def generate_certificate(student):
-    from weasyprint import HTML
-    from django.templatetags.static import static
-    from django.conf import settings as django_settings
-
-    eligible, pct = certificate_eligible(student)
+def generate_certificate(student, course=None):
+    eligible, pct = certificate_eligible(student, course)
     if not eligible:
         return None
 
-    semester = Certificate.current_semester_label()
-    verification_hash = Certificate.make_hash(student, semester, pct)
+    if not course:
+        return None
+
+    verification_hash = Certificate.make_hash(student, course, pct)
     cert, created = Certificate.objects.get_or_create(
         verification_hash=verification_hash,
         defaults={
             "student": student,
-            "semester": semester,
+            "course": course,
             "completion_percentage": pct,
         },
     )
@@ -392,57 +531,22 @@ def generate_certificate(student):
     qr.save(qr_buffer, "PNG")
     cert.qr_code.save(f"{verification_hash}.png", ContentFile(qr_buffer.getvalue()), save=False)
 
-    # Get dynamic data for template
-    faculty_coordinator = get_faculty_coordinator_for_student(student)
-    
-    # Get course name from completed modules
-    completed_modules = Module.objects.filter(
-        questions__submissions__student=student,
-        questions__submissions__status=Submission.Status.ACCEPTED,
-        is_active=True
-    ).distinct()
-    course_names = Course.objects.filter(
-        modules__in=completed_modules
-    ).values_list('name', flat=True).distinct()
-    course_name = ", ".join(course_names) if course_names.exists() else "CCE e-Lab Programming Course"
-    
-    # Get HOD and Principal names (fallback to static if not configured)
-    hod = User.objects.filter(role=User.Role.HOD).first()
-    hod_name = hod.display_name if hod else "Head of Department"
-    principal = User.objects.filter(role=User.Role.ADMIN).first()
-    principal_name = principal.display_name if principal else "Principal / Director"
-    
-    # Certificate template image URL
-    certificate_template_url = f"{settings.SITE_BASE_URL}{static('img/certificate_template.png')}"
-    
     issued_at = timezone.localtime()
-    issued_date = issued_at.strftime("%B %d, %Y")
+    issued_date = issued_at.strftime("%d %B %Y")
 
-    html = render_to_string(
-        "certificates/certificate_png_template.html",
-        {
-            "student": student,
-            "percentage": pct,
-            "semester": semester,
-            "issued_at": issued_at,
-            "issued_date": issued_date,
-            "verify_url": verify_url,
-            "certificate": cert,
-            "site_name": settings.SITE_NAME,
-            "course_name": course_name,
-            "faculty_coordinator_name": faculty_coordinator.display_name if faculty_coordinator else "Faculty Coordinator",
-            "hod_name": hod_name,
-            "principal_name": principal_name,
-            "certificate_template_url": certificate_template_url,
-        },
-    )
+    from .certificate_generator import generate_certificate_pdf
     try:
-        pdf_bytes = HTML(string=html, base_url=str(django_settings.BASE_DIR)).write_pdf()
+        pdf_bytes = generate_certificate_pdf(
+            student=student,
+            percentage=pct,
+            semester=course.name,
+            issued_date=issued_date,
+            verify_url=verify_url,
+        )
         name_usn = student.usn or student.username
-        cert.pdf.save(f"{name_usn}_{semester.replace(' ', '_')}.pdf", ContentFile(pdf_bytes), save=False)
+        cert.pdf.save(f"{name_usn}_{course.slug}.pdf", ContentFile(pdf_bytes), save=False)
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).error(f"PDF generation failed for {student.username}: {e}")
+        logger.error(f"PDF generation failed for {student.username}: {e}")
     cert.save()
     notify_certificate(student, cert)
     return cert
@@ -453,16 +557,16 @@ def notify_certificate(student, certificate):
     if student.email:
         send_mail(
             subject=f"{settings.SITE_NAME} - Certificate Generated",
-            message=f"Congratulations! Your certificate for {certificate.semester} is ready.",
+            message=f"Congratulations! Your certificate for {certificate.course.name} is ready.",
             from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
             recipient_list=[student.email],
             fail_silently=True,
         )
 
 
-def notify_faculty_of_eligible_student(student, is_reapplication=False):
+def notify_faculty_of_eligible_student(student, course=None, is_reapplication=False):
     """Create a notification for all faculty members when a student applies for certificate verification."""
-    eligible, pct = certificate_eligible(student)
+    eligible, pct = certificate_eligible(student, course)
     if not eligible:
         return
 

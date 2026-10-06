@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar bg-light p-3 h-100">
+                <h5 class="mb-4"><i class="fas fa-magic me-2"></i>AI Question Generator</h5>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{% url 'faculty_generate_question' %}">
+                        <i class="fas fa-magic me-2"></i> Generate Questions
+                    </a>
+                    <a class="nav-link" href="{% url 'faculty_question_bank' %}">
+                        <i class="fas fa-book me-2"></i> Question Bank
+                    </a>
+                    <a class="nav-link" href="{% url 'faculty_question_upload' %}">
+                        <i class="fas fa-upload me-2"></i> Bulk Upload
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-magic me-2"></i>AI Question Generator</h2>
+                <span class="badge bg-primary">Powered by RAG + Problem Adaptation</span>
+            </div>
+
+            <!-- Step Indicator -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <nav aria-label="Progress">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item {% if not preview_question %}active{% endif %}">
+                                <i class="fas fa-search me-1"></i> 1. Generate
+                            </li>
+                            <li class="breadcrumb-item {% if preview_question and not saved %}active{% endif %}">
+                                <i class="fas fa-eye me-1"></i> 2. Preview
+                            </li>
+                            <li class="breadcrumb-item {% if saved %}active{% endif %}">
+                                <i class="fas fa-save me-1"></i> 3. Save
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="generate-form">
+                {% csrf_token %}
+                
+                <!-- Step 1: Generate -->
+                {% if not preview_question %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Step 1: Generate Question</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Topic</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="topic" class="form-control" placeholder="e.g., dynamic programming, two pointers, binary search, graph traversal" 
+                                       value="{{ selected_topic }}" required>
+                                <div class="form-text">Enter a DSA topic. The system will find relevant reference problems from 400+ curated DSA problems.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Difficulty</label>
+                            <div class="col-sm-4">
+                                <select name="difficulty" class="form-select" required>
+                                    {% for value, label in difficulties %}
+                                    <option value="{{ value }}" {% if value == selected_difficulty %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Module</label>
+                            <div class="col-sm-4">
+                                <select name="module_id" class="form-select" required>
+                                    {% for module in modules %}
+                                    <option value="{{ module.id }}" {% if module.id == selected_module_id %}selected{% endif %}>
+                                        {{ module.name }} ({{ module.course.name|default:"No Course" }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">Select the module to save this question to.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Custom Prompt (Optional)</label>
+                            <div class="col-sm-10">
+                                <textarea name="custom_prompt" class="form-control" rows="3" 
+                                          placeholder="Additional instructions for the generator, e.g., 'Focus on sliding window technique' or 'Make it suitable for a 2-hour lab'">
+{{ selected_custom_prompt }}</textarea>
+                                <div class="form-text">Add specific instructions for the question generator.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="action" value="generate" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>Generate Question
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                
+                <!-- Step 2: Preview -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Step 2: Preview Generated Question</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Review the generated question below. You can edit any field before saving.
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Title</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" class="form-control" 
+                                       value="{{ preview_question.title }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Difficulty</label>
+                            <div class="col-sm-4">
+                                <select name="difficulty" class="form-select" required>
+                                    {% for value, label in difficulties %}
+                                    <option value="{{ value }}" {% if value == preview_question.difficulty %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Module</label>
+                            <div class="col-sm-4">
+                                <select name="module_id" class="form-select" required>
+                                    {% for module in modules %}
+                                    <option value="{{ module.id }}" {% if module.id == selected_module_id %}selected{% endif %}>
+                                        {{ module.name }} ({{ module.course.name|default:"No Course" }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Description</label>
+                            <div class="col-sm-10">
+                                <textarea name="description" class="form-control" rows="8" required>{{ preview_question.description }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Starter Code (C)</label>
+                            <div class="col-sm-10">
+                                <textarea name="starter_code" class="form-control font-monospace" rows="6">{{ preview_question.starter_code }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Test Cases</label>
+                            <div class="col-sm-10">
+                                <textarea name="test_cases_json" class="form-control font-monospace" rows="10" id="test-cases-json">
+{% if preview_question.test_cases %}{{ preview_question.test_cases|safe }}{% else %}[]{% endif %}
+</textarea>
+                                <div class="form-text">Edit test cases as JSON array. Each test case: {"input": "...", "expected_output": "...", "is_sample": true/false}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary" onclick="history.back()">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </button>
+                            <button type="submit" name="action" value="save" class="btn btn-success btn-lg ms-auto">
+                                <i class="fas fa-save me-2"></i>Save Question to Module
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- References -->
+                {% if references %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-book me-2"></i>Reference Problems Used</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for ref in references %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ ref.title }}</h6>
+                                        <p class="card-text text-muted small">
+                                            Topic: {{ ref.topic }}<br>
+                                            Difficulty: {{ ref.difficulty }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-format JSON test cases
+    const testCasesJson = document.getElementById('test-cases-json');
+    if (testCasesJson) {
+        testCasesJson.addEventListener('blur', function() {
+            try {
+                const parsed = JSON.parse(this.value);
+                this.value = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                // Invalid JSON, leave as is
+            }
+        });
+    }
+    
+    // Auto-fill title from topic if empty
+    const topicInput = document.querySelector('input[name="topic"]');
+    const titleInput = document.querySelector('input[name="title"]');
+    if (topicInput && titleInput && !titleInput.value) {
+        topicInput.addEventListener('blur', function() {
+            if (!titleInput.value && this.value) {
+                titleInput.value = this.value.charAt(0).toUpperCase() + this.value.slice(1) + ' Problem';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

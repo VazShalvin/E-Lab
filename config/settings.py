@@ -1,4 +1,5 @@
 import os
+from celery.schedules import crontab
 import warnings
 from pathlib import Path
 
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "core",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -176,9 +178,17 @@ if env("SECURE_COOKIES", str(not DEBUG)).lower() == "true":
 # ---------------------------------------------------------------------------
 # Celery
 # ---------------------------------------------------------------------------
+CELERY_BEAT_SCHEDULE = {
+    "auto-advance-semesters": {
+        "task": "core.tasks_semester.auto_advance_semesters_task",
+        "schedule": crontab(hour=2, minute=0),  # Daily at 2 AM
+    },
+}
+
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", env("REDIS_URL", "redis://elab-redis:6379/1"))
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", "redis://elab-redis:6379/2")
 CELERY_TASK_ALWAYS_EAGER = env("CELERY_TASK_ALWAYS_EAGER", "false").lower() == "true"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # ---------------------------------------------------------------------------
 # REST Framework
@@ -202,7 +212,7 @@ REST_FRAMEWORK = {
 SITE_NAME = env("SITE_NAME", "CCE e-Lab")
 SITE_BASE_URL = env("SITE_BASE_URL", "http://localhost")
 CERTIFICATE_SIGNING_KEY = env("CERTIFICATE_SIGNING_KEY", SECRET_KEY)
-CERTIFICATE_THRESHOLD = int(env("CERTIFICATE_THRESHOLD", "60"))
+CERTIFICATE_THRESHOLD = int(env("CERTIFICATE_THRESHOLD", "80"))
 
 EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = env("EMAIL_HOST", "smtp.gmail.com")

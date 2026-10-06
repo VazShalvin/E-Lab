@@ -1,5 +1,9 @@
 import sqlite3
-from config import DB_PATH
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from scripts.rag_config import DB_PATH
 
 
 def get_conn():
@@ -7,7 +11,7 @@ def get_conn():
 
 
 def init_db():
-    """Create both tables: repo_questions (parsed) + generated_questions (LLM output)."""
+    """Create both tables: repo_questions (parsed) + generated_questions (adapted output)."""
     conn = get_conn()
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS repo_questions (

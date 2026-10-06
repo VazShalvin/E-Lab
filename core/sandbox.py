@@ -5,11 +5,38 @@ import shlex
 import shutil
 import subprocess
 import uuid
+import base64
+
+
+def _detect_host_sandbox_dir(container_dir):
+    """
+    Detect the host path backing container_dir for Docker-out-of-Docker / sibling containers.
+    1. Returns HOST_SANDBOX_DIR environment variable if explicitly set and not container_dir.
+    2. Parses /proc/self/mountinfo to detect the underlying host bind-mount path.
+    3. Falls back to HOST_SANDBOX_DIR or container_dir.
+    """
+    env_dir = os.environ.get("HOST_SANDBOX_DIR")
+    if env_dir and env_dir != container_dir:
+        return env_dir
+
+    try:
+        if os.path.exists("/proc/self/mountinfo"):
+            with open("/proc/self/mountinfo", "r") as f:
+                for line in f:
+                    parts = line.strip().split()
+                    if len(parts) >= 5 and parts[4] == container_dir:
+                        host_path = parts[3]
+                        if os.path.isabs(host_path) and host_path != container_dir:
+                            return host_path
+    except Exception:
+        pass
+
+    return env_dir or container_dir
 
 
 SANDBOX_DIR = os.environ.get("DOCKER_SANDBOX_DIR", "/var/elab-sandbox")
 SANDBOX_IMAGE = os.environ.get("DOCKER_SANDBOX_IMAGE", "elab-sandbox")
-HOST_SANDBOX_DIR = os.environ.get("HOST_SANDBOX_DIR", SANDBOX_DIR)
+HOST_SANDBOX_DIR = _detect_host_sandbox_dir(SANDBOX_DIR)
 
 # Marker emitted by the inner script when compilation fails. Picked to be
 # impossible to appear in normal program output.
@@ -59,6 +86,12 @@ LANGUAGES = {
         "compile": ["javac", "__SOURCE__"],
         "run": ["java", "__CLASS__"],
     },
+    "sql": {
+        "monaco": "sql",
+        "filename": "main.sql",
+        "compile": ["sh", "-c", "cat input.txt __SOURCE__ > combined.sql"],
+        "run": ["sqlite3", "-batch", "test.db", ".read combined.sql"],
+    },
 }
 
 # Maps the Question/Submission `language_id` to a language
@@ -68,6 +101,7 @@ LANGUAGE_ID_MAP = {
     54: "cpp",
     62: "java",
     71: "python",
+    82: "sql",
 }
 
 
@@ -81,17 +115,25 @@ def _java_filename(source_code):
     Detect the Java class name so the source file is saved under the matching
     name (required by javac for public classes). Order:
       1. first `public class X`
-      2. first `class X`
+      2. first `class X` (non-public)
       3. fallback to "Main"
     """
-    match = re.search(r"\bpublic\s+class\s+(\w+)", source_code)
+    # Match public class possibly preceded by modifiers like abstract/final
+    match = re.search(r"\b(?:public\s+)?(?:abstract\s+)?(?:final\s+)?class\s+(\w+)", source_code)
     if not match:
-        match = re.search(r"\bclass\s+(\w+)", source_code)
+        match = re.search(r"\b(?:public\s+)?(?:abstract\s+)?(?:final\s+)?class\s+(\w+)", source_code)
     name = match.group(1) if match else "Main"
     return name + ".java", name
 
 
-def _build_inner_script(lang_config, source_filename, class_name, time_limit):
+def _write_file_safe(path, content):
+    """Write content to a file using base64 to avoid shell escaping issues."""
+    encoded = base64.b64encode(content.encode("utf-8")).decode("ascii")
+    # Use a temp file approach: decode inside the container script
+    return encoded
+
+
+def _build_inner_script(lang_config, source_filename, class_name, time_limit, source_code=None, stdin=""):
     """
     Build the sh -c script that runs inside the container. It compiles first
     (emitting our marker on failure), then runs the program under `timeout`.
@@ -99,9 +141,20 @@ def _build_inner_script(lang_config, source_filename, class_name, time_limit):
     definitively instead of sniffing output for "error:".
     """
     parts = [
-        "cp -a /box/. /tmp/",
-        "cd /tmp"
+        "touch /tmp/input.txt",
+        "cd /tmp",
+        "touch input.txt",
     ]
+
+    # Write source code using base64 encoding to avoid heredoc/escaping issues
+    if source_code is not None:
+        encoded_source = base64.b64encode(source_code.encode('utf-8')).decode('ascii')
+        parts.append(f"echo '{encoded_source}' | base64 -d > {shlex.quote(source_filename)}")
+
+    # Write stdin to input.txt using base64 encoding if provided
+    if stdin:
+        encoded_stdin = base64.b64encode(stdin.encode('utf-8')).decode('ascii')
+        parts.append(f"echo '{encoded_stdin}' | base64 -d > input.txt")
 
     compile_cmd = lang_config["compile"]
     if compile_cmd is not None:
@@ -113,14 +166,25 @@ def _build_inner_script(lang_config, source_filename, class_name, time_limit):
         # Compile output goes to compile.out; on failure, emit the marker and
         # the real compiler message, then exit 3.
         parts.append(
-            f"{{ {quoted} >compile.out 2>&1; cp compile.out /box/ 2>/dev/null; }} || "
-            f"{{ echo {_COMPILE_ERROR_MARKER}; cat compile.out; cp compile.out /box/ 2>/dev/null; exit 3; }}"
+            f"if {quoted} >compile.out 2>&1; then "
+            f"cp compile.out /box/ 2>/dev/null || true; "
+            f"else "
+            f"echo {_COMPILE_ERROR_MARKER}; cat compile.out; cp compile.out /box/ 2>/dev/null || true; exit 3; "
+            f"fi"
         )
 
     run_cmd = list(lang_config["run"])
     run_cmd = [t.replace("__CLASS__", class_name) for t in run_cmd]
     quoted_run = " ".join(shlex.quote(t) for t in run_cmd)
-    parts.append(f"timeout {time_limit}s {quoted_run} < input.txt")
+
+    # Use timeout to enforce time limits. Fall back to stdbuf for unbuffered output.
+    # Pick stdbuf-if-available FIRST — chaining with || would re-run the whole
+    # program a second time whenever the first attempt exits non-zero.
+    parts.append(
+        f"if command -v stdbuf >/dev/null 2>&1; then "
+        f"stdbuf -o0 timeout {time_limit}s {quoted_run} < input.txt; "
+        f"else timeout {time_limit}s {quoted_run} < input.txt; fi"
+    )
 
     return "; ".join(parts)
 
@@ -139,31 +203,45 @@ def run_code(language, source_code, stdin="", expected_output="",
     memory_limit_mb = max(16, int(memory_limit_kb) // 1024)
     run_id = str(uuid.uuid4())
     tmpdir = os.path.join(SANDBOX_DIR, run_id)
-    host_tmpdir = os.path.join(HOST_SANDBOX_DIR, run_id)
+    host_sandbox_dir = _detect_host_sandbox_dir(SANDBOX_DIR)
+    host_tmpdir = os.path.join(host_sandbox_dir, run_id)
+
+    # Ensure tmpdir is unique and safe.
+    # Since SANDBOX_DIR is bind-mounted from host_sandbox_dir, creating tmpdir
+    # automatically creates host_tmpdir on the host.
     os.makedirs(tmpdir, exist_ok=True)
+    if host_tmpdir == tmpdir:
+        os.makedirs(host_tmpdir, exist_ok=True)
 
     class_name = ""
     if language == "java":
         source_filename, class_name = _java_filename(source_code)
     else:
         source_filename = lang_key["filename"]
-    
+
     # Ensure source_filename is a string
     source_filename = str(source_filename)
 
     try:
-        code_file = os.path.join(tmpdir, source_filename)
-        with open(code_file, "w") as f:
-            f.write(source_code)
+        try:
+            os.chmod(tmpdir, 0o777)
+        except OSError:
+            pass
 
-        input_file = os.path.join(tmpdir, "input.txt")
-        with open(input_file, "w") as f:
-            f.write(stdin or "")
+        inner_script = _build_inner_script(lang_key, source_filename, class_name, time_limit, source_code, stdin)
 
-        inner_script = _build_inner_script(lang_key, source_filename, class_name, time_limit)
+        # Write the inner script to a file in the container's tmpdir
+        script_path = os.path.join(tmpdir, "run_script.sh")
+        with open(script_path, "w") as f:
+            f.write("#!/bin/sh\n")
+            f.write(inner_script)
+        os.chmod(script_path, 0o755)
 
+        # The script will be accessible at /box/run_script.sh in the container
+        container_name = f"elab-sandbox-{uuid.uuid4().hex[:12]}"
         cmd = [
             "docker", "run", "--rm",
+            "--name", container_name,
             "--network", "none",
             "--memory", f"{memory_limit_mb}m",
             "--memory-swap", f"{memory_limit_mb}m",
@@ -174,7 +252,7 @@ def run_code(language, source_code, stdin="", expected_output="",
             "--tmpfs", "/tmp:rw,nosuid,exec,size=50m",
             "-v", f"{host_tmpdir}:/box:rw",
             SANDBOX_IMAGE,
-            "sh", "-c", inner_script,
+            "/box/run_script.sh",
         ]
 
         try:
@@ -182,7 +260,7 @@ def run_code(language, source_code, stdin="", expected_output="",
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=time_limit + 5,
+                timeout=time_limit + 10,
                 check=False,
             )
 
@@ -227,7 +305,10 @@ def run_code(language, source_code, stdin="", expected_output="",
                 }
 
             # --- Time Limit Exceeded ---
-            if result.returncode == 124 or "timeout" in stderr.lower():
+            # Only the runner's own exit condition (124) or the inner `timeout`
+            # wrapper's stderr marker counts — a runtime program that merely
+            # prints the word "timeout" must not be misclassified.
+            if result.returncode == 124 or "time limit exceeded by sandbox runner" in stderr.lower():
                 return {
                     "status_id": 5,
                     "status": "Time Limit Exceeded",
@@ -271,6 +352,15 @@ def run_code(language, source_code, stdin="", expected_output="",
             }
 
         except subprocess.TimeoutExpired:
+            # The docker CLI was killed, but the inner container may still be
+            # running — force-remove it by name so it can't leak resources.
+            try:
+                subprocess.run(
+                    ["docker", "rm", "-f", container_name],
+                    capture_output=True, timeout=10, check=False,
+                )
+            except Exception:
+                pass
             return {
                 "status_id": 5,
                 "status": "Time Limit Exceeded",
@@ -281,8 +371,29 @@ def run_code(language, source_code, stdin="", expected_output="",
                 "memory": memory_limit_kb,
             }
 
+    except Exception:
+        # On any unexpected error (e.g. docker daemon unreachable), return
+        # INTERNAL_ERROR so the frontend can show a helpful message.
+        return {
+            "status_id": 11,
+            "status": "Runtime Error",
+            "stdout": "",
+            "stderr": "Sandbox execution failed (docker unavailable or error).",
+            "compile_output": "",
+            "time": "0.0",
+            "memory": 0,
+        }
     finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+        # Clean up tmpdir; removing tmpdir automatically removes files from host_tmpdir
+        try:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+        except Exception:
+            pass
+        if host_tmpdir == tmpdir:
+            try:
+                shutil.rmtree(host_tmpdir, ignore_errors=True)
+            except Exception:
+                pass
 
 
 def run_c_code(source_code, stdin="", expected_output="",
@@ -296,3 +407,30 @@ def run_c_code(source_code, stdin="", expected_output="",
         time_limit=time_limit,
         memory_limit_kb=memory_limit_kb,
     )
+
+
+def inject_headers(source_code, starter_code):
+    """Prepend #include and import statements from starter_code if missing in source_code."""
+    if not starter_code or not source_code:
+        return source_code
+
+    injected_lines = []
+
+    for line in starter_code.splitlines():
+        line_stripped = line.strip()
+        if line_stripped.startswith("#include") or line_stripped.startswith("import "):
+            # Only inject if the exact line is not already present
+            if line_stripped not in source_code:
+                # Also check for near-duplicates (ignore whitespace differences)
+                normalized = re.sub(r'\s+', ' ', line_stripped)
+                found = False
+                for existing_line in source_code.splitlines():
+                    if re.sub(r'\s+', ' ', existing_line.strip()) == normalized:
+                        found = True
+                        break
+                if not found:
+                    injected_lines.append(line_stripped)
+
+    if injected_lines:
+        return "\n".join(injected_lines) + "\n\n" + source_code
+    return source_code

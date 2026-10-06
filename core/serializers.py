@@ -39,6 +39,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "question",
             "question_title",
             "code",
+            "language_id",
             "status",
             "score",
             "execution_time",

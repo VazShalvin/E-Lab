@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instructions & Eligibility - E-Lab{% endblock %}
+
+{% block content %}
+<style>
+  .instructions-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .instructions-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .instructions-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  
+  .instructions-subtitle {
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+  
+  .instruction-section {
+    margin-bottom: 30px;
+  }
+  
+  .instruction-section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .instruction-section ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  
+  .instruction-section ul li {
+    margin-bottom: 10px;
+  }
+  
+  .eligibility-box {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+    padding: 20px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 20px;
+  }
+  
+  .eligibility-box h4 {
+    color: #3b82f6;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .eligibility-box p {
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  .eligibility-box ul {
+    margin-top: 10px;
+    margin-bottom: 0;
+    color: var(--text-primary);
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .btn-proceed {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+  }
+  
+  .btn-proceed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    background: #2563eb;
+  }
+  
+  .btn-back {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .btn-back:hover {
+    color: var(--text-primary);
+  }
+  
+  [data-theme="dark"] .instructions-container {
+    background: #111111;
+    border-color: #355a66;
+  }
+  
+  [data-theme="dark"] .instructions-title {
+    color: #9cdef2;
+  }
+  
+  [data-theme="dark"] .instruction-section h3 {
+    color: #9cdef2;
+  }
+  
+  [data-theme="dark"] .eligibility-box {
+    background: rgba(156, 222, 242, 0.1);
+    border-left-color: #9cdef2;
+  }
+  
+  [data-theme="dark"] .eligibility-box h4 {
+    color: #9cdef2;
+  }
+  
+  [data-theme="dark"] .btn-proceed {
+    background: linear-gradient(135deg, #e06c75 0%, #f0989e 100%);
+    color: #111111;
+    box-shadow: 0 6px 20px rgba(224, 108, 117, 0.35);
+  }
+
+  [data-theme="dark"] .btn-proceed:hover {
+    background: #f0989e;
+    box-shadow: 0 8px 28px rgba(224, 108, 117, 0.55);
+  }
+  
+  [data-theme="dark"] .eligibility-box p, 
+  [data-theme="dark"] .eligibility-box ul {
+    color: #e0e6ed;
+  }
+</style>
+
+<div class="instructions-container">
+  <div class="instructions-header">
+    <h1 class="instructions-title">Welcome to C Programming</h1>
+    <p class="instructions-subtitle">Please read the following instructions carefully before proceeding to your dashboard.</p>
+  </div>
+  
+  <div class="instruction-section">
+    <h3>📝 Platform Instructions</h3>
+    <ul>
+      <li>This platform is designed to test your coding skills in C Programming through interactive lab sessions.</li>
+      <li>Each module contains multiple questions. You must write the correct logic and pass all hidden test cases to complete a question.</li>
+      <li>Do not refresh the page while a submission is evaluating.</li>
+      <li>If a question is marked as proctored, fullscreen mode will be enforced automatically. Exiting fullscreen will record a violation.</li>
+    </ul>
+  </div>
+  
+  <div class="instruction-section">
+    <h3>🎓 Certificate Eligibility Criteria</h3>
+    <div class="eligibility-box">
+      <h4>Requirements to Earn Your Certificate</h4>
+      <p>To successfully pass the course and receive your official certificate, you must meet <strong>both</strong> of the following criteria:</p>
+      <ul>
+        <li><strong>80% Overall Score:</strong> You must successfully complete at least 80% of all active questions in the course.</li>
+        <li><strong>100% Mandatory Completion:</strong> You must successfully solve EVERY question that is explicitly marked as "Mandatory" by the faculty. Skipping even one mandatory question will disqualify you, regardless of your overall percentage.</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="action-buttons">
+    <a href="{% url 'onboarding_journey' %}" class="btn-back">← Back to Course Selection</a>
+    <a href="{% url 'dashboard' %}" class="btn-proceed">I Understand, Proceed to Dashboard →</a>
+  </div>
+</div>
+{% endblock %}

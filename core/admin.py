@@ -17,7 +17,10 @@ from .models import (
     Quiz,
     QuizAttempt,
     QuizQuestion,
+    StudentQuestionHint,
     Submission,
+    SubQuestion,
+    SubQuestionTestCase,
     TestCase,
     User,
 )
@@ -41,8 +44,8 @@ class TestCaseInline(admin.TabularInline):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "year", "semester", "is_active")
-    list_filter = ("year", "is_active")
+    list_display = ("name", "slug", "year", "semester", "proctoring_enabled", "is_active")
+    list_filter = ("year", "proctoring_enabled", "is_active")
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name", "slug")
 
@@ -55,8 +58,8 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("title", "module", "difficulty", "language_id", "is_mandatory", "is_active")
-    list_filter = ("module", "difficulty", "is_mandatory", "is_active")
+    list_display = ("title", "module", "difficulty", "language_id", "is_mandatory", "proctoring_enabled", "is_active")
+    list_filter = ("module", "difficulty", "is_mandatory", "proctoring_enabled", "is_active")
     prepopulated_fields = {"slug": ("title",)}
     inlines = [TestCaseInline]
 
@@ -114,7 +117,7 @@ class ProgressAdmin(admin.ModelAdmin):
 
 @admin.register(Certificate)
 class CertificateAdmin(admin.ModelAdmin):
-    list_display = ("student", "semester", "completion_percentage", "issued_at")
+    list_display = ("student", "course", "completion_percentage", "issued_at")
     search_fields = ("student__username", "student__usn", "verification_hash")
 
 
@@ -157,4 +160,32 @@ class QuizAttemptAdmin(admin.ModelAdmin):
     list_display = ("student", "quiz", "started_at", "finished_at", "total_score")
     list_filter = ("quiz",)
     search_fields = ("student__username", "student__usn")
+
+
+@admin.register(StudentQuestionHint)
+class StudentQuestionHintAdmin(admin.ModelAdmin):
+    list_display = ("student", "question", "hint_number", "hint_type", "unlocked_at")
+    list_filter = ("hint_number", "hint_type")
+    search_fields = ("student__username", "student__usn", "question__title")
+
+
+class SubQuestionTestCaseInline(admin.TabularInline):
+    model = SubQuestionTestCase
+    extra = 1
+
+
+@admin.register(SubQuestion)
+class SubQuestionAdmin(admin.ModelAdmin):
+    list_display = ("title", "main_question", "type", "difficulty", "language_id", "is_mandatory", "proctoring_enabled", "is_active")
+    list_filter = ("main_question__module", "type", "difficulty", "is_mandatory", "proctoring_enabled", "is_active")
+    prepopulated_fields = {"slug": ("title",)}
+    inlines = [SubQuestionTestCaseInline]
+
+
+@admin.register(SubQuestionTestCase)
+class SubQuestionTestCaseAdmin(admin.ModelAdmin):
+    list_display = ("subquestion", "stdin", "expected_output", "is_sample", "order")
+    list_filter = ("is_sample",)
+    search_fields = ("subquestion__title",)
+
 

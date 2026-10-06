@@ -44,7 +44,11 @@
                 <span class="chips" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; background: rgba(128,128,128,0.2); color: var(--text-primary); border: 1px solid rgba(128,128,128,0.3); white-space: nowrap;">{{ state.label }}</span>
               {% endif %}
             {% else %}
-              <a href="{% url 'notification_mark_read' notif.id %}?redirect=true" class="primary" style="padding: 6px 14px; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;">Open Action &rarr;</a>
+              {% if notif.notification_type != 'faculty_note' %}
+                <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px;">
+                  <a href="{% url 'notification_mark_read' notif.id %}?redirect=true" class="primary" style="padding: 6px 14px; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;">Open Action &rarr;</a>
+                </div>
+              {% endif %}
             {% endif %}
           {% endwith %}
           {% if not notif.is_read %}

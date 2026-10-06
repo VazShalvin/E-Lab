@@ -18,6 +18,10 @@ class User(AbstractUser):
     role = models.CharField(max_length=16, choices=Role.choices, default=Role.STUDENT)
     department = models.CharField(max_length=80, blank=True)
     semester = models.PositiveSmallIntegerField(default=1)
+    year = models.PositiveSmallIntegerField(
+        default=1,
+        help_text="Academic year (1-4). Auto-updated on semester transitions.",
+    )
     bio = models.TextField(blank=True, max_length=500)
     managed_modules = models.ManyToManyField(
         "Module",
@@ -65,7 +69,15 @@ class Course(models.Model):
     description = models.TextField(blank=True)
     year = models.PositiveSmallIntegerField(default=1, help_text="Target year (1st, 2nd, etc.)")
     semester = models.PositiveSmallIntegerField(null=True, blank=True)
+    available_from_semester = models.PositiveSmallIntegerField(
+        default=1,
+        help_text="Minimum semester a student must be in to access this course.",
+    )
     is_active = models.BooleanField(default=True)
+    proctoring_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable or disable proctoring monitoring for questions in this course.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -73,6 +85,10 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
+    def is_accessible_to(self, student_semester):
+        """Check if this course is accessible to a student in the given semester."""
+        return student_semester >= self.available_from_semester
 
 
 class Module(models.Model):
@@ -118,6 +134,10 @@ class Question(models.Model):
     starter_codes = models.JSONField(default=dict, blank=True)
     is_mandatory = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
+    proctoring_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable or disable proctoring monitoring for this question.",
+    )
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -130,6 +150,15 @@ class Question(models.Model):
 
     def get_absolute_url(self):
         return reverse("question_detail", args=[self.pk])
+
+    @property
+    def is_proctoring_active(self):
+        """Returns True if proctoring is enabled on this question and its course."""
+        if not self.proctoring_enabled:
+            return False
+        if self.module and self.module.course and not self.module.course.proctoring_enabled:
+            return False
+        return True
 
 
 class TestCase(models.Model):
@@ -160,6 +189,14 @@ class Submission(models.Model):
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="submissions")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="submissions")
+    subquestion = models.ForeignKey(
+        'SubQuestion',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="submissions",
+        help_text="The sub-question this submission is for (if applicable)",
+    )
     code = models.TextField()
     language_id = models.PositiveIntegerField(default=50)
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.PENDING)
@@ -265,7 +302,7 @@ class Progress(models.Model):
 
 class Certificate(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="certificates")
-    semester = models.CharField(max_length=32)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name="certificates", default=1)
     completion_percentage = models.FloatField()
     verification_hash = models.CharField(max_length=96, unique=True)
     pdf = models.FileField(upload_to="certificates/pdf/", blank=True)
@@ -276,11 +313,11 @@ class Certificate(models.Model):
         ordering = ["-issued_at"]
 
     def __str__(self):
-        return f"{self.student} - {self.semester}"
+        return f"{self.student} - {self.course}"
 
     @classmethod
-    def make_hash(cls, student, semester, percentage):
-        data = f"{student.pk}:{student.usn}:{semester}:{percentage:.2f}"
+    def make_hash(cls, student, course, percentage):
+        data = f"{student.pk}:{student.usn}:{course.pk}:{percentage:.2f}"
         return hmac.new(
             settings.CERTIFICATE_SIGNING_KEY.encode(),
             data.encode(),
@@ -290,8 +327,14 @@ class Certificate(models.Model):
     @classmethod
     def current_semester_label(cls):
         now = timezone.localtime()
-        term = "Odd" if now.month >= 7 else "Even"
-        return f"{now.year}-{str(now.year + 1)[-2:]} {term}"
+        month = now.month
+        year = now.year
+        if month >= 7:
+            # July-December: Odd semester of current academic year
+            return f"{year}-{str(year + 1)[-2:]} Odd"
+        else:
+            # January-June: Even semester of previous academic year
+            return f"{year - 1}-{str(year)[-2:]} Even"
 
 
 class Notification(models.Model):
@@ -396,6 +439,9 @@ class CertificateRequest(models.Model):
 
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="certificate_requests"
+    )
+    course = models.ForeignKey(
+        'Course', on_delete=models.CASCADE, related_name="certificate_requests", null=True
     )
     requested_by_faculty = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -540,3 +586,119 @@ class QuizAttempt(models.Model):
             deadline = self.started_at + timedelta(minutes=self.quiz.duration_minutes)
             return timezone.now() > deadline
         return False
+
+
+class StudentQuestionHint(models.Model):
+    """
+    Stores progressive hints unlocked by a student on unsuccessful attempts.
+    Strictly capped at maximum 3 unique hints per student per question.
+    """
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="unlocked_hints",
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="student_hints",
+    )
+    submission = models.ForeignKey(
+        Submission,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="hints",
+    )
+    hint_number = models.PositiveSmallIntegerField(
+        help_text="1, 2, or 3 (maximum 3 unique hints per question)"
+    )
+    hint_text = models.TextField()
+    hint_type = models.CharField(
+        max_length=32,
+        default="local_llm",
+        help_text="local_llm or diagnostic",
+    )
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["hint_number"]
+        unique_together = [("student", "question", "hint_number")]
+
+    def __str__(self):
+        return f"Hint #{self.hint_number} for {self.student.username} on {self.question.title}"
+
+
+class SubQuestion(models.Model):
+    """Sub-questions for a main question, specifically for DBMS modules with SELECT/INSERT/UPDATE types."""
+    class Type(models.TextChoices):
+        SELECT = "select", "SELECT"
+        INSERT = "insert", "INSERT"
+        UPDATE = "update", "UPDATE"
+
+    main_question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="subquestions",
+        help_text="The main question this sub-question belongs to"
+    )
+    type = models.CharField(
+        max_length=10,
+        choices=Type.choices,
+        help_text="Type of sub-question: SELECT, INSERT, or UPDATE"
+    )
+    title = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180)
+    description = models.TextField()
+    difficulty = models.CharField(max_length=16, choices=Question.Difficulty.choices, default=Question.Difficulty.EASY)
+    csv_level = models.PositiveSmallIntegerField(default=1)
+    level_range = models.CharField(max_length=32, blank=True)
+    sample_input = models.TextField(blank=True)
+    sample_output = models.TextField(blank=True)
+    starter_code = models.TextField(blank=True)
+    language_id = models.PositiveIntegerField(default=50, help_text="Language id. 50 is C (GCC).")
+    time_limit = models.FloatField(default=2.0)
+    memory_limit_kb = models.PositiveIntegerField(default=128000)
+    allow_multiple_languages = models.BooleanField(default=False)
+    starter_codes = models.JSONField(default=dict, blank=True)
+    is_mandatory = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+    proctoring_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable or disable proctoring monitoring for this sub-question.",
+    )
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["main_question__title", "type"]
+        unique_together = [("main_question", "type")]
+
+    def __str__(self):
+        return f"{self.main_question.title} - {self.get_type_display()}"
+
+    @property
+    def is_proctoring_active(self):
+        """Returns True if proctoring is enabled on this sub-question and its course."""
+        if not self.proctoring_enabled:
+            return False
+        if self.main_question and self.main_question.module and self.main_question.module.course and not self.main_question.module.course.proctoring_enabled:
+            return False
+        return True
+
+
+class SubQuestionTestCase(models.Model):
+    """Test cases for sub-questions."""
+    subquestion = models.ForeignKey(SubQuestion, on_delete=models.CASCADE, related_name="test_cases")
+    stdin = models.TextField(blank=True)
+    expected_output = models.TextField()
+    is_sample = models.BooleanField(default=False)
+    order = models.PositiveSmallIntegerField(default=1)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        label = "sample" if self.is_sample else "hidden"
+        return f"{self.subquestion} ({label} #{self.order})"
+

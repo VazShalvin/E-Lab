@@ -1,8 +1,12 @@
 import sqlite3
 import chromadb
 from sentence_transformers import SentenceTransformer
-from db import get_conn
-from config import CHROMA_PATH, EMBED_MODEL_NAME
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from rag_db import get_conn
+from rag_config import CHROMA_PATH, EMBED_MODEL_NAME
 
 COLLECTION_NAME = "leetcode_questions"
 

@@ -1,0 +1,33 @@
+# Python cache
+*.pyc
+__pycache__/
+*.pyo
+
+# Database files
+*.db
+chroma_db/
+sandbox_data/
+
+# Large data directories (imported at runtime)
+leetcode-problems-master/
+data/DSA_Topics/
+generated_level_question_csvs/
+
+# Build artifacts
+compile.out
+main.c
+program
+input.txt
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

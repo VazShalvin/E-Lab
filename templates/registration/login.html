@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Login - Dept. of Computer and Communication{% endblock %}
+{% block title %}Login - PRAXIS | Department of Computer and Communication{% endblock %}
 
 {% block body_class %}login-page{% endblock %}
 
@@ -39,8 +39,10 @@
   <div class="login-glass-card">
     <div class="login-brand">
       <img src="{% static 'img/nitte_logo.png' %}" alt="NITTE Logo" class="login-logo">
-      <span class="login-dept-name">Dept. of Computer and Communication Engineering</span>
-      <p class="login-subtitle">CCE e-Lab Portal · Sign in to continue</p>
+      <h1 class="login-app-title">PRAXIS</h1>
+      <span class="login-dept-name">Department of Computer and Communication Engineering</span>
+      <div class="login-platform-tag">Coding and Placement Skill Development Platform</div>
+      <p class="login-subtitle">Sign in to continue</p>
     </div>
     <form method="post" class="login-form">
       {% csrf_token %}
@@ -50,6 +52,64 @@
     <p class="login-signup-link">New student? <a href="{% url 'signup' %}">Create an account</a></p>
   </div>
   <style>
+    /* Brand Styling */
+    .login-logo {
+      max-width: 240px;
+      margin-bottom: 0.8rem;
+    }
+    .login-app-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      margin: 0 0 0.4rem 0;
+      color: #ffffff;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 20%, #c7d2fe 60%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 10px rgba(99, 102, 241, 0.4));
+      line-height: 1.1;
+    }
+    .login-dept-name {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.2px;
+      line-height: 1.4;
+    }
+    .login-platform-tag {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #bae6fd;
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      margin-bottom: 0.75rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+    .login-subtitle {
+      font-size: 0.88rem;
+      opacity: 0.75;
+      color: #fff;
+      margin-bottom: 0;
+    }
+    /* Error List Styling */
+    .errorlist {
+      color: #ff4d4f;
+      list-style-type: none;
+      padding: 0;
+      margin: 0 0 15px 0;
+      font-size: 0.9em;
+      font-weight: 500;
+      text-align: center;
+    }
     /* Award-Winning Login Warp Transition */
     .login-cinematic {
       transition: all 0.6s cubic-bezier(0.7, 0, 0.3, 1);
@@ -67,24 +127,55 @@
   var videos = document.querySelectorAll('.login-bg-video');
   if (videos.length <= 1) return;
   var current = 0; // Starts at index 0 (login_bg4.mp4)
+  var timeoutId = null;
+
+  function onVideoEnded() {
+    nextVideo();
+  }
+
+  function playCurrentVideo() {
+    var vid = videos[current];
+    vid.classList.add('active');
+    
+    // Reset video time to start if it was played before
+    if (vid.readyState >= 1) {
+      vid.currentTime = 0;
+    }
+    vid.play().catch(function(e){}); // catch auto-play restrictions
+
+    if (vid.getAttribute('data-full') === 'true') {
+      vid.loop = false;
+      vid.addEventListener('ended', onVideoEnded, {once: true});
+    } else {
+      var duration = parseInt(vid.getAttribute('data-duration'), 10) || 8000;
+      timeoutId = setTimeout(nextVideo, duration);
+    }
+  }
 
   function nextVideo() {
+    clearTimeout(timeoutId);
     videos[current].classList.remove('active');
+    
     // Pick a random next video different from current
     var next = Math.floor(Math.random() * videos.length);
     if (next === current) {
       next = (current + 1) % videos.length;
     }
     current = next;
-    videos[current].classList.add('active');
     
-    var duration = parseInt(videos[current].getAttribute('data-duration'), 10) || 8000;
-    setTimeout(nextVideo, duration);
+    playCurrentVideo();
   }
 
-  // Play initial video (login_bg4.mp4) for its full duration before picking next random video
-  var initialDuration = parseInt(videos[current].getAttribute('data-duration'), 10) || 9000;
-  setTimeout(nextVideo, initialDuration);
+  // Initial setup: start the first video
+  clearTimeout(timeoutId);
+  videos[current].classList.add('active');
+  if (videos[current].getAttribute('data-full') === 'true') {
+    videos[current].loop = false;
+    videos[current].addEventListener('ended', onVideoEnded, {once: true});
+  } else {
+    var initialDuration = parseInt(videos[current].getAttribute('data-duration'), 10) || 9000;
+    timeoutId = setTimeout(nextVideo, initialDuration);
+  }
 })();
 
 (function() {

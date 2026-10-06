@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
-  <link rel="icon" type="image/png" href="{% static 'img/nitte_logo.png' %}">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=12.0">
+  <link rel="icon" type="image/png" href="{% static 'img/Logologo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=14.0">
   <script>
     (function() {
       const savedTheme = localStorage.getItem('theme') || 'light';
@@ -14,11 +14,12 @@
     })();
   </script>
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %} animate-fade-in">
   <header class="topbar">
     <a class="brand" href="{% url 'dashboard' %}" style="display: flex; align-items: center; gap: 14px; text-decoration: none;">
-      <img src="{% static 'img/nitte_logo.png' %}" alt="NITTE NMAMIT Logo" class="brand-logo" style="height: 38px; width: auto; object-fit: contain;">
-      <span class="header-dept-text">Dept. of Computer and Communication Engineering</span>
+      <img src="{% static 'img/nitte_logo.png' %}" alt="NITTE NMAMIT Logo" class="brand-logo hoverlogo" style="height: 38px; width: auto; object-fit: contain;" title="NITTE NMAMIT">
+      <img src="{% static 'img/CCE_logo.png' %}" alt="CCE Logo" class="cce-logo hoverlogo" style="height: 38px; width: 38px; object-fit: contain; border-radius: 50%;" title="Department of Computer and Communication Engineering">
+      <span class="header-dept-text">Department of Computer and Communication Engineering</span>
     </a>
     <nav class="nav">
       {% block theme_toggle %}

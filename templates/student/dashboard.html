@@ -17,13 +17,13 @@
   <div class="course-hero">
     <div>
       <p class="eyebrow">Welcome back, {{ user.display_name }}</p>
-      <h1>{% if category == 'advanced_placement_training' %}Advanced Placement Training E-Lab{% elif category == 'placement_training' %}Placement Training E-Lab{% else %}C Programming E-Lab{% endif %}</h1>
+      <h1>{% if course_name %}{{ course_name }} E-Lab{% elif category == 'advanced_placement_training' %}Advanced Placement Training E-Lab{% elif category == 'placement_training' %}Placement Training E-Lab{% else %}C Programming E-Lab{% endif %}</h1>
       <div class="semester-info">
-        {% if request.user.semester <= 2 %}
+        {% if request.user.semester == 1 or request.user.semester == 2 %}
           <span class="badge bg-success">First Year - Semester {{ request.user.semester }}</span>
-        {% elif request.user.semester <= 4 %}
+        {% elif request.user.semester == 3 or request.user.semester == 4 %}
           <span class="badge bg-primary">Second Year - Semester {{ request.user.semester }}</span>
-        {% elif request.user.semester <= 6 %}
+        {% elif request.user.semester == 5 or request.user.semester == 6 %}
           <span class="badge bg-warning">Third Year - Semester {{ request.user.semester }}</span>
         {% else %}
           <span class="badge bg-danger">Fourth Year - Semester {{ request.user.semester }}</span>
@@ -64,7 +64,7 @@
     <div class="course-info">
       <div class="course-card">
         <p class="eyebrow">Course Information</p>
-        <h3>{% if category == 'advanced_placement_training' %}Advanced Placement Training{% elif category == 'placement_training' %}Placement Training{% else %}E-Lab: C Programming{% endif %}</h3>
+        <h3>{% if course_name %}{{ course_name }}{% elif category == 'advanced_placement_training' %}Advanced Placement Training{% elif category == 'placement_training' %}Placement Training{% else %}E-Lab: C Programming{% endif %}</h3>
         <span class="muted" style="display: block; margin-bottom: 8px;">{% if 'placement_training' in category %}Training Outcome{% else %}Course Outcome{% endif %}</span>
         <p style="font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--text-primary); margin-bottom: 24px;">
           {% if category == 'advanced_placement_training' %}
@@ -126,7 +126,7 @@
 
       <!-- Center core -->
       <div class="wheel-core">
-        <strong>{% if category == 'advanced_placement_training' %}APT{% elif category == 'placement_training' %}PT{% else %}C{% endif %}</strong>
+        <strong>{% if course_name %}{{ course_name|slice:":3"|upper }}{% elif category == 'advanced_placement_training' %}APT{% elif category == 'placement_training' %}PT{% else %}C{% endif %}</strong>
         <span>{{ overall_percentage|floatformat:0 }}%</span>
         <small>Complete</small>
       </div>
@@ -148,7 +148,7 @@
             <div class="module-progress-item {% if card.completed %}completed{% endif %}"
                  style="--mp-color: var(--lvl-{{ forloop.counter }}); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-radius: var(--radius-md); background: var(--surface-soft); border: 1px solid rgba(255,255,255,0.06); border-left: 4px solid var(--mp-color); min-height: 54px; transition: transform 0.2s ease;">
               <!-- Background Progress Fill Layer -->
-              <div class="mp-bg-fill" style="position: absolute; top: 0; left: 0; bottom: 0; width: {{ card.percentage|floatformat:0 }}%; background: var(--mp-color); opacity: 0.22; pointer-events: none; z-index: 0; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+              <div class="mp-bg-fill" style="position: absolute; top: 0; left: 0; bottom: 0; width: {{ card.percentage|default:0|floatformat:0 }}%; background: var(--mp-color); opacity: 0.22; pointer-events: none; z-index: 0; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
               
               <!-- Content Layer (Above Progress Fill) -->
               <span class="mp-label" style="position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">

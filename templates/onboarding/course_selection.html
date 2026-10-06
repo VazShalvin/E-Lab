@@ -406,156 +406,94 @@
     <h1 class="journey-title">Select Your Course of Journey</h1>
     <p class="journey-subtitle">
       {% if user.is_faculty_like %}
-      Select a programming language specialization below to manage course modules, review student submissions, upload question banks, and monitor class progress. We currently offer our comprehensive C Programming e-Lab, with additional languages expanding in the future.
+      Select a programming language specialization below to manage course modules, review student submissions, upload question banks, and monitor class progress.
       {% else %}
-      Choose your programming language specialization below. We currently offer our comprehensive C Programming e-Lab, with additional languages expanding in the future.
+      Choose your programming language specialization below. Courses unlock as you progress through your academic journey.
       {% endif %}
     </p>
   </div>
 
   <div class="course-grid">
-    {% if user.semester <= 2 %}
-    <!-- CARD 1: C PROGRAMMING (ACTIVE) -->
+    {% for course in courses %}
+    <!-- AVAILABLE COURSE CARD -->
     <div class="course-card-item active-course">
       <div>
         <div class="course-top-row">
-          <div class="course-icon-wrap icon-c">C</div>
+          <div class="course-icon-wrap icon-c">
+            {% if course.slug == "c-programming" %}C{% elif course.slug == "python-programming" %}Py{% elif course.slug == "java-programming" %}Java{% elif course.slug == "c-programming-advanced" %}C++{% elif course.slug == "technical-placement-training" %}PT{% elif course.slug == "advanced-technical-placement-training" %}APT{% else %}{{ course.name|slice:":1" }}{% endif %}
+          </div>
           <span class="status-pill status-active">🟢 Available Now</span>
         </div>
-        {% if user.is_faculty_like %}
-        <h2 class="course-title">C Programming e-Lab</h2>
-        <p class="course-desc">
-          Manage C programming modules, monitor real-time student completion analytics, review code submissions, and customize question banks across 15 structured learning modules.
-        </p>
+        <h2 class="course-title">{{ course.name }}</h2>
+        <p class="course-desc">{{ course.description }}</p>
+      </div>
+      <div>
+        {% if course.slug == "placement_training" or course.slug == "advanced-technical-placement-training" %}
+        <a href="{% url 'placement_training_overview' %}" class="action-btn btn-enter-c transition-link" style="background: linear-gradient(135deg, {% if course.slug == 'advanced-technical-placement-training' %}#e11d48, #be123c{% else %}#f59e0b, #d97706{% endif %}); color: #ffffff;">
+          <span>Enter {{ course.name }}</span>
+          <span>→</span>
+        </a>
+        {% elif course.slug == "c-programming" and user.year == 1 %}
+        <a href="{% url 'first_year_instructions' %}" class="action-btn btn-enter-c transition-link">
+          <span>Enter {{ course.name }}</span>
+          <span>→</span>
+        </a>
         {% else %}
-        <h2 class="course-title">C Programming e-Lab</h2>
-        <p class="course-desc">
-          Master foundational programming concepts, variables, decision-making constructs, loops, arrays, strings, functions, pointers, file handling, and memory allocation through live automated evaluation.
-        </p>
+        <a href="{% url 'dashboard' %}?course={{ course.id }}" class="action-btn btn-enter-c transition-link">
+          <span>Enter {{ course.name }}</span>
+          <span>→</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="course-card-item locked-course">
+      <div>
+        <div class="course-top-row">
+          <div class="course-icon-wrap icon-locked">?</div>
+          <span class="status-pill status-locked">🔒 Not Available</span>
+        </div>
+        <h2 class="course-title">No Courses Available</h2>
+        <p class="course-desc">No courses are currently available for your semester. Please contact your faculty advisor.</p>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- LOCKED COURSES (for reference) -->
+    {% for course in all_active_courses %}
+    {% if course not in courses %}
+    <div class="course-card-item locked-course">
+      <div>
+        <div class="course-top-row">
+          <div class="course-icon-wrap icon-locked">
+            {% if course.slug == "c-programming" %}C{% elif course.slug == "python-programming" %}Py{% elif course.slug == "java-programming" %}Java{% elif course.slug == "c-programming-advanced" %}C++{% elif course.slug == "technical-placement-training" %}PT{% elif course.slug == "advanced-technical-placement-training" %}APT{% else %}{{ course.name|slice:":1" }}{% endif %}
+          </div>
+          {% if user.is_faculty_like %}
+          <span class="status-pill status-locked">🔒 Not Managed</span>
+          {% else %}
+          <span class="status-pill status-locked">🔒 Locked · Sem {{ course.available_from_semester }}+</span>
+          {% endif %}
+        </div>
+        <h2 class="course-title">{{ course.name }}</h2>
+        <p class="course-desc">{{ course.description }}</p>
+        {% if not user.is_faculty_like %}
+        <div class="progress-note">
+          <strong>🔒 Locked:</strong> Available from semester {{ course.available_from_semester }}.
+        </div>
         {% endif %}
       </div>
       <div>
-        <a href="{% url 'dashboard' %}" class="action-btn btn-enter-c transition-link">
+        <button disabled class="action-btn btn-locked">
           {% if user.is_faculty_like %}
-          <span>Enter Faculty Portal</span>
+          <span>🔒 Not Opted In Preferences</span>
           {% else %}
-          <span>Enter C e-Lab</span>
+          <span>🔒 Not Yet Available</span>
           {% endif %}
-          <span>→</span>
-        </a>
-      </div>
-    </div>
-    {% endif %}
-
-    {% if user.semester == 3 or user.semester == 4 %}
-    <!-- CARD: PLACEMENT TRAINING -->
-    <div class="course-card-item active-course">
-      <div>
-        <div class="course-top-row">
-          <div class="course-icon-wrap icon-c" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">PT</div>
-          <span class="status-pill status-active" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);">🟢 Placement Prep</span>
-        </div>
-        <h2 class="course-title">Technical Placement Training</h2>
-        <p class="course-desc">
-          Exclusive 14-week program for 3rd semester CCE students. Master logical building, advanced algorithms, and competitive programming using C, C++, Java, or Python.
-        </p>
-      </div>
-      <div>
-        <a href="{% url 'placement_training_overview' %}" class="action-btn btn-enter-c transition-link" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff;">
-          <span>Start Training Overview</span>
-          <span>→</span>
-        </a>
-      </div>
-    </div>
-    {% endif %}
-
-    {% if user.semester == 5 or user.semester == 6 %}
-    <!-- CARD: ADVANCED PLACEMENT TRAINING -->
-    <div class="course-card-item active-course">
-      <div>
-        <div class="course-top-row">
-          <div class="course-icon-wrap icon-c" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);">APT</div>
-          <span class="status-pill status-active" style="background: rgba(225, 29, 72, 0.2); color: #e11d48; border-color: rgba(225, 29, 72, 0.4); box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);">🟢 Advanced Prep</span>
-        </div>
-        <h2 class="course-title">Advanced Technical Placement Training</h2>
-        <p class="course-desc">
-          Exclusive 14-week program for 5th semester CCE students. Master advanced algorithmic paradigms, OOP, Design Patterns, and OS fundamentals.
-        </p>
-      </div>
-      <div>
-        <a href="{% url 'placement_training_overview' %}" class="action-btn btn-enter-c transition-link" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff;">
-          <span>Start Training Overview</span>
-          <span>→</span>
-        </a>
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- CARD 2: C++ PROGRAMMING (LOCKED) -->
-    <div class="course-card-item locked-course">
-      <div>
-        <div class="course-top-row">
-          <div class="course-icon-wrap icon-locked">C++</div>
-          <span class="status-pill status-locked">🔒 Under Progress</span>
-        </div>
-        <h2 class="course-title">C++ Programming e-Lab</h2>
-        <p class="course-desc">
-          Object-oriented programming, classes, inheritance, polymorphism, STL containers, templates, and advanced algorithmic problem solving.
-        </p>
-        <div class="progress-note">
-          <strong>⚡ Under Progress:</strong> Curriculum and automated evaluation engine under active development. Stay tuned for release!
-        </div>
-      </div>
-      <div>
-        <button disabled class="action-btn btn-locked">
-          <span>🔒 Under Progress · Coming Soon</span>
         </button>
       </div>
     </div>
-
-    <!-- CARD 3: JAVA PROGRAMMING (LOCKED) -->
-    <div class="course-card-item locked-course">
-      <div>
-        <div class="course-top-row">
-          <div class="course-icon-wrap icon-locked">Java</div>
-          <span class="status-pill status-locked">🔒 Under Progress</span>
-        </div>
-        <h2 class="course-title">Java Programming e-Lab</h2>
-        <p class="course-desc">
-          Core Java principles, object-oriented design, interfaces, multithreading, collections framework, exception handling, and JDBC database connectivity.
-        </p>
-        <div class="progress-note">
-          <strong>⚡ Under Progress:</strong> Curriculum and automated evaluation engine under active development. Stay tuned for release!
-        </div>
-      </div>
-      <div>
-        <button disabled class="action-btn btn-locked">
-          <span>🔒 Under Progress · Coming Soon</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- CARD 4: PYTHON PROGRAMMING (LOCKED) -->
-    <div class="course-card-item locked-course">
-      <div>
-        <div class="course-top-row">
-          <div class="course-icon-wrap icon-locked">Py</div>
-          <span class="status-pill status-locked">🔒 Under Progress</span>
-        </div>
-        <h2 class="course-title">Python Programming e-Lab</h2>
-        <p class="course-desc">
-          Python scripting, data structures, list comprehensions, functional programming, file I/O, and introductory libraries for data analytics and automation.
-        </p>
-        <div class="progress-note">
-          <strong>⚡ Under Progress:</strong> Curriculum and automated evaluation engine under active development. Stay tuned for release!
-        </div>
-      </div>
-      <div>
-        <button disabled class="action-btn btn-locked">
-          <span>🔒 Under Progress · Coming Soon</span>
-        </button>
-      </div>
-    </div>
+    {% endif %}
+    {% endfor %}
   </div>
 </div>
 
