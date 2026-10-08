@@ -9,10 +9,12 @@
   <div class="actions">
     <form method="post" action="{% url 'faculty_quiz_toggle' quiz.id %}" style="display: inline;">
       {% csrf_token %}
-      <button class="secondary">Toggle Status</button>
+      <button type="submit" class="btn {% if quiz.is_active %}secondary{% else %}primary{% endif %}" {% if not quiz.is_active and quiz.question_count == 0 %}disabled title="Add questions first"{% endif %}>
+        {% if quiz.is_active %}Deactivate{% else %}Activate{% endif %}
+      </button>
     </form>
     <a class="secondary as-link" href="{% url 'faculty_quiz_edit' quiz.id %}">Edit Details</a>
-    <a class="secondary as-link" href="{% url 'faculty_quiz_upload' %}">Upload Questions</a>
+    <a class="secondary as-link" href="{% url 'faculty_quiz_questions' quiz.id %}">Manage Questions</a>
   </div>
 </section>
 

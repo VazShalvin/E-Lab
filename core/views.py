@@ -521,7 +521,7 @@ def dashboard(request):
             }
         )
     course_obj = Course.objects.filter(id=course_id).first() if course_id else None
-    pct = overall_percentage(request.user, course=course_obj)
+    
     dashboard_questions = Question.objects.filter(module__is_active=True, is_active=True)
     if request.user.is_faculty_like:
         questions_total = dashboard_questions.count()
@@ -529,9 +529,12 @@ def dashboard(request):
             submissions__student=request.user,
             submissions__status=Submission.Status.ACCEPTED,
         ).distinct().count()
+        pct = overall_percentage(request.user, course=course_obj)
     else:
         questions_total = sum(card["module_total"] for card in module_cards)
         completed_total = sum(card["module_completed"] for card in module_cards)
+        pct = (completed_total / questions_total * 100) if questions_total > 0 else 0
+
     eligible, _ = certificate_eligible(request.user)
     certificates = request.user.certificates.all()
 
@@ -2745,7 +2748,14 @@ def faculty_open_ended_delete(request, pk):
 
 @login_required
 def student_quiz_list(request):
-    quizzes = Quiz.objects.filter(is_active=True).order_by('-created_at')
+    course_id = request.session.get("student_last_course")
+    
+    quizzes = Quiz.objects.filter(is_active=True)
+    if course_id:
+        quizzes = quizzes.filter(course_id=course_id)
+        
+    quizzes = quizzes.order_by('-created_at')
+    
     return render(request, "student/quiz_list.html", {"quizzes": quizzes})
 
 @login_required
@@ -2765,8 +2775,35 @@ def student_quiz_take(request, quiz_id):
         messages.info(request, "You have already completed this quiz.")
         return redirect("student_quiz_results", quiz_id=quiz.id)
         
-    # Simplified version for now
-    questions = quiz.quiz_questions.select_related('question').order_by('order')
+    # Fetch questions
+    questions_qs = quiz.quiz_questions.all().order_by('order')
+    
+    if request.method == "POST":
+        total_score = 0
+        for qq in questions_qs:
+            answer = request.POST.get(f"q_{qq.id}")
+            if answer == qq.correct_option:
+                total_score += qq.points
+                
+        attempt.total_score = total_score
+        attempt.finished_at = timezone.now()
+        attempt.save()
+        messages.success(request, f"Quiz submitted successfully! You scored {total_score} points.")
+        return redirect("student_quiz_results", quiz_id=quiz.id)
+
+    import random
+    questions = []
+    for qq in questions_qs:
+        opts = [
+            ("A", qq.option_a),
+            ("B", qq.option_b),
+            ("C", qq.option_c),
+            ("D", qq.option_d),
+        ]
+        random.shuffle(opts)
+        qq.shuffled_options = opts
+        questions.append(qq)
+
     return render(request, "student/quiz_take.html", {"quiz": quiz, "attempt": attempt, "questions": questions})
 
 @login_required
@@ -2803,7 +2840,7 @@ def faculty_quiz_form(request, quiz_id=None):
             obj.created_by = request.user
         obj.save()
         messages.success(request, "Quiz saved.")
-        return redirect("faculty_quiz_detail", quiz_id=obj.id)
+        return redirect("faculty_quiz_questions", quiz_id=obj.id)
         
     return render(request, "faculty/quiz_form.html", {"form": form, "quiz": quiz})
 
@@ -2826,16 +2863,74 @@ def faculty_quiz_toggle(request, quiz_id):
     if quiz.course not in request.user.managed_courses.all():
         raise PermissionDenied
         
+    if not quiz.is_active and quiz.quiz_questions.count() == 0:
+        messages.error(request, "You cannot activate a quiz without any questions. Please add questions first.")
+        return redirect("faculty_quiz_questions", quiz_id=quiz.id)
+        
     quiz.is_active = not quiz.is_active
     quiz.save()
-    messages.success(request, f"Quiz is now {'active' if quiz.is_active else 'inactive'}.")
+    
+    if quiz.is_active:
+        from .models import Notification, User
+        students = User.objects.filter(
+            role=User.Role.STUDENT, 
+            semester__gte=quiz.course.available_from_semester
+        )
+        notifications = [
+            Notification(
+                recipient=student,
+                notification_type=Notification.Type.QUIZ_ALERT,
+                title=f"New Quiz: {quiz.title}",
+                message=f"A new quiz has been activated in {quiz.course.name}. Time limit: {quiz.duration_minutes} mins."
+            ) for student in students
+        ]
+        Notification.objects.bulk_create(notifications)
+        messages.success(request, f"Quiz is now active. Alert sent to {len(notifications)} students.")
+    else:
+        messages.success(request, "Quiz is now inactive.")
+        
     return redirect("faculty_quiz_detail", quiz_id=quiz.id)
 
 @login_required
-def faculty_quiz_upload(request):
+def faculty_quiz_questions(request, quiz_id):
     faculty_required(request.user)
-    messages.info(request, "Question upload for quizzes is coming soon.")
-    return redirect("faculty_quiz_list")
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    if quiz.course not in request.user.managed_courses.all():
+        raise PermissionDenied
+        
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "add":
+            text = request.POST.get("text")
+            opt_a = request.POST.get("option_a")
+            opt_b = request.POST.get("option_b")
+            opt_c = request.POST.get("option_c")
+            opt_d = request.POST.get("option_d")
+            correct = request.POST.get("correct_option")
+            points = int(request.POST.get("points", 10))
+            order = quiz.quiz_questions.count() + 1
+            
+            QuizQuestion.objects.create(
+                quiz=quiz,
+                text=text,
+                option_a=opt_a,
+                option_b=opt_b,
+                option_c=opt_c,
+                option_d=opt_d,
+                correct_option=correct,
+                points=points,
+                order=order
+            )
+            messages.success(request, "Question added successfully.")
+        elif action == "delete":
+            q_id = request.POST.get("question_id")
+            QuizQuestion.objects.filter(id=q_id, quiz=quiz).delete()
+            messages.success(request, "Question deleted.")
+            
+        return redirect("faculty_quiz_questions", quiz_id=quiz.id)
+        
+    questions = quiz.quiz_questions.all().order_by('order')
+    return render(request, "faculty/quiz_questions.html", {"quiz": quiz, "questions": questions})
 
 
 # ─── FACULTY RAG AGENT API ENDPOINTS ───

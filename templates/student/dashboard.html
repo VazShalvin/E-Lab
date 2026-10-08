@@ -181,7 +181,7 @@
     <div class="insight-card">
       <p class="eyebrow">Completion</p>
       <span>{{ overall_percentage|floatformat:1 }}%</span>
-      <small class="muted">Overall</small>
+      <small class="muted">Course</small>
     </div>
   </div>
 
@@ -208,6 +208,18 @@
   {% endif %}
 
 </div>
+
+  <!-- Footer -->
+  <footer style="margin-top: 60px; padding: 30px 20px; border-top: 1px solid var(--border-color, rgba(255,255,255,0.1)); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 13px;">
+    <div class="footer-left" style="display: flex; gap: 20px; align-items: center;">
+      <img src="{% static 'img/design.png' %}" alt="design" style="height: 40px; width: auto; object-fit: contain;">
+      <img src="{% static 'img/SDG04.jpg' %}" alt="SDG04 Logo" style="height: 40px; width: auto; object-fit: contain; border-radius: 4px;">
+    </div>
+    <div class="footer-right" style="display: flex; gap: 24px;">
+      <a href="{% url 'about' %}" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">About</a>
+      <a href="mailto:support@praxis.elab" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">Contact</a>
+    </div>
+  </footer>
 
 <script>
 (function() {

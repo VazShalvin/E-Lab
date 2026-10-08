@@ -72,7 +72,7 @@ urlpatterns = [
     path("faculty/quizzes/<int:quiz_id>/", views.faculty_quiz_detail, name="faculty_quiz_detail"),
     path("faculty/quizzes/<int:quiz_id>/edit/", views.faculty_quiz_form, name="faculty_quiz_edit"),
     path("faculty/quizzes/<int:quiz_id>/toggle/", views.faculty_quiz_toggle, name="faculty_quiz_toggle"),
-    path("faculty/quizzes/upload-questions/", views.faculty_quiz_upload, name="faculty_quiz_upload"),
+    path("faculty/quizzes/<int:quiz_id>/questions/", views.faculty_quiz_questions, name="faculty_quiz_questions"),
     # Notifications
     path("notifications/", views.notifications_list, name="notifications_list"),
     path("notifications/<int:notification_id>/read/", views.notification_mark_read, name="notification_mark_read"),

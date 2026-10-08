@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Manage Questions - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<section class="toolbar">
+  <div>
+    <h1>Manage Questions</h1>
+    <p class="muted">Quiz: {{ quiz.title }} ({{ quiz.course.name }})</p>
+  </div>
+  <div class="toolbar-actions">
+    <a class="secondary as-link" href="{% url 'faculty_quiz_detail' quiz.id %}">Back to Quiz</a>
+  </div>
+</section>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+  <section class="panel">
+    <h2>Add New Question</h2>
+    <form method="post" class="stack" style="margin-top: 16px;">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      
+      <label>Question Text
+        <textarea name="text" required rows="3"></textarea>
+      </label>
+      
+      <label>Option A
+        <input type="text" name="option_a" required>
+      </label>
+      <label>Option B
+        <input type="text" name="option_b" required>
+      </label>
+      <label>Option C
+        <input type="text" name="option_c" required>
+      </label>
+      <label>Option D
+        <input type="text" name="option_d" required>
+      </label>
+      
+      <div style="display: flex; gap: 16px;">
+        <label style="flex: 1;">Correct Option
+          <select name="correct_option" required>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </label>
+        <label style="flex: 1;">Points
+          <input type="number" name="points" value="10" min="1" required>
+        </label>
+      </div>
+      
+      <button type="submit" class="btn primary" style="margin-top: 16px;">Add Question</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Existing Questions ({{ questions.count }})</h2>
+    <div class="list" style="margin-top: 16px;">
+      {% for q in questions %}
+      <div class="row-card" style="align-items: flex-start;">
+        <div style="flex: 1;">
+          <strong>Q{{ q.order }} ({{ q.points }} pts)</strong>
+          <div class="prose-dark" style="font-size: 14px; margin-top: 8px;">{{ q.text|linebreaksbr }}</div>
+          <ul style="font-size: 13px; color: var(--text-muted); margin-top: 8px; padding-left: 20px;">
+            <li {% if q.correct_option == 'A' %}style="color: var(--accent-primary); font-weight: bold;"{% endif %}>A: {{ q.option_a }}</li>
+            <li {% if q.correct_option == 'B' %}style="color: var(--accent-primary); font-weight: bold;"{% endif %}>B: {{ q.option_b }}</li>
+            <li {% if q.correct_option == 'C' %}style="color: var(--accent-primary); font-weight: bold;"{% endif %}>C: {{ q.option_c }}</li>
+            <li {% if q.correct_option == 'D' %}style="color: var(--accent-primary); font-weight: bold;"{% endif %}>D: {{ q.option_d }}</li>
+          </ul>
+        </div>
+        <form method="post" onsubmit="return confirm('Delete this question?');">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="question_id" value="{{ q.id }}">
+          <button type="submit" class="btn secondary" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">Delete</button>
+        </form>
+      </div>
+      {% empty %}
+      <p class="muted">No questions added yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -6260,3 +6260,10 @@ body.is-maximized-split .submit-panel-wide {
   backdrop-filter: none !important;
   border: none !important;
 }
+
+input[type="radio"] {
+  width: auto;
+  flex-shrink: 0;
+  accent-color: var(--accent-primary, #6366f1);
+  margin: 0;
+}

@@ -208,9 +208,15 @@ class OpenEndedQuestionForm(forms.ModelForm):
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ("course", "title", "description", "duration_minutes", "start_time", "end_time", "is_active", "show_results")
+        fields = ("course", "title", "description", "duration_minutes", "passing_score", "start_time", "end_time", "is_active", "show_results")
         widgets: ClassVar[dict] = {
             "description": forms.Textarea(attrs={"rows": 4}),
             "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            if field != 'description' and field != 'is_active' and field != 'show_results':
+                self.fields[field].required = True

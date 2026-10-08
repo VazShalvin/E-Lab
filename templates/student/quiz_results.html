@@ -30,7 +30,7 @@
       <p class="eyebrow">Details</p>
       <dl class="stats">
         <dt>Completed</dt><dd>{{ attempt.finished_at|date:"M d, Y, H:i" }}</dd>
-        <dt>Time Taken</dt><dd>-- mins</dd>
+        <dt>Time Taken</dt><dd>{{ attempt.time_taken_mins }} mins</dd>
         <dt>Status</dt><dd>{% if attempt.is_timed_out %}Timed Out{% else %}Submitted{% endif %}</dd>
       </dl>
     </div>

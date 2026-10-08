@@ -344,6 +344,7 @@ class Notification(models.Model):
         CERT_HOD_APPROVED = "cert_hod_approved", "HoD Approved Certificate"
         CERT_HOD_REJECTED = "cert_hod_rejected", "HoD Rejected Certificate"
         FACULTY_NOTE = "faculty_note", "Message from Faculty"
+        QUIZ_ALERT = "quiz_alert", "New Quiz Available"
 
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
@@ -506,6 +507,7 @@ class Quiz(models.Model):
         null=True, blank=True, related_name="created_quizzes",
     )
     duration_minutes = models.PositiveIntegerField(default=60)
+    passing_score = models.PositiveIntegerField(default=10)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
@@ -543,18 +545,23 @@ class Quiz(models.Model):
 
 
 class QuizQuestion(models.Model):
-    """Through-model linking a Quiz to a Question with ordering and points."""
+    """An MCQ question for a specific quiz."""
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="quiz_questions")
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="quiz_slots")
+    text = models.TextField(default="Question text")
+    option_a = models.CharField(max_length=255, default="Option A")
+    option_b = models.CharField(max_length=255, default="Option B")
+    option_c = models.CharField(max_length=255, default="Option C")
+    option_d = models.CharField(max_length=255, default="Option D")
+    correct_option = models.CharField(max_length=1, choices=[("A","A"),("B","B"),("C","C"),("D","D")], default="A")
     order = models.PositiveSmallIntegerField(default=1)
     points = models.PositiveSmallIntegerField(default=10)
 
     class Meta:
         ordering = ["order"]
-        unique_together = [("quiz", "question"), ("quiz", "order")]
+        unique_together = [("quiz", "order")]
 
     def __str__(self):
-        return f"{self.quiz} — Q{self.order}: {self.question}"
+        return f"{self.quiz.title} — Q{self.order}"
 
 
 class QuizAttempt(models.Model):
@@ -578,6 +585,13 @@ class QuizAttempt(models.Model):
     @property
     def percentage(self):
         return (self.total_score / self.max_score * 100) if self.max_score else 0
+
+    @property
+    def time_taken_mins(self):
+        if self.started_at and self.finished_at:
+            delta = self.finished_at - self.started_at
+            return round(delta.total_seconds() / 60)
+        return 0
 
     @property
     def is_timed_out(self):
