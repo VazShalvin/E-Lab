@@ -334,7 +334,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       </div>
       <div>
-        <h2 class="panel-title" style="font-size: 20px; font-weight: 700;">Problem Description</h2>
+        <h2 class="panel-title" style="font-size: 20px; font-weight: 700;">{{ display_question.title | default:"Problem Description" }}</h2>
         <span style="font-size: 13px; color: var(--text-muted);">Read the specification and constraints carefully before writing your solution</span>
       </div>
     </div>
@@ -516,6 +516,10 @@
   </span>
 </div>
 {% endif %}
+        <button type="button" class="secondary" id="editor-toggle-desc-btn" title="Toggle Problem Description" style="display: none; height: 32px; min-height: 32px; padding: 0 14px; font-size: 12px; border-radius: var(--radius-sm); margin-right: 8px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Read Problem
+        </button>
         <button type="button" class="secondary" id="editor-minimize-btn" title="Exit Full Screen" style="display: none; height: 32px; min-height: 32px; padding: 0 14px; font-size: 12px; border-radius: var(--radius-sm);">
           Exit Fullscreen
         </button>
@@ -2307,10 +2311,24 @@ public class Main {
       const editorNode = document.getElementById("editor");
       const maxBtn = document.getElementById("editor-maximize-btn");
       const minBtn = document.getElementById("editor-minimize-btn");
+      const descBtn = document.getElementById("editor-toggle-desc-btn");
       const toast = document.getElementById("fullscreen-toast");
       const iconMax = maxBtn ? maxBtn.querySelector('.icon-maximize') : null;
       const iconMin = maxBtn ? maxBtn.querySelector('.icon-minimize') : null;
       const maxText = maxBtn ? maxBtn.querySelector('.max-text') : null;
+
+      if (descBtn) {
+        descBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.body.classList.toggle('is-maximized-split');
+          if (document.body.classList.contains('is-maximized-split')) {
+            descBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> Hide Problem';
+          } else {
+            descBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Read Problem';
+          }
+          if (typeof editor !== 'undefined' && editor) setTimeout(() => editor.layout(), 50);
+        });
+      }
 
       window.toggleMaximize = function() {
         if (!document.body.classList.contains("is-maximized-page")) {
@@ -2320,6 +2338,7 @@ public class Main {
           if (iconMin) iconMin.style.display = 'inline';
           if (maxText) maxText.textContent = 'Minimize';
           if (minBtn) minBtn.style.display = "inline-flex";
+          if (descBtn) descBtn.style.display = "inline-flex";
           if (toast) {
             toast.textContent = "Full screen mode activated.";
             toast.classList.add("show");
@@ -2331,6 +2350,11 @@ public class Main {
           if (typeof editor !== 'undefined' && editor) editor.layout();
         } else {
           document.body.classList.remove("is-maximized-page");
+          document.body.classList.remove("is-maximized-split");
+          if (descBtn) {
+            descBtn.style.display = "none";
+            descBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Read Problem';
+          }
           if (document.fullscreenElement) {
             document.exitFullscreen().catch(e => console.log(e));
           }
@@ -2365,17 +2389,37 @@ public class Main {
         });
       }
 
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape" && document.body.classList.contains("is-maximized-split")) {
+          window._escClosedSplit = true;
+          setTimeout(() => window._escClosedSplit = false, 1000);
+        }
+      });
+
       document.addEventListener("fullscreenchange", function() {
         if (!document.fullscreenElement) {
+          // If they pressed ESC while in split mode, treat it as a safe intentional exit of fullscreen
+          if (window._escClosedSplit) {
+            window._intentionalFullscreenExit = true;
+          }
+
           if (document.body.classList.contains("is-maximized-page")) {
+            // This safely removes the is-maximized-page and is-maximized-split classes
             toggleMaximize();
           }
-          // Only trigger violation if proctoring is active AND the exit was not intentional (minimize button)
-          if (window.proctoringMonitoringActive && !document.body.classList.contains("is-maximized-page") && !window._intentionalFullscreenExit) {
+
+          // Only trigger violation if proctoring is active AND the exit was not intentional
+          if (window.proctoringMonitoringActive && !window._intentionalFullscreenExit) {
             if (typeof triggerViolation === 'function') {
               triggerViolation("Exited fullscreen mode");
             }
             setTimeout(window.requestFullscreen, 500);
+          }
+          
+          // Clean up the flag if it was set via ESC
+          if (window._escClosedSplit) {
+            window._intentionalFullscreenExit = false;
+            window._escClosedSplit = false;
           }
         }
       });

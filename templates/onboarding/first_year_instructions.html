@@ -192,7 +192,7 @@
   
   <div class="action-buttons">
     <a href="{% url 'onboarding_journey' %}" class="btn-back">← Back to Course Selection</a>
-    <a href="{% url 'dashboard' %}" class="btn-proceed">I Understand, Proceed to Dashboard →</a>
+    <a href="{% url 'dashboard' %}{% if course_id %}?course={{ course_id }}{% endif %}" class="btn-proceed">I Understand, Proceed to Dashboard →</a>
   </div>
 </div>
 {% endblock %}

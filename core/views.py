@@ -18,6 +18,7 @@ from django.db.models import Count, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -130,7 +131,8 @@ def first_year_instructions(request):
     if request.user.role == User.Role.ADMIN:
         return redirect("admin:index")
     # You can add logic here if you want to redirect non-first years
-    return render(request, "onboarding/first_year_instructions.html")
+    course_id = request.GET.get("course")
+    return render(request, "onboarding/first_year_instructions.html", {"course_id": course_id})
 
 
 @login_required
@@ -376,9 +378,23 @@ def dashboard(request):
                 if course.available_from_semester > current_semester:
                     raise PermissionDenied("This course is not yet available for your semester.")
             
-            first_module = course.modules.first()
-            if first_module:
-                category = first_module.category
+            slug_map = {
+                "c-programming": "c_programming",
+                "python-programming": "python_programming",
+                "java-programming": "java_programming",
+                "c-programming-advanced": "c_programming_advanced",
+                "technical-placement-training": "placement_training",
+                "placement-training": "placement_training",
+                "advanced-technical-placement-training": "advanced_placement_training",
+                "dbms-sql": "dbms-sql",
+                "database-management-systems": "dbms-sql",
+            }
+            category = slug_map.get(course.slug)
+            
+            if not category:
+                first_module = course.modules.first()
+                if first_module and first_module.category:
+                    category = first_module.category
         except (ValueError, Course.DoesNotExist):
             course_id = None # Reset so it falls back to defaults properly
             
@@ -396,6 +412,12 @@ def dashboard(request):
                 category = "c_programming"
         else:
             category = "c_programming"
+
+    # Recover missing course_id if we have a category
+    if category and not course_id:
+        mod = Module.objects.filter(category=category, course__isnull=False).first()
+        if mod:
+            course_id = mod.course_id
 
     # 4. Save the definitive category and course_id to the session
     request.session["student_last_category"] = category
@@ -443,17 +465,21 @@ def dashboard(request):
             ).distinct().count()
             questions_for_dots = list(module_questions)
         else:
-            if module.category in ["placement_training", "advanced_placement_training"]:
-                module_total = min(7, module_questions.count())
-            else:
-                module_total = min(12, module_questions.count())
             assigned_qs = AssignedQuestion.objects.filter(
                 assignment__student=request.user, assignment__module=module
             )
             if assigned_qs.exists():
+                module_total = assigned_qs.count()
                 module_completed = assigned_qs.filter(completed_at__isnull=False).count()
                 questions_for_dots = [aq.question for aq in assigned_qs.select_related("question")]
             else:
+                if module.category in ["placement_training", "advanced_placement_training"]:
+                    module_total = min(7, module_questions.count())
+                elif "dbms" in module.category.lower():
+                    module_total = min(5, module_questions.count())
+                else:
+                    module_total = min(12, module_questions.count())
+                
                 module_completed = module_questions.filter(
                     submissions__student=request.user,
                     submissions__status=Submission.Status.ACCEPTED,
@@ -494,7 +520,8 @@ def dashboard(request):
                 "question_statuses": question_statuses,
             }
         )
-    pct = overall_percentage(request.user)
+    course_obj = Course.objects.filter(id=course_id).first() if course_id else None
+    pct = overall_percentage(request.user, course=course_obj)
     dashboard_questions = Question.objects.filter(module__is_active=True, is_active=True)
     if request.user.is_faculty_like:
         questions_total = dashboard_questions.count()
@@ -533,7 +560,8 @@ def dashboard(request):
         "student/dashboard.html",
         {
             "category": category,
-            "course_name": Course.objects.filter(id=course_id).values_list("name", flat=True).first() if course_id else None,
+            "course": course_obj,
+            "course_name": course_obj.name if course_obj else None,
             "modules": modules,
             "module_cards": module_cards,
             "progress_rows": progress_rows,

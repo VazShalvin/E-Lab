@@ -80,7 +80,7 @@ def choose_adaptive_questions(student, module, difficulty, count=5):
     optional_qs = [q for q in all_questions if not q.is_mandatory]
 
     if len(all_questions) <= count:
-        rng.shuffle(all_questions)
+        all_questions.sort(key=lambda q: (q.csv_level, q.id))
         return all_questions
 
     needed_optional = max(0, count - len(mandatory_qs))
@@ -106,7 +106,7 @@ def choose_adaptive_questions(student, module, difficulty, count=5):
 
     selected = mandatory_qs + pool[:needed_optional]
     selected = selected[:count]
-    rng.shuffle(selected)
+    selected.sort(key=lambda q: (q.csv_level, q.id))
     return selected
 
 

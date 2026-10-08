@@ -4606,14 +4606,26 @@ body.is-maximized-page .submit-panel-wide {
   height: 100vh !important;
   max-width: none !important;
   max-height: none !important;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
   border-radius: 0 !important;
-  overflow-y: auto !important;
   margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  background: var(--bg-primary) !important;
+  backdrop-filter: none !important;
+}
+
+body.is-maximized-page .submit-panel-wide .editor-chrome {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 body.is-maximized-page .monaco-editor {
-  height: calc(100vh - 240px) !important;
+  flex: 1 !important;
+  height: auto !important;
   min-height: 500px !important;
 }
 
@@ -6191,4 +6203,60 @@ input:focus, select:focus, textarea:focus {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Split screen code editor mode */
+body.is-maximized-split .toolbar {
+  display: none !important;
+}
+
+body.is-maximized-split .question-layout-stacked {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0 !important;
+  z-index: 99999 !important;
+  background: var(--bg-primary) !important;
+}
+
+body.is-maximized-split .question-card-top {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 45% !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--border-color, rgba(255,255,255,0.1)) !important;
+  margin: 0 !important;
+  padding: 24px !important;
+  background: var(--bg-primary) !important;
+}
+
+body.is-maximized-split .submit-panel-wide {
+  position: relative !important;
+  flex: 1 !important;
+  height: 100vh !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  z-index: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  background: var(--bg-primary) !important;
+  backdrop-filter: none !important;
+  border: none !important;
 }

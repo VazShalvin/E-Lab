@@ -67,7 +67,9 @@
         <h3>{% if course_name %}{{ course_name }}{% elif category == 'advanced_placement_training' %}Advanced Placement Training{% elif category == 'placement_training' %}Placement Training{% else %}E-Lab: C Programming{% endif %}</h3>
         <span class="muted" style="display: block; margin-bottom: 8px;">{% if 'placement_training' in category %}Training Outcome{% else %}Course Outcome{% endif %}</span>
         <p style="font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--text-primary); margin-bottom: 24px;">
-          {% if category == 'advanced_placement_training' %}
+          {% if course and course.description %}
+          {{ course.description }}
+          {% elif category == 'advanced_placement_training' %}
           Master advanced algorithmic paradigms, OOP, Design Patterns, and OS fundamentals.
           {% elif category == 'placement_training' %}
           Master problem solving and data structures for technical interviews.
@@ -106,7 +108,7 @@
       <div class="wheel-donut">
         {% for card in module_cards %}
           {% for status in card.question_statuses %}
-            <div class="wheel-donut-segment status-{{ status }}" title="M{{ forloop.parentloop.counter }}: {{ status|title }}"></div>
+            <div class="wheel-donut-segment status-{{ status }}" title="{% if 'placement_training' in category %}W{{ card.module.order }}{% elif 'dbms' in category %}{% if card.module.order == 1 %}Easy{% elif card.module.order == 2 %}Medium{% elif card.module.order == 3 %}Hard{% else %}M{{ card.module.order }}{% endif %}{% else %}M{{ card.module.order }}{% endif %}: {{ status|title }}"></div>
           {% endfor %}
         {% endfor %}
       </div>
@@ -117,7 +119,7 @@
            class="wheel-module-label"
            style="--mod-color: var(--lvl-{{ forloop.counter }});"
            title="{{ card.module.name }} — {{ card.percentage|floatformat:0 }}% complete">
-          <span class="wheel-mod-title" style="color: var(--mod-color); font-weight: 800; font-size: 16px; display: block; margin-bottom: 2px;">{% if 'placement_training' in category %}W{{ card.module.order }}{% else %}M{{ card.module.order }}{% endif %}</span>
+          <span class="wheel-mod-title" style="color: var(--mod-color); font-weight: 800; font-size: 16px; display: block; margin-bottom: 2px;">{% if 'placement_training' in category %}W{{ card.module.order }}{% elif 'dbms' in category %}{% if card.module.order == 1 %}Easy{% elif card.module.order == 2 %}Medium{% elif card.module.order == 3 %}Hard{% else %}M{{ card.module.order }}{% endif %}{% else %}M{{ card.module.order }}{% endif %}</span>
           <small>{{ card.percentage|floatformat:0 }}%</small>
         </a>
       {% empty %}
@@ -153,7 +155,7 @@
               <!-- Content Layer (Above Progress Fill) -->
               <span class="mp-label" style="position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
                 <span class="mp-dot" style="background: var(--mp-color); width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px var(--mp-color);"></span>
-                <span class="mp-label-text" style="font-weight: 700; font-size: 15px; line-height: 1.3; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.15);" title="{{ card.module.name }}">{% if 'placement_training' in category %}W{{ card.module.order }} {% else %}M{{ card.module.order }} {% endif %}{{ card.module.name }}</span>
+                <span class="mp-label-text" style="font-weight: 700; font-size: 15px; line-height: 1.3; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.15);" title="{{ card.module.name }}">{% if 'placement_training' in category %}W{{ card.module.order }} {% elif 'dbms' in category %}{% if card.module.order == 1 %}Easy {% elif card.module.order == 2 %}Medium {% elif card.module.order == 3 %}Hard {% else %}M{{ card.module.order }} {% endif %}{% else %}M{{ card.module.order }} {% endif %}{{ card.module.name }}</span>
               </span>
               
               <span class="mp-value" style="position: relative; z-index: 1; font-weight: 800; font-size: 15px; color: var(--text-primary); margin-left: 16px; flex-shrink: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">{{ card.percentage|floatformat:0 }}%</span>

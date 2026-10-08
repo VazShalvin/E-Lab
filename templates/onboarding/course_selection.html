@@ -434,7 +434,7 @@
           <span>→</span>
         </a>
         {% elif course.slug == "c-programming" and user.year == 1 %}
-        <a href="{% url 'first_year_instructions' %}" class="action-btn btn-enter-c transition-link">
+        <a href="{% url 'first_year_instructions' %}?course={{ course.id }}" class="action-btn btn-enter-c transition-link">
           <span>Enter {{ course.name }}</span>
           <span>→</span>
         </a>
